@@ -1,0 +1,202 @@
+using System;
+using System.Windows.Forms;
+using WaDesktop.Domain.Interfaces;
+using WaDesktop.Domain.Messages;
+using WaDesktop.Domain.State;
+using WaDesktop.Infrastructure;
+using WaDesktop.Client.Views;
+using WaDesktop.Client.Views.ManagementViews;
+
+namespace WaDesktop.Client.Presenters
+{
+    public class ShellPresenter : IDisposable
+    {
+        private readonly IShellView _view;
+        private readonly IAuthService _auth;
+        private readonly IEventAggregator _bus;
+        private readonly AppState _state;
+        private readonly string _messagesUrl;
+        private readonly string _apiBaseUrl;
+        private IDisposable _tabSub;
+        private IDisposable _sessionSub;
+        private IDisposable _notifSub;
+        private IDisposable _badgeSub;
+        private bool _disposed;
+
+        public ShellPresenter(IShellView view, IAuthService auth, IEventAggregator bus, AppState state,
+            string messagesUrl, string apiBaseUrl = "http://localhost:8080")
+        {
+            _view = view;
+            _auth = auth;
+            _bus = bus;
+            _state = state;
+            _messagesUrl = messagesUrl;
+            _apiBaseUrl = apiBaseUrl;
+
+            _tabSub = bus.Subscribe<RequestOpenTabMessage>(OnRequestOpenTab);
+            _sessionSub = bus.Subscribe<SessionExpiredMessage>(OnSessionExpired);
+            _notifSub = bus.Subscribe<ShowNotificationMessage>(m => _view.ShowNotification(m.Title, m.Body));
+            _badgeSub = bus.Subscribe<SetBadgeMessage>(m => _view.SetBadge(m.Count));
+
+            view.MessagesClicked += (s, e) => OpenMessages();
+            view.CompanyClicked += (s, e) => OpenCompany();
+            view.UsersClicked += (s, e) => OpenUsers();
+            view.PhoneNumbersClicked += (s, e) => OpenPhoneNumbers();
+            view.WabaClicked += (s, e) => OpenWaba();
+            view.TemplatesClicked += (s, e) => OpenTemplates();
+            view.AppSettingsClicked += (s, e) => OpenAppSettings();
+            view.SoftwareUpdateClicked += (s, e) => OnSoftwareUpdate();
+            view.LogoutClicked += OnLogout;
+
+            bool isAgent = _state.Role == "cs";
+            //view.AppSettingsVisible = _auth.IsSuperAdmin;
+            view.SidebarCollapsed = isAgent;
+            //view.SidebarCollapsed = isAgent;
+            view.CompanyVisible = _auth.IsSuperAdmin;
+            view.UsersVisible = !isAgent;
+            view.PhoneNumbersVisible = !isAgent;
+            view.WabaVisible = auth.IsSuperAdmin;
+            view.TemplatesVisible = !isAgent;
+            view.StatusText = $"Logged in as {_auth.DisplayName}";
+
+            if (isAgent)
+            {
+                OpenMessages();
+            }
+            else
+            {
+                OpenPhoneNumbers();
+            }
+        }
+
+        private void OnRequestOpenTab(RequestOpenTabMessage msg)
+        {
+            _view.AddOrSelectTab(msg.ModuleKey, msg.Title, CreateModuleView(msg.ModuleKey));
+        }
+
+        private IViewBase CreateModuleView(string moduleKey)
+        {
+            switch (moduleKey)
+            {
+                case "dashboard":
+                    var msgView = new MessagesView();
+                    var msgPresenter = new MessagesPresenter(msgView, _bus, _auth, _messagesUrl, _apiBaseUrl);
+                    ServiceLocator.Register(msgPresenter);
+                    return msgView;
+
+                case "company":
+                    var coView = new CompanyView();
+                    var coPresenter = new CompanyPresenter(coView, ServiceLocator.Resolve<IApiClient>());
+                    ServiceLocator.Register(coPresenter);
+                    coPresenter.LoadData();
+                    return coView;
+
+                case "users":
+                    var usrView = new UsersView();
+                    var usrPresenter = new UsersPresenter(usrView, ServiceLocator.Resolve<IApiClient>());
+                    ServiceLocator.Register(usrPresenter);
+                    usrPresenter.LoadData();
+                    return usrView;
+
+                case "phonenumbers":
+                    var pnView = new PhoneNumberView();
+                    var pnPresenter = new PhoneNumbersPresenter(pnView, ServiceLocator.Resolve<IApiClient>(), _bus);
+                    ServiceLocator.Register(pnPresenter);
+                    pnPresenter.LoadData();
+                    return pnView;
+
+                case "waba":
+                    var wbView = new WabaView();
+                    var wbPresenter = new WabasPresenter(wbView, ServiceLocator.Resolve<IApiClient>());
+                    ServiceLocator.Register(wbPresenter);
+                    wbPresenter.LoadData();
+                    return wbView;
+
+                case "templates":
+                    var tplView = new TemplatesView();
+                    var tplPresenter = new TemplatesPresenter(tplView, ServiceLocator.Resolve<IApiClient>(), _bus);
+                    ServiceLocator.Register(tplPresenter);
+                    tplPresenter.LoadData();
+                    return tplView;
+
+                case "appsettings":
+                    var setView = new AppSettingsView();
+                    var setPresenter = new AppSettingsPresenter(setView, ServiceLocator.Resolve<IApiClient>());
+                    ServiceLocator.Register(setPresenter);
+                    setPresenter.LoadData();
+                    return setView;
+
+                default:
+                    if (moduleKey.StartsWith("phonedetail_"))
+                    {
+                        var phoneId = moduleKey.Substring("phonedetail_".Length);
+                        var detailView = new PhoneNumberDetailView();
+                        var detailPresenter = new PhoneNumberDetailPresenter(detailView, ServiceLocator.Resolve<IApiClient>(), phoneId);
+                        ServiceLocator.Register(detailPresenter);
+                        detailPresenter.LoadData();
+                        return detailView;
+                    }
+                    throw new ArgumentException($"Unknown module key: {moduleKey}");
+            }
+        }
+
+        private void OpenMessages() => OnRequestOpenTab(new RequestOpenTabMessage("dashboard", "Messages"));
+        private void OpenCompany() => OnRequestOpenTab(new RequestOpenTabMessage("company", "Server"));
+        private void OpenUsers() => OnRequestOpenTab(new RequestOpenTabMessage("users", "Users"));
+        private void OpenPhoneNumbers() => OnRequestOpenTab(new RequestOpenTabMessage("phonenumbers", "Nomor HP"));
+        private void OpenWaba() => OnRequestOpenTab(new RequestOpenTabMessage("waba", "WABA"));
+        private void OpenTemplates() => OnRequestOpenTab(new RequestOpenTabMessage("templates", "Templates"));
+        private void OpenAppSettings() => OnRequestOpenTab(new RequestOpenTabMessage("appsettings", "App Settings"));
+
+        private void OnSoftwareUpdate()
+        {
+            var updateService = ServiceLocator.Resolve<IUpdateService>();
+            var updateView = _view.CreateSoftwareUpdateView();
+            using (var presenter = new SoftwareUpdatePresenter(updateView, updateService))
+            {
+                _view.ShowDialog(updateView);
+            }
+        }
+
+        private void OnSessionExpired(SessionExpiredMessage msg)
+        {
+            _view.ClearTabs();
+            _view.StatusText = "Session expired — login ulang";
+
+            var loginView = new LoginView();
+            var loginPresenter = new LoginPresenter(loginView, _auth, _bus);
+            if (loginView.ShowDialog() == DialogResult.OK)
+            {
+                _view.StatusText = $"Logged in as {_auth.DisplayName}";
+            OpenMessages();
+            }
+            else
+            {
+                _auth.Logout();
+                _bus.Publish(new LogoutMessage());
+                _view.StatusText = "Logged out";
+            }
+            loginPresenter.Dispose();
+        }
+
+        private void OnLogout(object sender, EventArgs e)
+        {
+            _auth.Logout();
+            _bus.Publish(new LogoutMessage());
+            _view.ClearTabs();
+            _view.StatusText = "Logged out";
+        }
+
+        public void Dispose()
+        {
+            if (!_disposed)
+            {
+                _tabSub?.Dispose();
+                _sessionSub?.Dispose();
+                _notifSub?.Dispose();
+                _badgeSub?.Dispose();
+                _disposed = true;
+            }
+        }
+    }
+}

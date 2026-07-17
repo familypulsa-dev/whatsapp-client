@@ -1,0 +1,36 @@
+using System;
+
+namespace WaDesktop.Domain.Interfaces
+{
+    public interface IMessagesView : IViewBase
+    {
+        /// <summary>URL yang akan di-load di WebView.</summary>
+        string Url { set; }
+
+        /// <summary>
+        /// Script yang di-inject via AddScriptToExecuteOnDocumentCreatedAsync
+        /// sebelum navigasi. Jalan SEBELUM React app di-load.
+        /// </summary>
+        string PreloadScript { set; }
+
+        /// <summary>Event: halaman selesai di-load.</summary>
+        event EventHandler LoadCompleted;
+
+        /// <summary>Eksekusi JavaScript di WebView (setelah page load).</summary>
+        void ExecuteScript(string script);
+
+        /// <summary>Event: menerima pesan dari JavaScript (via postMessage).</summary>
+        event EventHandler<WebMessageReceivedEventArgs> MessageReceived;
+
+        /// <summary>Show native SaveFileDialog. Returns selected path or null if cancelled.</summary>
+        string ShowSaveFileDialog(string defaultFileName, string filter);
+
+        void DestroyWebView(); // untuk cleanup sebelum dispose, karena WebView2 tidak bisa di-dispose di thread selain UI thread
+    }
+
+    public class WebMessageReceivedEventArgs : EventArgs
+    {
+        public string Message { get; }
+        public WebMessageReceivedEventArgs(string message) => Message = message;
+    }
+}

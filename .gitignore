@@ -1,0 +1,46 @@
+# Env
+.env
+
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+tmp/
+
+# Test
+*.test
+*.out
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Data
+data/
+
+# Go workspace
+go.work
+go.work.sum
+
+# Go debug binaries
+__debug_bin*
+
+# Front-End and Build dependencies
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Built frontend (generated, not tracked)
+wa-desktop/src/WaDesktop.Client/wwwroot/assets/
+
+# Backend binaries
+wa-backend/server
+
+# Internal agent and cli tools
+.antigravitycli/
