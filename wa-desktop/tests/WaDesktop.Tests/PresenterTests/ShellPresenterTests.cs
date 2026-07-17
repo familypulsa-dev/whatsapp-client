@@ -34,19 +34,26 @@ namespace WaDesktop.Tests.PresenterTests
             public bool CompanyVisible { get; set; }
             public bool UsersVisible { get; set; }
             public bool TemplatesVisible { get; set; }
+            public bool PhoneNumbersVisible { get; set; }
+            public bool WabaVisible { get; set; }
             public bool InvokeRequired => false;
             public event EventHandler MessagesClicked;
             public event EventHandler CompanyClicked;
             public event EventHandler UsersClicked;
+            public event EventHandler PhoneNumbersClicked;
+            public event EventHandler WabaClicked;
             public event EventHandler TemplatesClicked;
             public event EventHandler AppSettingsClicked;
             public event EventHandler LogoutClicked;
+            public event EventHandler SoftwareUpdateClicked;
 
             public void AddOrSelectTab(string key, string title, IViewBase content) { }
             public void CloseTab(string key) { }
             public void ClearTabs() { }
             public void ShowNotification(string title, string body) { }
             public void SetBadge(int count) { }
+            public ISoftwareUpdateView CreateSoftwareUpdateView() => null;
+            public bool ShowDialog(ISoftwareUpdateView view) => false;
 
             public void TriggerDashboard() => MessagesClicked?.Invoke(this, EventArgs.Empty);
             public void TriggerLogout() => LogoutClicked?.Invoke(this, EventArgs.Empty);
