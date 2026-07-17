@@ -67,23 +67,13 @@ jobs:
         working-directory: wa-desktop
         run: msbuild WaDesktop.sln /p:Configuration=Release /p:Platform="Any CPU" /t:Rebuild /m
 
-      - name: Package release
-        shell: pwsh
-        run: |
-          $src = "wa-desktop/src/WaDesktop.Client/bin/Release"
-          $zip = "WaDesktop-$env:VERSION.zip"
-          Compress-Archive -Path "$src/*" -DestinationPath $zip
-          echo "ZIP_PATH=$zip" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: WaDesktop-${{ env.VERSION }}
-          path: WaDesktop-${{ env.VERSION }}.zip
-          if-no-files-found: error
-
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: WaDesktop-${{ env.VERSION }}.zip
+          files: |
+            wa-desktop/src/WaDesktop.Client/bin/Release/WaDesktop.exe
+            wa-desktop/src/WaDesktop.Client/bin/Release/*.dll
+            wa-desktop/src/WaDesktop.Client/bin/Release/*.config
+            wa-desktop/src/WaDesktop.Client/bin/Release/wwwroot/**
           name: WaDesktop ${{ env.VERSION }}
           generate_release_notes: true
