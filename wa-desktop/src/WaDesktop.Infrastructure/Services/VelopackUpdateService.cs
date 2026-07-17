@@ -9,7 +9,7 @@ namespace WaDesktop.Infrastructure.Services
     public class VelopackUpdateService : IUpdateService
     {
         private const string RepoUrl = "https://github.com/familypulsa-dev/whatsapp-client";
-        private const string AccessToken = "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";
+        private const string AccessToken = "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";
         
         private UpdateInfo _pendingUpdate;
 
