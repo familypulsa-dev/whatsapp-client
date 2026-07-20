@@ -47,3 +47,6 @@ wa-backend/server
 
 # Internal agent and cli tools
 .antigravitycli/
+
+# Releases
+Releases*
