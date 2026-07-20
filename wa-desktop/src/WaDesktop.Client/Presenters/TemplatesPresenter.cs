@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WaDesktop.Domain.Interfaces;
 using WaDesktop.Domain.Entities;
+using WaDesktop.Domain.Interfaces;
+using WaDesktop.Domain.Messages;
 
 namespace WaDesktop.Client.Presenters
 {
@@ -10,6 +12,7 @@ namespace WaDesktop.Client.Presenters
     {
         private readonly IManagementView<Template> _view;
         private readonly IApiClient _api;
+        private List<Template> _data;
         private readonly IEventAggregator _bus;
         private bool _disposed;
 
@@ -34,6 +37,7 @@ namespace WaDesktop.Client.Presenters
             try
             {
                 var data = await Task.Run(() => _api.GetTemplatesAsync(search));
+                _data = data;
                 _view.DataSource = data;
             }
             catch (Exception ex)
@@ -53,6 +57,9 @@ namespace WaDesktop.Client.Presenters
         {
             if (_view.SelectedIndex < 0) { MessageBox.Show("Pilih baris dulu.", "Info"); return; }
             MessageBox.Show("Edit Template — implement form dialog.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            var item = _data[_view.SelectedIndex];
+            var key = $"templatedetail_{item.Id}";
+            _bus.Publish(new RequestOpenTabMessage(key, item.Name ?? item.Id));
         }
 
         private void OnDelete(object sender, EventArgs e)
@@ -67,6 +74,7 @@ namespace WaDesktop.Client.Presenters
         {
             if (!_disposed)
             {
+                _data = null;
                 _view.RefreshClicked -= null;
                 _view.SearchClicked -= null;
                 _view.AddClicked -= null;

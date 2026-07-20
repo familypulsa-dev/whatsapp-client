@@ -20,6 +20,9 @@ namespace WaMeta.Client.Views.Splash
             Label1.Text = $"Ver. {version}";
 
             ProgressBar1.MarqueeAnimationSpeed = 30;
+
+            // Memaksa form menjadi yang paling depan saat dibuka
+            this.TopMost = true;
         }
 
         protected override CreateParams CreateParams
@@ -105,6 +108,12 @@ namespace WaMeta.Client.Views.Splash
         {
             DialogResult = DialogResult.Cancel;
             Application.Exit();
+        }
+
+        private void SplashForm_Shown(object sender, EventArgs e)
+        {
+            // Matikan TopMost setelah aplikasi berhasil tampil di depan
+            this.TopMost = false;
         }
     }
 }

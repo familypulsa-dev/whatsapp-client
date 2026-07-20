@@ -30,6 +30,7 @@ namespace WaDesktop.Domain.Interfaces
         void AddOrSelectTab(string key, string title, IViewBase content);
         void CloseTab(string key);
         void ClearTabs();
+        event EventHandler<string> TabClosed;
 
         /// <summary>Show Windows desktop notification balloon.</summary>
         void ShowNotification(string title, string body);
@@ -40,5 +41,6 @@ namespace WaDesktop.Domain.Interfaces
         event EventHandler SoftwareUpdateClicked;
         ISoftwareUpdateView CreateSoftwareUpdateView();
         bool ShowDialog(ISoftwareUpdateView view);
+        void RenderSidebar(IViewBase sidebarContent);
     }
 }

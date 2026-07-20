@@ -8,6 +8,9 @@ function getBase(): string {
   if (typeof window !== "undefined" && (window as any).__API_BASE__) {
     return (window as any).__API_BASE__
   }
+
+  return "http://localhost:8080"
+
   return ""
 }
 

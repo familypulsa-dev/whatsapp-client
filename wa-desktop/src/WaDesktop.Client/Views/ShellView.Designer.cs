@@ -28,6 +28,8 @@ namespace WaDesktop.Client.Views
         {
             this.components = new System.ComponentModel.Container();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
+            this.toolStripSystem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSoftwareUpdate = new System.Windows.Forms.ToolStripMenuItem();
             this.dashboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.companyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.usersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -41,8 +43,6 @@ namespace WaDesktop.Client.Views
             this.tabWorkspace = new System.Windows.Forms.TabControl();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.footerView1 = new Shared.Views.Footer.FooterView();
-            this.toolStripSystem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSoftwareUpdate = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
@@ -67,6 +67,21 @@ namespace WaDesktop.Client.Views
             this.menuStrip.Size = new System.Drawing.Size(1423, 24);
             this.menuStrip.TabIndex = 0;
             this.menuStrip.Text = "menuStrip";
+            // 
+            // toolStripSystem
+            // 
+            this.toolStripSystem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripSoftwareUpdate});
+            this.toolStripSystem.Name = "toolStripSystem";
+            this.toolStripSystem.Size = new System.Drawing.Size(57, 20);
+            this.toolStripSystem.Text = "&System";
+            // 
+            // toolStripSoftwareUpdate
+            // 
+            this.toolStripSoftwareUpdate.Name = "toolStripSoftwareUpdate";
+            this.toolStripSoftwareUpdate.Size = new System.Drawing.Size(161, 22);
+            this.toolStripSoftwareUpdate.Text = "Software Update";
+            this.toolStripSoftwareUpdate.Click += new System.EventHandler(this.toolStripSoftwareUpdate_Click);
             // 
             // dashboardToolStripMenuItem
             // 
@@ -180,21 +195,6 @@ namespace WaDesktop.Client.Views
             this.footerView1.Size = new System.Drawing.Size(1423, 25);
             this.footerView1.TabIndex = 3;
             // 
-            // toolStripSystem
-            // 
-            this.toolStripSystem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripSoftwareUpdate});
-            this.toolStripSystem.Name = "toolStripSystem";
-            this.toolStripSystem.Size = new System.Drawing.Size(57, 20);
-            this.toolStripSystem.Text = "&System";
-            // 
-            // toolStripSoftwareUpdate
-            // 
-            this.toolStripSoftwareUpdate.Name = "toolStripSoftwareUpdate";
-            this.toolStripSoftwareUpdate.Size = new System.Drawing.Size(180, 22);
-            this.toolStripSoftwareUpdate.Text = "Software Update";
-            this.toolStripSoftwareUpdate.Click += new System.EventHandler(this.toolStripSoftwareUpdate_Click);
-            // 
             // ShellView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -207,8 +207,8 @@ namespace WaDesktop.Client.Views
             this.MinimumSize = new System.Drawing.Size(1439, 791);
             this.Name = "ShellView";
             this.Text = "WA Desktop";
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ShellView_FormClosing);
+            this.Shown += new System.EventHandler(this.ShellView_Shown);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.splitContainer.Panel1.ResumeLayout(false);

@@ -23,11 +23,6 @@ namespace WaDesktop.Client.Views.ManagementViews
         private void InitializeComponent()
         {
             this.dataGridView = new System.Windows.Forms.DataGridView();
-            this.txtSearch = new System.Windows.Forms.TextBox();
-            this.btnSearch = new System.Windows.Forms.Button();
-            this.btnRefresh = new System.Windows.Forms.Button();
-            this.btnSave = new System.Windows.Forms.Button();
-            this.panelToolbar = new System.Windows.Forms.Panel();
             this.DgvId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DgvUsername = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DgvName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -36,8 +31,15 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.Company = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.DgvPassword = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Reset = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.txtSearch = new System.Windows.Forms.TextBox();
+            this.btnSearch = new System.Windows.Forms.Button();
+            this.btnRefresh = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
+            this.panelToolbar = new System.Windows.Forms.Panel();
+            this.panelFooter = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             this.panelToolbar.SuspendLayout();
+            this.panelFooter.SuspendLayout();
             this.SuspendLayout();
             // 
             // dataGridView
@@ -57,64 +59,13 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dataGridView.Location = new System.Drawing.Point(0, 40);
             this.dataGridView.Name = "dataGridView";
             this.dataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView.Size = new System.Drawing.Size(1000, 666);
+            this.dataGridView.Size = new System.Drawing.Size(1000, 506);
             this.dataGridView.TabIndex = 0;
             this.dataGridView.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.DataGridView_CellBeginEdit);
             this.dataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView_CellContentClick);
             this.dataGridView.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView_CellEndEdit);
             this.dataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.DataGridView_DataError);
             this.dataGridView.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.DataGridView_UserDeletingRow);
-            // 
-            // txtSearch
-            // 
-            this.txtSearch.Location = new System.Drawing.Point(8, 10);
-            this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(200, 20);
-            this.txtSearch.TabIndex = 3;
-            this.txtSearch.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtSearch_KeyPress);
-            // 
-            // btnSearch
-            // 
-            this.btnSearch.Location = new System.Drawing.Point(214, 8);
-            this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(75, 23);
-            this.btnSearch.TabIndex = 2;
-            this.btnSearch.Text = "Search";
-            this.btnSearch.UseVisualStyleBackColor = true;
-            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
-            // 
-            // btnRefresh
-            // 
-            this.btnRefresh.Location = new System.Drawing.Point(295, 8);
-            this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
-            this.btnRefresh.TabIndex = 1;
-            this.btnRefresh.Text = "Refresh";
-            this.btnRefresh.UseVisualStyleBackColor = true;
-            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
-            // 
-            // btnSave
-            // 
-            this.btnSave.Location = new System.Drawing.Point(376, 8);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(75, 23);
-            this.btnSave.TabIndex = 0;
-            this.btnSave.Text = "Save";
-            this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            // 
-            // panelToolbar
-            // 
-            this.panelToolbar.Controls.Add(this.btnSave);
-            this.panelToolbar.Controls.Add(this.btnRefresh);
-            this.panelToolbar.Controls.Add(this.btnSearch);
-            this.panelToolbar.Controls.Add(this.txtSearch);
-            this.panelToolbar.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelToolbar.Location = new System.Drawing.Point(0, 0);
-            this.panelToolbar.Name = "panelToolbar";
-            this.panelToolbar.Padding = new System.Windows.Forms.Padding(8);
-            this.panelToolbar.Size = new System.Drawing.Size(1000, 40);
-            this.panelToolbar.TabIndex = 1;
             // 
             // DgvId
             // 
@@ -170,17 +121,80 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.Reset.UseColumnTextForButtonValue = true;
             this.Reset.Visible = false;
             // 
+            // txtSearch
+            // 
+            this.txtSearch.Location = new System.Drawing.Point(8, 10);
+            this.txtSearch.Name = "txtSearch";
+            this.txtSearch.Size = new System.Drawing.Size(200, 20);
+            this.txtSearch.TabIndex = 3;
+            this.txtSearch.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtSearch_KeyPress);
+            // 
+            // btnSearch
+            // 
+            this.btnSearch.Location = new System.Drawing.Point(214, 8);
+            this.btnSearch.Name = "btnSearch";
+            this.btnSearch.Size = new System.Drawing.Size(75, 23);
+            this.btnSearch.TabIndex = 2;
+            this.btnSearch.Text = "Search";
+            this.btnSearch.UseVisualStyleBackColor = true;
+            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
+            // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRefresh.Location = new System.Drawing.Point(815, 6);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(84, 23);
+            this.btnRefresh.TabIndex = 1;
+            this.btnRefresh.Text = "F5 - Refresh";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
+            // btnSave
+            // 
+            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSave.Location = new System.Drawing.Point(905, 6);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(75, 23);
+            this.btnSave.TabIndex = 0;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // panelToolbar
+            // 
+            this.panelToolbar.Controls.Add(this.btnSearch);
+            this.panelToolbar.Controls.Add(this.txtSearch);
+            this.panelToolbar.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelToolbar.Location = new System.Drawing.Point(0, 0);
+            this.panelToolbar.Name = "panelToolbar";
+            this.panelToolbar.Padding = new System.Windows.Forms.Padding(8);
+            this.panelToolbar.Size = new System.Drawing.Size(1000, 40);
+            this.panelToolbar.TabIndex = 1;
+            // 
+            // panelFooter
+            // 
+            this.panelFooter.Controls.Add(this.btnRefresh);
+            this.panelFooter.Controls.Add(this.btnSave);
+            this.panelFooter.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelFooter.Location = new System.Drawing.Point(0, 514);
+            this.panelFooter.Name = "panelFooter";
+            this.panelFooter.Size = new System.Drawing.Size(1000, 32);
+            this.panelFooter.TabIndex = 2;
+            // 
             // UsersView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.panelFooter);
             this.Controls.Add(this.dataGridView);
             this.Controls.Add(this.panelToolbar);
             this.Name = "UsersView";
-            this.Size = new System.Drawing.Size(1000, 706);
+            this.Size = new System.Drawing.Size(1000, 546);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).EndInit();
             this.panelToolbar.ResumeLayout(false);
             this.panelToolbar.PerformLayout();
+            this.panelFooter.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -193,5 +207,6 @@ namespace WaDesktop.Client.Views.ManagementViews
         private System.Windows.Forms.DataGridViewComboBoxColumn Company;
         private System.Windows.Forms.DataGridViewTextBoxColumn DgvPassword;
         private System.Windows.Forms.DataGridViewButtonColumn Reset;
+        private System.Windows.Forms.Panel panelFooter;
     }
 }

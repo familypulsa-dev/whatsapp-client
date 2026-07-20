@@ -98,6 +98,7 @@ namespace WaDesktop.Client.Views
             this.Name = "LoginView";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Login";
+            this.Shown += new System.EventHandler(this.LoginView_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 

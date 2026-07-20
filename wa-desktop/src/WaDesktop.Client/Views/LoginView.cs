@@ -9,6 +9,9 @@ namespace WaDesktop.Client.Views
         public LoginView()
         {
             InitializeComponent();
+
+            // Memaksa form menjadi yang paling depan saat dibuka
+            this.TopMost = true;
         }
 
         public string Username => txtUsername.Text.Trim();
@@ -43,6 +46,12 @@ namespace WaDesktop.Client.Views
         private void labelTitle_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void LoginView_Shown(object sender, EventArgs e)
+        {
+            // Matikan TopMost setelah aplikasi berhasil tampil di depan
+            this.TopMost = false;
         }
     }
 }

@@ -33,19 +33,19 @@ namespace WaDesktop.Client.Views.ManagementViews
 
                     if (dataGridView.Columns.Count == 3)
                     {
-                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "LimitMarketing", HeaderText = "Limit Mkt" });
-                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "LimitUtility", HeaderText = "Limit Util" });
-                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "LimitAuthentication", HeaderText = "Limit Auth" });
-                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "LimitService", HeaderText = "Limit Svc" });
+                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "LimitMarketing", HeaderText = "Limit Marketing" });
+                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "LimitUtility", HeaderText = "Limit Utilitas" });
+                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "LimitAuthentication", HeaderText = "Limit Autentikasi" });
+                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "LimitService", HeaderText = "Limit Servis" });
 
-                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "UsageMarketing", HeaderText = "Usage Mkt", ReadOnly = true });
-                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "UsageUtility", HeaderText = "Usage Util", ReadOnly = true });
-                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "UsageAuthentication", HeaderText = "Usage Auth", ReadOnly = true });
-                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "UsageService", HeaderText = "Usage Svc", ReadOnly = true });
+                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "UsageMarketing", HeaderText = "Usage Marketing", ReadOnly = true });
+                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "UsageUtility", HeaderText = "Usage Utilitas", ReadOnly = true });
+                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "UsageAuthentication", HeaderText = "Usage Autentikasi", ReadOnly = true });
+                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "UsageService", HeaderText = "Usage Servis", ReadOnly = true });
 
-                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "CurrentCost", HeaderText = "Current Cost", ReadOnly = true });
-                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "MetaCost", HeaderText = "Meta Billed Cost", ReadOnly = true });
-                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "MaxEstimatedCost", HeaderText = "Max Est. Cost", ReadOnly = true });
+                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "CurrentCost", HeaderText = "Est. Tagihan Saat ini", ReadOnly = true });
+                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "MetaCost", HeaderText = "Tagihan Meta", ReadOnly = true });
+                        dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "MaxEstimatedCost", HeaderText = "Maks Est.Tagihan", ReadOnly = true });
                     }
 
                     foreach (var c in value)

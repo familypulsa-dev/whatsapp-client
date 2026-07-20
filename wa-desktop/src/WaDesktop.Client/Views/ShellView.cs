@@ -23,6 +23,9 @@ namespace WaDesktop.Client.Views
             typeof(TabControl).GetProperty("DoubleBuffered",
                 System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
                 ?.SetValue(tabWorkspace, true, null);
+
+            // Memaksa form menjadi yang paling depan saat dibuka
+            this.TopMost = true;
         }
 
         // ── IShellView ──
@@ -94,9 +97,6 @@ namespace WaDesktop.Client.Views
 
         public void AddOrSelectTab(string key, string title, IViewBase content)
         {
-            var control = content as Control;
-            if (control == null)
-                throw new ArgumentException("content must be a WinForms Control");
 
             this.InvokeIfRequired(() =>
             {
@@ -109,6 +109,10 @@ namespace WaDesktop.Client.Views
                     }
                 }
 
+                var control = content as Control;
+                if (control == null)
+                    throw new ArgumentException("content must be a WinForms Control");
+
                 var page = new TabPage(title) { Name = key, UseVisualStyleBackColor = true };
                 control.Dock = DockStyle.Fill;
                 page.Controls.Add(control);
@@ -116,6 +120,8 @@ namespace WaDesktop.Client.Views
                 tabWorkspace.SelectedIndex = tabWorkspace.TabPages.Count - 1;
             });
         }
+
+        public event EventHandler<string> TabClosed;
 
         public void CloseTab(string key)
         {
@@ -125,7 +131,10 @@ namespace WaDesktop.Client.Views
                 {
                     if (tabWorkspace.TabPages[i].Name == key)
                     {
+                        var page = tabWorkspace.TabPages[i];
                         tabWorkspace.TabPages.RemoveAt(i);
+                        page.Dispose();
+                        TabClosed?.Invoke(this, key);
                         return;
                     }
                 }
@@ -134,7 +143,20 @@ namespace WaDesktop.Client.Views
 
         public void ClearTabs()
         {
-            this.InvokeIfRequired(() => tabWorkspace.TabPages.Clear());
+            this.InvokeIfRequired(() => 
+            {
+                // Salin dulu semua key agar tidak error saat koleksi diubah
+                var keys = new string[tabWorkspace.TabPages.Count];
+                for (int i = 0; i < tabWorkspace.TabPages.Count; i++)
+                {
+                    keys[i] = tabWorkspace.TabPages[i].Name;
+                }
+                
+                foreach (var key in keys)
+                {
+                    CloseTab(key);
+                }
+            });
         }
 
         public void ShowNotification(string title, string body)
@@ -299,6 +321,12 @@ namespace WaDesktop.Client.Views
                 this.WindowState = FormWindowState.Normal;
             this.Activate();
             this.Focus();
+        }
+
+        private void ShellView_Shown(object sender, EventArgs e)
+        {
+            // Matikan TopMost setelah aplikasi berhasil tampil di depan
+            this.TopMost = false;
         }
     }
 }

@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using Microsoft.Extensions.DependencyInjection;
 using WaDesktop.Domain.Interfaces;
 using WaDesktop.Domain.Messages;
 using WaDesktop.Domain.State;
@@ -17,6 +19,9 @@ namespace WaDesktop.Client.Presenters
         private readonly AppState _state;
         private readonly string _messagesUrl;
         private readonly string _apiBaseUrl;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly Dictionary<string, IServiceScope> _activeTabScopes = new Dictionary<string, IServiceScope>();
+        
         private IDisposable _tabSub;
         private IDisposable _sessionSub;
         private IDisposable _notifSub;
@@ -24,7 +29,7 @@ namespace WaDesktop.Client.Presenters
         private bool _disposed;
 
         public ShellPresenter(IShellView view, IAuthService auth, IEventAggregator bus, AppState state,
-            string messagesUrl, string apiBaseUrl = "http://localhost:8080")
+            string messagesUrl, string apiBaseUrl, IServiceProvider serviceProvider)
         {
             _view = view;
             _auth = auth;
@@ -32,6 +37,7 @@ namespace WaDesktop.Client.Presenters
             _state = state;
             _messagesUrl = messagesUrl;
             _apiBaseUrl = apiBaseUrl;
+            _serviceProvider = serviceProvider;
 
             _tabSub = bus.Subscribe<RequestOpenTabMessage>(OnRequestOpenTab);
             _sessionSub = bus.Subscribe<SessionExpiredMessage>(OnSessionExpired);
@@ -47,11 +53,10 @@ namespace WaDesktop.Client.Presenters
             view.AppSettingsClicked += (s, e) => OpenAppSettings();
             view.SoftwareUpdateClicked += (s, e) => OnSoftwareUpdate();
             view.LogoutClicked += OnLogout;
+            view.TabClosed += OnTabClosed;
 
             bool isAgent = _state.Role == "cs";
-            //view.AppSettingsVisible = _auth.IsSuperAdmin;
             view.SidebarCollapsed = isAgent;
-            //view.SidebarCollapsed = isAgent;
             view.CompanyVisible = _auth.IsSuperAdmin;
             view.UsersVisible = !isAgent;
             view.PhoneNumbersVisible = !isAgent;
@@ -69,60 +74,73 @@ namespace WaDesktop.Client.Presenters
             }
         }
 
+        private void OnTabClosed(object sender, string moduleKey)
+        {
+            if (_activeTabScopes.TryGetValue(moduleKey, out var scope))
+            {
+                scope.Dispose(); // Otomatis dispose View & Presenter di tab ini
+                _activeTabScopes.Remove(moduleKey);
+            }
+        }
+
         private void OnRequestOpenTab(RequestOpenTabMessage msg)
         {
+            if (_activeTabScopes.ContainsKey(msg.ModuleKey))
+            {
+                // Tab sudah terbuka, hanya perlu difokuskan
+                _view.AddOrSelectTab(msg.ModuleKey, msg.Title, null);
+                return;
+            }
+
             _view.AddOrSelectTab(msg.ModuleKey, msg.Title, CreateModuleView(msg.ModuleKey));
         }
 
         private IViewBase CreateModuleView(string moduleKey)
         {
+            var scope = _serviceProvider.CreateScope();
+            _activeTabScopes.Add(moduleKey, scope);
+            var provider = scope.ServiceProvider;
+
             switch (moduleKey)
             {
-                case "dashboard":
-                    var msgView = new MessagesView();
-                    var msgPresenter = new MessagesPresenter(msgView, _bus, _auth, _messagesUrl, _apiBaseUrl);
-                    ServiceLocator.Register(msgPresenter);
+                case "messages":
+                    var msgView = provider.GetRequiredService<MessagesView>();
+                    var msgPresenter = ActivatorUtilities.CreateInstance<MessagesPresenter>(provider, msgView, _messagesUrl, _apiBaseUrl);
                     return msgView;
 
                 case "company":
-                    var coView = new CompanyView();
-                    var coPresenter = new CompanyPresenter(coView, ServiceLocator.Resolve<IApiClient>());
-                    ServiceLocator.Register(coPresenter);
+                    var coView = provider.GetRequiredService<CompanyView>();
+                    var coPresenter = ActivatorUtilities.CreateInstance<CompanyPresenter>(provider, coView);
                     coPresenter.LoadData();
                     return coView;
 
                 case "users":
-                    var usrView = new UsersView();
-                    var usrPresenter = new UsersPresenter(usrView, ServiceLocator.Resolve<IApiClient>());
-                    ServiceLocator.Register(usrPresenter);
+                    var usrView = provider.GetRequiredService<UsersView>();
+                    var usrPresenter = ActivatorUtilities.CreateInstance<UsersPresenter>(provider, usrView);
                     usrPresenter.LoadData();
                     return usrView;
 
                 case "phonenumbers":
-                    var pnView = new PhoneNumberView();
-                    var pnPresenter = new PhoneNumbersPresenter(pnView, ServiceLocator.Resolve<IApiClient>(), _bus);
-                    ServiceLocator.Register(pnPresenter);
+                    var pnView = provider.GetRequiredService<PhoneNumberView>();
+                    var pnPresenter = ActivatorUtilities.CreateInstance<PhoneNumbersPresenter>(provider, pnView);
                     pnPresenter.LoadData();
                     return pnView;
 
                 case "waba":
-                    var wbView = new WabaView();
-                    var wbPresenter = new WabasPresenter(wbView, ServiceLocator.Resolve<IApiClient>());
-                    ServiceLocator.Register(wbPresenter);
+                    var wbView = provider.GetRequiredService<WabaView>();
+                    var wbPresenter = ActivatorUtilities.CreateInstance<WabasPresenter>(provider, wbView);
                     wbPresenter.LoadData();
                     return wbView;
 
                 case "templates":
-                    var tplView = new TemplatesView();
-                    var tplPresenter = new TemplatesPresenter(tplView, ServiceLocator.Resolve<IApiClient>(), _bus);
-                    ServiceLocator.Register(tplPresenter);
+                    var tplView = provider.GetRequiredService<TemplatesView>();
+                    var tplPresenter = ActivatorUtilities.CreateInstance<TemplatesPresenter>(provider, tplView);
                     tplPresenter.LoadData();
                     return tplView;
 
                 case "appsettings":
-                    var setView = new AppSettingsView();
-                    var setPresenter = new AppSettingsPresenter(setView, ServiceLocator.Resolve<IApiClient>());
-                    ServiceLocator.Register(setPresenter);
+                    var setView = provider.GetRequiredService<AppSettingsView>();
+                    var setPresenter = ActivatorUtilities.CreateInstance<AppSettingsPresenter>(provider, setView);
                     setPresenter.LoadData();
                     return setView;
 
@@ -130,17 +148,28 @@ namespace WaDesktop.Client.Presenters
                     if (moduleKey.StartsWith("phonedetail_"))
                     {
                         var phoneId = moduleKey.Substring("phonedetail_".Length);
-                        var detailView = new PhoneNumberDetailView();
-                        var detailPresenter = new PhoneNumberDetailPresenter(detailView, ServiceLocator.Resolve<IApiClient>(), phoneId);
-                        ServiceLocator.Register(detailPresenter);
+                        var detailView = provider.GetRequiredService<PhoneNumberDetailView>();
+                        
+                        var detailPresenter = ActivatorUtilities.CreateInstance<PhoneNumberDetailPresenter>(
+                            provider, detailView, phoneId);
+                            
                         detailPresenter.LoadData();
+                        return detailView;
+                    } else if(moduleKey.StartsWith("templatedetail_"))
+                    {
+                        var templateId = moduleKey.Substring("templatedetail_".Length);
+                        var detailView = provider.GetRequiredService<MessagesView>();
+
+                        var detailPresenter = ActivatorUtilities.CreateInstance<MessagesPresenter>(
+                            provider, detailView, _messagesUrl + "templates/new", _apiBaseUrl);
+
                         return detailView;
                     }
                     throw new ArgumentException($"Unknown module key: {moduleKey}");
             }
         }
 
-        private void OpenMessages() => OnRequestOpenTab(new RequestOpenTabMessage("dashboard", "Messages"));
+        private void OpenMessages() => OnRequestOpenTab(new RequestOpenTabMessage("messages", "Messages"));
         private void OpenCompany() => OnRequestOpenTab(new RequestOpenTabMessage("company", "Server"));
         private void OpenUsers() => OnRequestOpenTab(new RequestOpenTabMessage("users", "Users"));
         private void OpenPhoneNumbers() => OnRequestOpenTab(new RequestOpenTabMessage("phonenumbers", "Nomor HP"));
@@ -150,7 +179,7 @@ namespace WaDesktop.Client.Presenters
 
         private void OnSoftwareUpdate()
         {
-            var updateService = ServiceLocator.Resolve<IUpdateService>();
+            var updateService = _serviceProvider.GetRequiredService<IUpdateService>();
             var updateView = _view.CreateSoftwareUpdateView();
             using (var presenter = new SoftwareUpdatePresenter(updateView, updateService))
             {
@@ -163,12 +192,12 @@ namespace WaDesktop.Client.Presenters
             _view.ClearTabs();
             _view.StatusText = "Session expired — login ulang";
 
-            var loginView = new LoginView();
-            var loginPresenter = new LoginPresenter(loginView, _auth, _bus);
+            var loginView = _serviceProvider.GetRequiredService<LoginView>();
+            var loginPresenter = ActivatorUtilities.CreateInstance<LoginPresenter>(_serviceProvider, loginView);
             if (loginView.ShowDialog() == DialogResult.OK)
             {
                 _view.StatusText = $"Logged in as {_auth.DisplayName}";
-            OpenMessages();
+                OpenMessages();
             }
             else
             {
@@ -195,6 +224,13 @@ namespace WaDesktop.Client.Presenters
                 _sessionSub?.Dispose();
                 _notifSub?.Dispose();
                 _badgeSub?.Dispose();
+                
+                foreach (var scope in _activeTabScopes.Values)
+                {
+                    scope.Dispose();
+                }
+                _activeTabScopes.Clear();
+
                 _disposed = true;
             }
         }

@@ -45,5 +45,9 @@ namespace WaDesktop.Client.Views.ManagementViews
         {
             if (e.KeyChar == (char)Keys.Enter) SearchClicked?.Invoke(this, txtSearch.Text);
         }
+        private void dataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0) EditClicked?.Invoke(this, EventArgs.Empty);
+        }
     }
 }
