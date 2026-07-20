@@ -46,6 +46,7 @@ namespace WaDesktop.Tests.PresenterTests
             public event EventHandler AppSettingsClicked;
             public event EventHandler LogoutClicked;
             public event EventHandler SoftwareUpdateClicked;
+            public event EventHandler<string> TabClosed;
 
             public void AddOrSelectTab(string key, string title, IViewBase content) { }
             public void CloseTab(string key) { }
@@ -54,6 +55,7 @@ namespace WaDesktop.Tests.PresenterTests
             public void SetBadge(int count) { }
             public ISoftwareUpdateView CreateSoftwareUpdateView() => null;
             public bool ShowDialog(ISoftwareUpdateView view) => false;
+            public void RenderSidebar(IViewBase sidebarContent) { }
 
             public void TriggerDashboard() => MessagesClicked?.Invoke(this, EventArgs.Empty);
             public void TriggerLogout() => LogoutClicked?.Invoke(this, EventArgs.Empty);
@@ -68,7 +70,10 @@ namespace WaDesktop.Tests.PresenterTests
             var state = new AppState();
             state.SetSession("t", "rt", "admin", "Test");
 
-            var presenter = new global::WaDesktop.Client.Presenters.ShellPresenter(view, auth, bus, state, "http://localhost:5000");
+            var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+            var provider = services.BuildServiceProvider();
+
+            var presenter = new global::WaDesktop.Client.Presenters.ShellPresenter(view, auth, bus, state, "http://localhost:5000", "http://localhost:8080", provider);
 
             Assert.That(view.StatusText, Does.Contain("Test"));
             presenter.Dispose();
@@ -83,7 +88,10 @@ namespace WaDesktop.Tests.PresenterTests
             var state = new AppState();
             state.SetSession("t", "rt", "admin", "Test");
 
-            var presenter = new global::WaDesktop.Client.Presenters.ShellPresenter(view, auth, bus, state, "http://localhost:5000");
+            var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+            var provider = services.BuildServiceProvider();
+
+            var presenter = new global::WaDesktop.Client.Presenters.ShellPresenter(view, auth, bus, state, "http://localhost:5000", "http://localhost:8080", provider);
 
             view.TriggerLogout();
 
