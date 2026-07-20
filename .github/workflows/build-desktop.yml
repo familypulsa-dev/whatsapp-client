@@ -22,6 +22,7 @@ jobs:
           $version = "${{ github.ref_name }}" -replace '^v', ''
           echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
+      # 1. Frontend Build
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -34,8 +35,24 @@ jobs:
           npm ci
           npm run build:desktop
 
-      - uses: microsoft/setup-msbuild@v2
+      # 2. Setup .NET & Velopack Tool
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
 
+      - name: Install vpk Tool
+        run: dotnet tool install -g vpk
+
+      # 3. Setup Build Tools
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Restore NuGet packages
+        working-directory: wa-desktop
+        run: nuget restore WaDesktop.sln
+
+      # 4. Set Assembly Version
       - name: Generate AssemblyInfo
         shell: pwsh
         run: |
@@ -59,21 +76,21 @@ jobs:
           [assembly: AssemblyFileVersion("$env:VERSION.0")]
           "@ | Out-File -FilePath "$dir/AssemblyInfo.cs" -Encoding utf8
 
-      - name: Restore NuGet packages
-        working-directory: wa-desktop
-        run: nuget restore WaDesktop.sln
-
+      # 5. Compile App
       - name: Build (Release)
         working-directory: wa-desktop
         run: msbuild WaDesktop.sln /p:Configuration=Release /p:Platform="Any CPU" /t:Rebuild /m
 
+      # 6. Velopack Packaging
+      - name: Pack with Velopack
+        shell: pwsh
+        run: |
+          vpk pack --packId "WaDesktop" --packTitle "WaDesktop" --packVersion $env:VERSION --packDir "wa-desktop/src/WaDesktop.Client/bin/Release" --mainExe "WaDesktop.exe"
+
+      # 7. Upload to GitHub Releases
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            wa-desktop/src/WaDesktop.Client/bin/Release/WaDesktop.exe
-            wa-desktop/src/WaDesktop.Client/bin/Release/*.dll
-            wa-desktop/src/WaDesktop.Client/bin/Release/*.config
-            wa-desktop/src/WaDesktop.Client/bin/Release/wwwroot/**
+          files: Releases/*
           name: WaDesktop ${{ env.VERSION }}
           generate_release_notes: true
