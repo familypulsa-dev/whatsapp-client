@@ -152,6 +152,10 @@
             this.lbLoader.TabIndex = 11;
             this.lbLoader.Text = "Fetching data...";
             // 
+            // timer1
+            // 
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // SoftwareUpdateView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
