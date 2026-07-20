@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using WaDesktop.Domain.Interfaces;
 using WaDesktop.Domain.State;
 using WaDesktop.Domain.Messages;
