@@ -106,5 +106,9 @@ namespace WaDesktop.Client.Views.ManagementViews
             }
         }
 
+        private void PhoneNumberDetailView_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

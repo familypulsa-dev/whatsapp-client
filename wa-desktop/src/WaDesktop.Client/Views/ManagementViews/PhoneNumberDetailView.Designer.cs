@@ -67,6 +67,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.txtWebsite1 = new System.Windows.Forms.TextBox();
             this.lblWebsite2 = new System.Windows.Forms.Label();
             this.txtWebsite2 = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picProfile)).BeginInit();
             this.SuspendLayout();
             // 
@@ -92,11 +93,11 @@ namespace WaDesktop.Client.Views.ManagementViews
             // 
             // btnFetchMeta
             // 
-            this.btnFetchMeta.Location = new System.Drawing.Point(160, 629);
+            this.btnFetchMeta.Location = new System.Drawing.Point(478, 291);
             this.btnFetchMeta.Name = "btnFetchMeta";
             this.btnFetchMeta.Size = new System.Drawing.Size(120, 28);
             this.btnFetchMeta.TabIndex = 2;
-            this.btnFetchMeta.Text = "Fetch from Meta";
+            this.btnFetchMeta.Text = "Sinkron";
             this.btnFetchMeta.UseVisualStyleBackColor = true;
             this.btnFetchMeta.Click += new System.EventHandler(this.BtnFetchMeta_Click);
             // 
@@ -118,7 +119,8 @@ namespace WaDesktop.Client.Views.ManagementViews
             // 
             this.txtDisplayName.Location = new System.Drawing.Point(160, 84);
             this.txtDisplayName.Name = "txtDisplayName";
-            this.txtDisplayName.Size = new System.Drawing.Size(260, 20);
+            this.txtDisplayName.ReadOnly = true;
+            this.txtDisplayName.Size = new System.Drawing.Size(179, 20);
             this.txtDisplayName.TabIndex = 6;
             // 
             // txtDescription
@@ -133,11 +135,11 @@ namespace WaDesktop.Client.Views.ManagementViews
             // 
             this.btnSave.BackColor = System.Drawing.Color.White;
             this.btnSave.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnSave.Location = new System.Drawing.Point(300, 629);
+            this.btnSave.Location = new System.Drawing.Point(618, 291);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(120, 28);
             this.btnSave.TabIndex = 23;
-            this.btnSave.Text = "Save Changes";
+            this.btnSave.Text = "Simpan";
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.BtnSave_Click);
             // 
@@ -164,14 +166,14 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(160, 112);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(60, 13);
+            this.label3.Size = new System.Drawing.Size(50, 13);
             this.label3.TabIndex = 7;
-            this.label3.Text = "Description";
+            this.label3.Text = "Deskripsi";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(160, 252);
+            this.label5.Location = new System.Drawing.Point(160, 191);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(73, 13);
             this.label5.TabIndex = 11;
@@ -187,7 +189,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             // 
             // txtQuality
             // 
-            this.txtQuality.Location = new System.Drawing.Point(160, 268);
+            this.txtQuality.Location = new System.Drawing.Point(160, 207);
             this.txtQuality.Name = "txtQuality";
             this.txtQuality.ReadOnly = true;
             this.txtQuality.Size = new System.Drawing.Size(260, 20);
@@ -196,7 +198,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             // lblEmail
             // 
             this.lblEmail.AutoSize = true;
-            this.lblEmail.Location = new System.Drawing.Point(160, 306);
+            this.lblEmail.Location = new System.Drawing.Point(160, 240);
             this.lblEmail.Name = "lblEmail";
             this.lblEmail.Size = new System.Drawing.Size(32, 13);
             this.lblEmail.TabIndex = 13;
@@ -204,7 +206,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             // 
             // txtEmail
             // 
-            this.txtEmail.Location = new System.Drawing.Point(160, 322);
+            this.txtEmail.Location = new System.Drawing.Point(160, 256);
             this.txtEmail.Name = "txtEmail";
             this.txtEmail.Size = new System.Drawing.Size(260, 20);
             this.txtEmail.TabIndex = 14;
@@ -212,15 +214,15 @@ namespace WaDesktop.Client.Views.ManagementViews
             // lblAbout
             // 
             this.lblAbout.AutoSize = true;
-            this.lblAbout.Location = new System.Drawing.Point(160, 360);
+            this.lblAbout.Location = new System.Drawing.Point(478, 24);
             this.lblAbout.Name = "lblAbout";
-            this.lblAbout.Size = new System.Drawing.Size(35, 13);
+            this.lblAbout.Size = new System.Drawing.Size(47, 13);
             this.lblAbout.TabIndex = 15;
-            this.lblAbout.Text = "About";
+            this.lblAbout.Text = "Tentang";
             // 
             // txtAbout
             // 
-            this.txtAbout.Location = new System.Drawing.Point(160, 376);
+            this.txtAbout.Location = new System.Drawing.Point(478, 40);
             this.txtAbout.Name = "txtAbout";
             this.txtAbout.Size = new System.Drawing.Size(260, 20);
             this.txtAbout.TabIndex = 16;
@@ -228,15 +230,15 @@ namespace WaDesktop.Client.Views.ManagementViews
             // lblAddress
             // 
             this.lblAddress.AutoSize = true;
-            this.lblAddress.Location = new System.Drawing.Point(160, 414);
+            this.lblAddress.Location = new System.Drawing.Point(478, 78);
             this.lblAddress.Name = "lblAddress";
-            this.lblAddress.Size = new System.Drawing.Size(45, 13);
+            this.lblAddress.Size = new System.Drawing.Size(39, 13);
             this.lblAddress.TabIndex = 17;
-            this.lblAddress.Text = "Address";
+            this.lblAddress.Text = "Alamat";
             // 
             // txtAddress
             // 
-            this.txtAddress.Location = new System.Drawing.Point(160, 430);
+            this.txtAddress.Location = new System.Drawing.Point(478, 94);
             this.txtAddress.Name = "txtAddress";
             this.txtAddress.Size = new System.Drawing.Size(260, 20);
             this.txtAddress.TabIndex = 18;
@@ -244,14 +246,15 @@ namespace WaDesktop.Client.Views.ManagementViews
             // lblVertical
             // 
             this.lblVertical.AutoSize = true;
-            this.lblVertical.Location = new System.Drawing.Point(160, 468);
+            this.lblVertical.Location = new System.Drawing.Point(478, 132);
             this.lblVertical.Name = "lblVertical";
-            this.lblVertical.Size = new System.Drawing.Size(42, 13);
+            this.lblVertical.Size = new System.Drawing.Size(46, 13);
             this.lblVertical.TabIndex = 19;
-            this.lblVertical.Text = "Vertical";
+            this.lblVertical.Text = "Kategori";
             // 
             // cboVertical
             // 
+            this.cboVertical.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboVertical.Items.AddRange(new object[] {
             "OTHER",
             "AUTO",
@@ -274,7 +277,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             "ONLINE_GAMBLING",
             "PHYSICAL_GAMBLING",
             "OTC_DRUGS"});
-            this.cboVertical.Location = new System.Drawing.Point(160, 484);
+            this.cboVertical.Location = new System.Drawing.Point(478, 148);
             this.cboVertical.Name = "cboVertical";
             this.cboVertical.Size = new System.Drawing.Size(260, 21);
             this.cboVertical.TabIndex = 20;
@@ -282,7 +285,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             // lblWebsite1
             // 
             this.lblWebsite1.AutoSize = true;
-            this.lblWebsite1.Location = new System.Drawing.Point(160, 522);
+            this.lblWebsite1.Location = new System.Drawing.Point(478, 186);
             this.lblWebsite1.Name = "lblWebsite1";
             this.lblWebsite1.Size = new System.Drawing.Size(55, 13);
             this.lblWebsite1.TabIndex = 21;
@@ -290,7 +293,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             // 
             // txtWebsite1
             // 
-            this.txtWebsite1.Location = new System.Drawing.Point(160, 538);
+            this.txtWebsite1.Location = new System.Drawing.Point(478, 202);
             this.txtWebsite1.Name = "txtWebsite1";
             this.txtWebsite1.Size = new System.Drawing.Size(260, 20);
             this.txtWebsite1.TabIndex = 22;
@@ -298,7 +301,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             // lblWebsite2
             // 
             this.lblWebsite2.AutoSize = true;
-            this.lblWebsite2.Location = new System.Drawing.Point(160, 574);
+            this.lblWebsite2.Location = new System.Drawing.Point(478, 240);
             this.lblWebsite2.Name = "lblWebsite2";
             this.lblWebsite2.Size = new System.Drawing.Size(55, 13);
             this.lblWebsite2.TabIndex = 23;
@@ -306,16 +309,27 @@ namespace WaDesktop.Client.Views.ManagementViews
             // 
             // txtWebsite2
             // 
-            this.txtWebsite2.Location = new System.Drawing.Point(160, 590);
+            this.txtWebsite2.Location = new System.Drawing.Point(478, 256);
             this.txtWebsite2.Name = "txtWebsite2";
             this.txtWebsite2.Size = new System.Drawing.Size(260, 20);
             this.txtWebsite2.TabIndex = 24;
+            // 
+            // button1
+            // 
+            this.button1.Enabled = false;
+            this.button1.Location = new System.Drawing.Point(345, 82);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 25;
+            this.button1.Text = "Ubah";
+            this.button1.UseVisualStyleBackColor = true;
             // 
             // PhoneNumberDetailView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.txtWebsite2);
             this.Controls.Add(this.lblWebsite2);
@@ -341,11 +355,14 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.Controls.Add(this.btnUploadPhoto);
             this.Controls.Add(this.picProfile);
             this.Name = "PhoneNumberDetailView";
-            this.Size = new System.Drawing.Size(460, 660);
+            this.Size = new System.Drawing.Size(790, 358);
+            this.Load += new System.EventHandler(this.PhoneNumberDetailView_Load);
             ((System.ComponentModel.ISupportInitialize)(this.picProfile)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
+
+        private System.Windows.Forms.Button button1;
     }
 }

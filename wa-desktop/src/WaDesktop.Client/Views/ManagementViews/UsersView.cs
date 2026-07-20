@@ -130,6 +130,7 @@ namespace WaDesktop.Client.Views.ManagementViews
                         Id = row.Cells["DgvId"].Value?.ToString() ?? "",
                         Username = row.Cells["DgvUsername"].Value?.ToString() ?? "",
                         DisplayName = row.Cells["DgvName"].Value?.ToString() ?? "",
+                        NewPassword = row.Cells["DgvPassword"].Value?.ToString() ?? "",
                         Role = backendRole,
                         CompanyId = row.Cells["Company"].Value?.ToString() ?? "",
                         IsActive = row.Cells["Status"].Value as bool? ?? false
