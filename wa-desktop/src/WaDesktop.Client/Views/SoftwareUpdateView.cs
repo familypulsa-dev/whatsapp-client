@@ -31,7 +31,6 @@ namespace WaDesktop.Client.Views
             base.OnLoad(e);
 
             SetCanUpdate(false);
-            StartLoader();
             btnUpgrade.Text = "Upgrade";
 
             OnLoadView?.Invoke();
@@ -51,16 +50,17 @@ namespace WaDesktop.Client.Views
             }
         }
 
-        public void StartLoader()
+        public void Loader(bool status)
         {
-            lbLoader.Visible = true;
-            timer1.Start();
-        }
-
-        public void StopLoader()
-        {
-            timer1.Stop();
-            // lbLoader.Visible = false; // We use lbLoader to show progress now
+            if(status)
+            {
+                lbLoader.Visible = true;
+                timer1.Start();
+            }
+            else
+            {
+                   timer1.Stop();
+            }
         }
 
         public void SetParameters(string newVersion, string notes)
@@ -83,7 +83,6 @@ namespace WaDesktop.Client.Views
                 return;
             }
 
-            StopLoader();
             lbLoader.Visible = false;
 
             if (canUpdate)

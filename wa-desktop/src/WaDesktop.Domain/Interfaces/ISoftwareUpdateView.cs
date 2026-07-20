@@ -9,6 +9,7 @@ namespace WaDesktop.Domain.Interfaces
         void UpdateProgress(string status, int percent);
         void CloseView();
         void ShowError(string message);
+        void Loader(bool status);
         event Action OnClickDownloadUpdate;
         event Action OnClickClose;
         event Action OnLoadView;

@@ -145,6 +145,7 @@
             // 
             // lbLoader
             // 
+            this.lbLoader.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lbLoader.AutoSize = true;
             this.lbLoader.Location = new System.Drawing.Point(10, 263);
             this.lbLoader.Name = "lbLoader";
@@ -165,6 +166,7 @@
             this.Controls.Add(this.btnUpgrade);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.groupBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "SoftwareUpdateView";

@@ -23,6 +23,7 @@ namespace WaDesktop.Client.Presenters
         {
             try
             {
+                _view.Loader(true);
                 var info = await _updateService.CheckForUpdatesAsync();
                 if (info != null)
                 {
@@ -38,6 +39,10 @@ namespace WaDesktop.Client.Presenters
             {
                 _view.SetCanUpdate(false);
                 _view.ShowError("Gagal memeriksa pembaruan: " + ex.Message);
+            }
+            finally
+            {
+                _view.Loader(false);
             }
         }
 
