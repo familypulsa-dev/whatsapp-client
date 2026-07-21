@@ -5,8 +5,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, Save, Send, Info, Copy } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { get, post } from '../api/client';
 
 interface Mapping {
     parameter_position: number;
@@ -18,6 +19,13 @@ interface Mapping {
 
 const TemplateCreator: React.FC = () => {
     const navigate = useNavigate();
+    const { id } = useParams();
+    const location = useLocation();
+
+    const isEditMode = location.pathname.includes('/edit/');
+    const isPreviewMode = location.pathname.includes('/preview/');
+    const isCreateMode = location.pathname.includes('/create');
+
     const [name, setName] = useState('');
     const [templateId, setTemplateId] = useState('');
     const [templateLanguage, setTemplateLanguage] = useState('id');
@@ -57,44 +65,48 @@ const TemplateCreator: React.FC = () => {
             if (editLang) setTemplateLanguage(editLang);
 
             try {
-                // Fetch Source Fields
+                // Fetch Source Fields (Tetap pakai API lama karena backend Go belum ada)
                 const sfResponse = await axios.get(`http://${serverIp}:${serverPort}/api/templates/source-fields`);
                 if (sfResponse.data.status) {
                     setSourceFields(sfResponse.data.data);
                 }
 
-                // If editing, fetch template details
-                if (editName && editLang) {
-                    const tResponse = await axios.get(`http://${serverIp}:${serverPort}/api/templates/${editName}?waba_id=${urlWabaId}&language=${editLang}`);
-                    if (tResponse.data.status) {
-                        const { meta, mappings: savedMappings } = tResponse.data.data;
+                // If editing or previewing, fetch template details from Go Backend
+                if ((isEditMode || isPreviewMode) && id) {
+                    const tResponse = await get<{success: boolean, data: any}>(`/api/v1/templates/${id}`);
+                    if (tResponse.success) {
+                        const meta = tResponse.data;
                         setName(meta.name);
                         setTemplateId(meta.id);
                         setTemplateLanguage(meta.language || 'id');
                         setCategory(meta.category);
-                        setTimeExpiration(meta.time_expiration || 60);
+                        setTimeExpiration(meta.message_send_ttl_seconds || 60);
+
+                        // Parse string JSON components ke array object
+                        let components = [];
+                        try {
+                            if (typeof meta.components === 'string') {
+                                components = JSON.parse(meta.components);
+                            } else if (Array.isArray(meta.components)) {
+                                components = meta.components;
+                            }
+                        } catch(e) {
+                            console.error("Gagal parse components", e);
+                        }
 
                         // Extract component texts (using safe casing)
-                        const headerComp = meta.components?.find((c: any) => c.type?.toUpperCase() === 'HEADER');
-                        const bodyComp = meta.components?.find((c: any) => c.type?.toUpperCase() === 'BODY');
-                        const footerComp = meta.components?.find((c: any) => c.type?.toUpperCase() === 'FOOTER');
-                        const buttonComp = meta.components?.find((c: any) => c.type?.toUpperCase() === 'BUTTONS');
+                        const headerComp = components?.find((c: any) => c.type?.toUpperCase() === 'HEADER');
+                        const bodyComp = components?.find((c: any) => c.type?.toUpperCase() === 'BODY');
+                        const footerComp = components?.find((c: any) => c.type?.toUpperCase() === 'FOOTER');
+                        const buttonComp = components?.find((c: any) => c.type?.toUpperCase() === 'BUTTONS');
 
                         if (headerComp) setHeaderText(headerComp.text || '');
                         if (bodyComp) setBodyText(bodyComp.text || '');
                         if (footerComp) setFooterText(footerComp.text || '');
                         if (buttonComp) setTemplateButtons(buttonComp.buttons || []);
 
-                        // Map saved mappings to state
-                        if (savedMappings && savedMappings.length > 0) {
-                            setMappings(savedMappings.map((m: any) => ({
-                                parameter_position: m.parameter_position,
-                                source_key: m.source_key,
-                                component_type: m.component_type?.toUpperCase(),
-                                format_type: m.format_type?.toUpperCase(),
-                                button_index: m.button_index
-                            })));
-                        }
+                        // Mapping belum disupport Go Backend, kosongkan atau biarkan default
+                        setMappings([]);
                     }
                 }
             } catch (error) {
@@ -248,17 +260,19 @@ const TemplateCreator: React.FC = () => {
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <Button variant="outline" size="sm" onClick={() => navigate(`/templates?waba_id=${wabaId}`)}>Cancel</Button>
-                    <Button
-                        variant="default"
-                        size="sm"
-                        className="bg-[#00a884] hover:bg-[#06cf9c]"
-                        onClick={handleSave}
-                        disabled={isSaving}
-                    >
-                        <Save className="h-4 w-4 mr-2" />
-                        Save Mapping
-                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => navigate(-1)}>Cancel</Button>
+                    {!isPreviewMode && (
+                        <Button
+                            variant="default"
+                            size="sm"
+                            className="bg-[#00a884] hover:bg-[#06cf9c]"
+                            onClick={handleSave}
+                            disabled={isSaving}
+                        >
+                            <Save className="h-4 w-4 mr-2" />
+                            Save Mapping
+                        </Button>
+                    )}
                 </div>
             </header>
 

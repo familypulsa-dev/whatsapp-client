@@ -50,13 +50,16 @@ namespace WaDesktop.Client.Presenters
             }
         }
 
-        private void OnAdd(object sender, EventArgs e)
-            => MessageBox.Show("Add Template — implement form dialog.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        private void OnAdd(object sender, EventArgs e){
+            //MessageBox.Show("Add Template — implement form dialog.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            var key = $"template_create";
+            _bus.Publish(new RequestOpenTabMessage(key, "Template Baru"));
+        }
 
         private void OnEdit(object sender, EventArgs e)
         {
             if (_view.SelectedIndex < 0) { MessageBox.Show("Pilih baris dulu.", "Info"); return; }
-            MessageBox.Show("Edit Template — implement form dialog.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //MessageBox.Show("Edit Template — implement form dialog.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
             var item = _data[_view.SelectedIndex];
             var key = $"templatedetail_{item.Id}";
             _bus.Publish(new RequestOpenTabMessage(key, item.Name ?? item.Id));

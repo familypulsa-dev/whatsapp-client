@@ -1,13 +1,15 @@
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Web.UI.WebControls;
 using System.Windows.Forms;
-using Microsoft.Extensions.DependencyInjection;
+using WaDesktop.Client.Views;
+using WaDesktop.Client.Views.ManagementViews;
+using WaDesktop.Domain.Entities;
 using WaDesktop.Domain.Interfaces;
 using WaDesktop.Domain.Messages;
 using WaDesktop.Domain.State;
 using WaDesktop.Infrastructure;
-using WaDesktop.Client.Views;
-using WaDesktop.Client.Views.ManagementViews;
 
 namespace WaDesktop.Client.Presenters
 {
@@ -143,7 +145,11 @@ namespace WaDesktop.Client.Presenters
                     var setPresenter = ActivatorUtilities.CreateInstance<AppSettingsPresenter>(provider, setView);
                     setPresenter.LoadData();
                     return setView;
-
+                case "template_create":
+                    var tmpView = provider.GetRequiredService<MessagesView>();
+                    var tmpPresenter = ActivatorUtilities.CreateInstance<MessagesPresenter>(
+                            provider, tmpView, _messagesUrl + $"templates/create", _apiBaseUrl);
+                    return tmpView;
                 default:
                     if (moduleKey.StartsWith("phonedetail_"))
                     {
@@ -161,7 +167,7 @@ namespace WaDesktop.Client.Presenters
                         var detailView = provider.GetRequiredService<MessagesView>();
 
                         var detailPresenter = ActivatorUtilities.CreateInstance<MessagesPresenter>(
-                            provider, detailView, _messagesUrl + "templates/new", _apiBaseUrl);
+                            provider, detailView, _messagesUrl + $"templates/edit/{templateId}", _apiBaseUrl);
 
                         return detailView;
                     }

@@ -5,6 +5,7 @@ import Inbox from "./pages/Inbox"
 import TemplateManagement from "./components/TemplateManagement"
 import TemplateCreator from "./components/TemplateCreator"
 import { TooltipProvider } from "./components/ui/tooltip"
+import Template from "./pages/Template"
 
 function RootRedirect() {
   const hasToken = typeof window !== "undefined" && !!localStorage.getItem("token")
@@ -35,10 +36,26 @@ export default function App() {
           }
         />
         <Route
-          path="/templates/new"
+          path="/templates/create"
           element={
             <ProtectedRoute>
-              <TemplateCreator />
+              <Template />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/templates/edit/:id"
+          element={
+            <ProtectedRoute>
+              <Template />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/templates/preview/:id"
+          element={
+            <ProtectedRoute>
+              <Template />
             </ProtectedRoute>
           }
         />

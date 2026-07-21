@@ -95,26 +95,26 @@ export interface Contact{
     last_customer_message_at : string;
 }
 
-export interface Bubble{
-    id?: string;
-    conversation_id: string ;
-    phone_number_id: string;
-    wamid?: string;
-    wa_id: string;
-    direction: 'inbound' | 'outbound';
-    created_at: string;
-    message_timestamp?: number;
-    timestamp?: Date;
-    message_type: string;
-    status : string;
-    sender_name : string;
-    error_message?: string;
-    agent_name?: string;
+    export interface Bubble{
+        id?: string;
+        conversation_id: string ;
+        phone_number_id: string;
+        wamid?: string;
+        wa_id: string;
+        direction: 'inbound' | 'outbound';
+        created_at: string;
+        message_timestamp?: number;
+        timestamp?: Date;
+        message_type: string;
+        status : string;
+        sender_name : string;
+        error_message?: string;
+        agent_name?: string;
 
-    raw_message? : string;
-    content? : MessageContent;
-    context? : ContextMsg;
-}
+        raw_message? : string;
+        content? : MessageContent;
+        context? : ContextMsg;
+    }
 
 export interface ContentMsg {
     format?: string;

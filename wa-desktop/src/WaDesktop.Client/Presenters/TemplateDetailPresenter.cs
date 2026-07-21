@@ -8,7 +8,7 @@ namespace WaDesktop.Client.Presenters
 {
     public class TemplateDetailPresenter
     {
-
+            
 
 
         public void LoadData()
