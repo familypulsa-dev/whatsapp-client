@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Phone, Copy, Info } from 'lucide-react';
+import { ChevronLeft, Link, MessageSquare, Info, Copy } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { get } from '../../api/client';
 import type { Template, TextComponent, ImageComponent, ButtonComponent, SubButtonComponent, Component, ExampleComponent } from '../../types/template';
+import { useExternalActions } from '../hooks/useExternalActions';
 
 const statusColor = (status?: string) => {
   switch (status?.toUpperCase()) {
@@ -35,6 +36,7 @@ function replaceWithExample(text: string, comp: TextComponent | undefined): stri
 export default function TemplateEditor() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { handleOpenModule,handleCloseModule } = useExternalActions();
 
   const [template, setTemplate] = useState<Template | null>(null);
   const [loading, setLoading] = useState(true);
@@ -113,7 +115,7 @@ export default function TemplateEditor() {
             </div>
           </div>
         </div>
-        <Button variant="outline" size="sm" onClick={() => navigate(-1)}>Cancel</Button>
+        <Button variant="outline" size="sm" onClick={() => handleCloseModule('templatedetail_'+ template.id)}>Cancel</Button>
       </header>
 
       <main className="flex-1 flex overflow-hidden">
@@ -233,8 +235,9 @@ export default function TemplateEditor() {
                   {buttons.map((btn, idx) => (
                     <div key={idx} className="flex items-center gap-3 bg-slate-50 p-2 rounded-lg border border-slate-100">
                       <div className="w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-[10px] shrink-0">
-                        {btn.type === 'url' ? <Copy className="h-3 w-3" /> :
-                         btn.type === 'phone_number' ? <Phone className="h-3 w-3" /> :
+                        {btn.type === 'url' ? <Link className="h-3 w-3" /> :
+                         btn.type === 'quick_reply' ? <MessageSquare className="h-3 w-3" /> :
+                         btn.type === 'copy_code' ? <Copy className="h-3 w-3" /> :
                          'OTP'}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -307,8 +310,9 @@ export default function TemplateEditor() {
                   <div className="border-t border-[#f2f2f2] flex flex-col divide-y divide-[#f2f2f2]">
                     {buttons.map((btn, bIdx) => (
                       <div key={bIdx} className="py-2.5 px-3 text-[#00a8e6] font-medium text-center flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors cursor-default">
-                        {btn.type === 'phone_number' ? <Phone className="h-3 w-3" /> :
-                         btn.type === 'url' ? <Copy className="h-3 w-3" /> :
+                        {btn.type === 'url' ? <Link className="h-3 w-3" /> :
+                         btn.type === 'quick_reply' ? <MessageSquare className="h-3 w-3" /> :
+                         btn.type === 'copy_code' ? <Copy className="h-3 w-3" /> :
                          <Info className="h-3 w-3" />}
                         {btn.text}
                       </div>

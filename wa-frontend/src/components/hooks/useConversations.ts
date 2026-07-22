@@ -40,7 +40,6 @@ export const useConversations = ({
     useEffect(() => { activeConversationRef.current = activeConversation; }, [activeConversation]);
     useEffect(() => { convFilterRef.current = convFilter; }, [convFilter]);
 
-
     const fetchConvs = async (silent = false) => {
         if (!silent) setIsLoading(true);
         setConvPage(1);

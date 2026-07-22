@@ -34,7 +34,7 @@ export interface ButtonComponent extends Component{
     buttons : SubButtonComponent[],
 }
 
-export type ButtonType = 'url' | 'phone_number' | 'copy_code' | 'otp';
+export type ButtonType = 'url' | 'quick_reply' | 'otp' | 'copy_code';
 
 export interface SubButtonComponent{
     url ?: string,

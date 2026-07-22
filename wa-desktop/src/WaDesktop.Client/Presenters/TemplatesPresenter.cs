@@ -8,7 +8,7 @@ using WaDesktop.Domain.Messages;
 
 namespace WaDesktop.Client.Presenters
 {
-    public class TemplatesPresenter : IDisposable
+    public class TemplatesPresenter : IDisposable, IPresenterBase
     {
         private readonly IManagementView<Template> _view;
         private readonly IApiClient _api;
@@ -83,6 +83,7 @@ namespace WaDesktop.Client.Presenters
                 _view.AddClicked -= null;
                 _view.EditClicked -= null;
                 _view.DeleteClicked -= null;
+
                 _disposed = true;
             }
         }

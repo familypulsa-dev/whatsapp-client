@@ -8,7 +8,7 @@ using WaDesktop.Client.Views.ManagementViews;
 
 namespace WaDesktop.Client.Presenters
 {
-    public class WabasPresenter : IDisposable
+    public class WabasPresenter : IDisposable, IPresenterBase
     {
         private readonly WabaView _view;
         private readonly IApiClient _api;

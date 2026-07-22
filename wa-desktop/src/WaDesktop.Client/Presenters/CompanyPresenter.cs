@@ -7,7 +7,7 @@ using WaDesktop.Client.Views.ManagementViews;
 
 namespace WaDesktop.Client.Presenters
 {
-    public class CompanyPresenter : IDisposable
+    public class CompanyPresenter : IDisposable, IPresenterBase
     {
         private readonly CompanyView _view;
         private readonly IApiClient _api;

@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Phone, Copy, Info, Plus, X, Send, Save } from 'lucide-react';
+import { Plus, X, Send, Save, Link, MessageSquare, Info, Copy } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { post } from '../../api/client';
-import type { SubButtonComponent, ButtonType } from '../../types/template';
+import type {  ButtonType } from '../../types/template';
+import { useExternalActions } from '../hooks/useExternalActions';
 
 interface DraftButton {
   id: string;
@@ -11,16 +12,18 @@ interface DraftButton {
   type: ButtonType;
   url?: string;
   otp_type?: string;
+  url_type?: 'STATIC' | 'DYNAMIC';
+  url_example?: string;
+  example?: string;
 }
 
 const detectVars = (text: string): number[] =>
   [...new Set([...text.matchAll(/\{\{(\d+)\}\}/g)].map(m => parseInt(m[1])))].sort();
 
 const BUTTON_TYPES: { value: ButtonType; label: string; icon: any }[] = [
-  { value: 'url', label: 'URL', icon: Copy },
-  { value: 'phone_number', label: 'Phone', icon: Phone },
-  { value: 'copy_code', label: 'Copy', icon: Info },
-  { value: 'otp', label: 'OTP', icon: Info },
+  { value: 'url', label: 'URL', icon: Link },
+  { value: 'quick_reply', label: 'Balas', icon: MessageSquare },
+  { value: 'copy_code', label: 'Copy', icon: Copy },
 ];
 
 function ExampleInputs({ vars, examples, setExamples, color }: {
@@ -39,7 +42,7 @@ function ExampleInputs({ vars, examples, setExamples, color }: {
             <span className="text-[10px] font-mono text-slate-400 w-8 shrink-0">{label}</span>
             <input
               className={`flex-1 h-7 px-2 text-[11px] border rounded focus:outline-none focus:ring-1 focus:ring-[#00a884]/20 ${color}`}
-              placeholder={`Example for ${label}...`}
+              placeholder={`Contoh untuk ${label}...`}
               value={examples[v] || ''}
               onChange={e => setExamples(prev => ({ ...prev, [v]: e.target.value }))}
             />
@@ -55,10 +58,10 @@ const freshId = () => `b${++idCounter}`;
 
 export default function TemplateCreate() {
   const navigate = useNavigate();
+  const { handleOpenModule,handleCloseModule,handleShowNotif,handleRefreshModule} = useExternalActions();
 
   const [name, setName] = useState('');
   const [category, setCategory] = useState<'UTILITY' | 'AUTHENTICATION' | 'MARKETING'>('UTILITY');
-  const [language, setLanguage] = useState('id');
   const [headerText, setHeaderText] = useState('');
   const [bodyText, setBodyText] = useState('');
   const [footerText, setFooterText] = useState('');
@@ -69,6 +72,7 @@ export default function TemplateCreate() {
   const [isSaving, setIsSaving] = useState(false);
 
   const isAuth = category === 'AUTHENTICATION';
+  const wasAuth = useRef(isAuth);
 
   const headerVars = useMemo(() => detectVars(headerText), [headerText]);
   const bodyVars = useMemo(() => detectVars(bodyText), [bodyText]);
@@ -90,9 +94,15 @@ export default function TemplateCreate() {
   }, [headerVars]);
 
   useEffect(() => {
-    if (!isAuth) return;
-    setBodyText('*{{1}}* adalah kode verifikasi Anda. Demi keamanan, jangan bagikan kode ini.');
-    setButtons([{ id: freshId(), type: 'otp', otp_type: 'copy_code', text: 'Copy Code' }]);
+    if (isAuth) {
+      setBodyText('*{{1}}* adalah kode verifikasi Anda. Demi keamanan, jangan bagikan kode ini.');
+      setButtons([{ id: freshId(), type: 'otp', otp_type: 'copy_code', text: 'Copy Code' }]);
+    } else if (wasAuth.current) {
+      setBodyText('');
+      setFooterText('');
+      setButtons([]);
+    }
+    wasAuth.current = isAuth;
   }, [category]);
 
   useEffect(() => {
@@ -110,7 +120,16 @@ export default function TemplateCreate() {
   const previewFooter = useMemo(() => highlight(footerText), [footerText]);
 
   const addBtn = (type: ButtonType) =>
-    setButtons(prev => [...prev, { id: freshId(), text: '', type, otp_type: type === 'otp' ? 'COPY_CODE' : undefined }]);
+    setButtons(prev => [...prev, {
+      id: freshId(),
+      text: '',
+      type,
+      ...(type === 'otp' ? { otp_type: 'COPY_CODE' } : {}),
+      ...(type === 'url' ? { url_type: 'STATIC' } : {}),
+      ...(type === 'copy_code' ? { example: '' } : {}),
+    }]);
+
+  const hasCopyCode = buttons.some(b => b.type === 'copy_code');
 
   const updBtn = (id: string, patch: Partial<DraftButton>) =>
     setButtons(prev => prev.map(b => b.id === id ? { ...b, ...patch } : b));
@@ -127,7 +146,7 @@ export default function TemplateCreate() {
       const components: any[] = [];
 
       if(isAuth) {
-        components.push({ type: 'BODY' });
+        components.push({ type: 'BODY',add_security_recommendation : true });
       }else{
         if (bodyText.trim()) {
           components.push({ type: 'BODY', text: bodyText });
@@ -164,34 +183,43 @@ export default function TemplateCreate() {
 
       if (buttons.length) {
         components.push({ type: 'BUTTONS', buttons: buttons.map(b => {
-          if(b.type === 'otp'){
-            const btn: any = { type: b.type};
-            if (b.type === 'otp') btn.otp_type = b.otp_type;
-            return btn;
-          }else{
-             const btn: any = { type: b.type, text: b.text };
-            if (b.type === 'url') btn.url = b.url;
-            if (b.type === 'phone_number') btn.url = b.url;
-            return btn;
+          if (b.type === 'otp') {
+            return { type: 'OTP', otp_type: b.otp_type };
           }
+          if (b.type === 'copy_code') {
+            return { type: 'COPY_CODE', example: b.example || '' };
+          }
+          const btn: any = { type: b.type.toUpperCase(), text: b.text };
+          if (b.type === 'url') {
+            btn.url = b.url || '';
+            if (b.url_type === 'DYNAMIC') {
+              btn.url += '{{1}}';
+              if (b.url_example) btn.example = [b.url_example];
+            }
+          }
+          return btn;
         }) });
       }
 
       const res = await post<{ success: boolean; data?: any; error?: string }>('/api/v1/templates', {
         name: name.trim(),
         category,
-        language,
+        language: 'id',
         components,
       });
 
       if (!res.success) {
         alert(res.error || 'Gagal menyimpan template');
+        handleShowNotif('Gagal', 'Gagal menyimpan template');
         return;
       }
 
-      navigate('/templates');
+      handleShowNotif('Berhasil', 'Template berhasil disimpan');
+      handleRefreshModule('templates');
+      handleOpenModule('templates');
+      handleCloseModule('template_create');
     } catch (err: any) {
-      alert(err?.message || 'Terjadi kesalahan');
+      alert(err?.message || 'Terjadi kesalahan'); 
     } finally {
       setIsSaving(false);
     }
@@ -206,12 +234,12 @@ export default function TemplateCreate() {
           </h1>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" onClick={() => navigate(-1)}>
-            Cancel
+          <Button variant="ghost" onClick={() => {  handleRefreshModule('templates');handleCloseModule('template_create')}}>
+            Batal
           </Button>
-          <Button onClick={handleSave} disabled={isSaving}>
+          <Button onClick={handleSave} disabled={isSaving} className="bg-[#00a884] text-white hover:bg-[#009a7a]">
             <Save className="w-4 h-4 mr-1.5" />
-            {isSaving ? 'Menyimpan...' : 'Save'}
+            {isSaving ? 'Menyimpan...' : 'Simpan'}
           </Button>
         </div>
       </header>
@@ -220,44 +248,41 @@ export default function TemplateCreate() {
         <div className="w-[420px] bg-white border-r flex flex-col shadow-inner overflow-y-auto p-5 space-y-4">
           {/* Template Name Card */}
           <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-3 shadow-sm">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Template Name</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nama Template</label>
             <input
-              className="w-full h-9 px-3 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00a884]/20 border-slate-200"
-              placeholder="e.g. registration_otp"
+              className="w-full h-6 px-3 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00a884]/20 border-slate-200"
+              placeholder="cth: registration_otp"
               value={name}
               onChange={e => setName(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '_'))}
             />
-            <div className="grid grid-cols-2 gap-3">
-              <select
-                className="h-8 px-2 text-xs border rounded-md border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#00a884]/20"
-                value={category}
-                onChange={e => setCategory(e.target.value as any)}
-              >
-                <option value="UTILITY">Utility</option>
-                <option value="MARKETING">Marketing</option>
-                <option value="AUTHENTICATION">Authentication</option>
-              </select>
-              <select
-                className="h-8 px-2 text-xs border rounded-md border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#00a884]/20"
-                value={language}
-                onChange={e => setLanguage(e.target.value)}
-              >
-                <option value="id">Indonesian</option>
-                <option value="en">English</option>
-              </select>
+            <div className="flex rounded-md border border-slate-200 overflow-hidden">
+              {(['UTILITY', 'MARKETING', 'AUTHENTICATION'] as const).map(c => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setCategory(c)}
+                  className={`flex-1 h-7 text-[11px] font-medium transition-colors
+                    ${category === c
+                      ? 'bg-[#00a884] text-white shadow-sm'
+                      : 'bg-white text-slate-500 hover:bg-slate-50'
+                    }`}
+                >
+                  {c === 'AUTHENTICATION' ? 'Auth' : c.charAt(0) + c.slice(1).toLowerCase()}
+                </button>
+              ))}
             </div>
           </div>
 
           {/* Content Card */}
           <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-4 shadow-sm">
-            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Content</h3>
+            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Konten</h3>
 
             {/* Header */}
             <div>
-              <label className="text-[11px] font-medium text-slate-600">Header / Judul (Optional)</label>
-              <input disabled={!isAuth}
-                className="w-full h-8 px-3 pb-2 text-xs border rounded-md mt-1 mb-1 focus:outline-none focus:ring-2 focus:ring-[#00a884]/20 border-slate-200"
-                placeholder="e.g. Order Status Update"
+              <label className="text-[11px] font-medium text-slate-600">Header / Judul (Opsional)</label>
+              <input readOnly={isAuth}
+                className="w-full h-6 px-3 text-xs border rounded-md mt-1 mb-1 focus:outline-none focus:ring-2 focus:ring-[#00a884]/20 border-slate-200"
+                placeholder="cth: Informasi Status Pesanan"
                 value={headerText}
                 onChange={e => setHeaderText(e.target.value)}
               />
@@ -279,7 +304,7 @@ export default function TemplateCreate() {
               <label className="text-[11px] font-medium text-slate-600">Isi / Body</label>
               <textarea
                 className="w-full min-h-[80px] p-2 text-xs border rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-[#00a884]/20 border-slate-200 resize-none bg-slate-50"
-                placeholder="Type message here... Use {{1}} for variables."
+                placeholder="Ketik pesan di sini... Gunakan {{1}} untuk variabel."
                 value={bodyText}
                 onChange={e => setBodyText(e.target.value)}
                 disabled={isAuth}
@@ -299,10 +324,10 @@ export default function TemplateCreate() {
 
             {/* Footer */}
             <div>
-              <label className="text-[11px] font-medium text-slate-600">Catatan Kaki / Footer (Optional)</label>
+              <label className="text-[11px] font-medium text-slate-600">Catatan Kaki / Footer (Opsional)</label>
               <input
-                className="w-full h-8 px-3 text-xs border rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-[#00a884]/20 border-slate-200"
-                placeholder="e.g. Regards, Family Pulsa"
+                className="w-full h-6 px-3 text-xs border rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-[#00a884]/20 border-slate-200"
+                placeholder="cth: Salam, Family Pulsa"
                 value={footerText}
                 onChange={e => setFooterText(e.target.value)}
                 disabled={isAuth}
@@ -311,7 +336,7 @@ export default function TemplateCreate() {
 
             {isAuth && (
               <div className="pt-2 border-t border-slate-100">
-                <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Code Expiration (Minutes)</label>
+                <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Kedaluwarsa (Menit)</label>
                 <input
                   type="number"
                   className="w-full h-8 px-3 text-xs border rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-[#00a884]/20 border-slate-200"
@@ -326,7 +351,7 @@ export default function TemplateCreate() {
           {/* Buttons Card */}
           <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-3 shadow-sm">
             <div className="flex items-center justify-between">
-              <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Buttons</h3>
+              <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Tombol</h3>
               <span className="text-[10px] text-slate-400">{buttons.length}</span>
             </div>
 
@@ -348,17 +373,59 @@ export default function TemplateCreate() {
                   )}
                 </div>
                 <input
-                  className="w-full h-7 px-2 text-[11px] border rounded border-slate-200 focus:outline-none focus:ring-1 focus:ring-[#00a884]/20 bg-white"
-                  placeholder="Button text"
+                  className="w-full h-6 px-2 text-[11px] border rounded border-slate-200 focus:outline-none focus:ring-1 focus:ring-[#00a884]/20 bg-white"
+                  placeholder="Teks tombol"
                   value={btn.text}
                   onChange={e => updBtn(btn.id, { text: e.target.value })}
                 />
                 {btn.type === 'url' && (
+                  <>
+                    <div className="flex gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => updBtn(btn.id, { url_type: 'STATIC', url_example: undefined })}
+                        className={`flex-1 h-6 text-[10px] font-medium rounded transition-colors ${btn.url_type === 'STATIC' ? 'bg-[#00a884] text-white' : 'bg-white text-slate-500 border border-slate-200'}`}
+                      >
+                        Static
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updBtn(btn.id, { url_type: 'DYNAMIC' })}
+                        className={`flex-1 h-6 text-[10px] font-medium rounded transition-colors ${btn.url_type === 'DYNAMIC' ? 'bg-[#00a884] text-white' : 'bg-white text-slate-500 border border-slate-200'}`}
+                      >
+                        Dinamis
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-0">
+                      <input
+                        className="flex-1 h-6 px-2 text-[11px] border rounded-l border-slate-200 focus:outline-none focus:ring-1 focus:ring-[#00a884]/20 bg-white"
+                        placeholder="https://example.com"
+                        value={btn.url || ''}
+                        onChange={e => updBtn(btn.id, { url: e.target.value })}
+                      />
+                      {btn.url_type === 'DYNAMIC' && (
+                        <div className="flex items-center h-6 px-1.5 text-[10px] font-bold text-slate-500 bg-slate-100 border border-l-0 border-slate-200 rounded-r" title="Parameter dinamis akan ditambahkan">
+                          <span className="text-[#00a884]">{'{{1}}'}</span>
+                          <Info className="h-2.5 w-2.5 ml-1 text-slate-400" />
+                        </div>
+                      )}
+                    </div>
+                    {btn.url_type === 'DYNAMIC' && (
+                      <input
+                        className="w-full h-6 px-2 text-[11px] border rounded border-slate-200 focus:outline-none focus:ring-1 focus:ring-[#00a884]/20 bg-white"
+                        placeholder="Contoh parameter (cth: user123)"
+                        value={btn.url_example || ''}
+                        onChange={e => updBtn(btn.id, { url_example: e.target.value })}
+                      />
+                    )}
+                  </>
+                )}
+                {btn.type === 'copy_code' && (
                   <input
-                    className="w-full h-7 px-2 text-[11px] border rounded border-slate-200 focus:outline-none focus:ring-1 focus:ring-[#00a884]/20 bg-white"
-                    placeholder="https://example.com"
-                    value={btn.url || ''}
-                    onChange={e => updBtn(btn.id, { url: e.target.value })}
+                    className="w-full h-6 px-2 text-[11px] border rounded border-slate-200 focus:outline-none focus:ring-1 focus:ring-[#00a884]/20 bg-white"
+                    placeholder="Contoh kode (cth: KUPON50)"
+                    value={btn.example || ''}
+                    onChange={e => updBtn(btn.id, { example: e.target.value })}
                   />
                 )}
               </div>
@@ -366,12 +433,12 @@ export default function TemplateCreate() {
 
             {!isAuth && (
               <div className="flex flex-wrap gap-2">
-                {BUTTON_TYPES.map(t => (
+                {BUTTON_TYPES.filter(t => t.value !== 'copy_code' || !hasCopyCode).map(t => (
                   <Button
                     key={t.value}
                     variant="outline"
                     size="sm"
-                    className="h-7 text-[10px] border-slate-300 text-slate-600"
+                    className="h-6 text-[10px] border-slate-300 text-slate-600"
                     onClick={() => addBtn(t.value)}
                   >
                     <t.icon className="h-3 w-3 mr-1" /> {t.label}
@@ -397,7 +464,7 @@ export default function TemplateCreate() {
                   {previewHeader && (
                     <h4 className="font-bold text-[#111b21] text-base leading-tight break-words" dangerouslySetInnerHTML={{ __html: previewHeader }} />
                   )}
-                  <div className="text-[#111b21] text-sm leading-relaxed whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{ __html: previewBody || '<span class="text-slate-300 italic">Body message goes here...</span>' }} />
+                  <div className="text-[#111b21] text-sm leading-relaxed whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{ __html: previewBody || '<span class="text-slate-300 italic">Isi pesan di sini...</span>' }} />
                   <div className="flex items-end justify-between gap-4 mt-2">
                     {previewFooter ? <div className="text-[11px] text-[#667781] leading-tight flex-1" dangerouslySetInnerHTML={{ __html: previewFooter }} /> : <div className="flex-1" />}
                     <span className="text-[10px] text-[#667781] shrink-0">{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
@@ -407,8 +474,8 @@ export default function TemplateCreate() {
                   <div className="border-t border-[#f2f2f2] flex flex-col divide-y divide-[#f2f2f2]">
                     {buttons.map(btn => (
                       <div key={btn.id} className="py-2.5 px-3 text-[#00a8e6] font-medium text-center flex items-center justify-center gap-2 cursor-default">
-                        {btn.type === 'phone_number' ? <Phone className="h-3 w-3" /> :
-                         btn.type === 'url' ? <Copy className="h-3 w-3" /> :
+                        {btn.type === 'url' ? <Link className="h-3 w-3" /> :
+                         btn.type === 'quick_reply' ? <MessageSquare className="h-3 w-3" /> :
                          <Info className="h-3 w-3" />}
                         {btn.text}
                       </div>

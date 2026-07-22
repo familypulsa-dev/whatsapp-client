@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Phone, Copy, Info } from 'lucide-react';
+import { ChevronLeft, Link, MessageSquare, Info, Copy } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { get } from '../../api/client';
@@ -146,8 +146,9 @@ export default function TemplatePreview({ template: propTemplate, onClose }: Tem
               <div className="border-t border-[#f2f2f2] flex flex-col divide-y divide-[#f2f2f2]">
                 {buttonComp.buttons.map((btn: SubButtonComponent, bIdx: number) => (
                   <div key={bIdx} className="py-2.5 px-3 text-[#00a8e6] font-medium text-center flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors cursor-default">
-                    {btn.type === 'phone_number' ? <Phone className="h-3 w-3" /> :
-                     btn.type === 'url' ? <Copy className="h-3 w-3" /> :
+                    {btn.type === 'url' ? <Link className="h-3 w-3" /> :
+                     btn.type === 'quick_reply' ? <MessageSquare className="h-3 w-3" /> :
+                     btn.type === 'copy_code' ? <Copy className="h-3 w-3" /> :
                      <Info className="h-3 w-3" />}
                     {btn.text}
                   </div>

@@ -127,16 +127,39 @@ namespace WaDesktop.Client.Views
         {
             this.InvokeIfRequired(() =>
             {
-                for (int i = 0; i < tabWorkspace.TabPages.Count; i++)
+                try
+                {
+
+                    for (int i = 0; i < tabWorkspace.TabPages.Count; i++)
                 {
                     if (tabWorkspace.TabPages[i].Name == key)
                     {
+                        if (tabWorkspace.SelectedIndex == i)
+                        {
+                            if (tabWorkspace.TabPages.Count > i + 1)
+                            {
+                                tabWorkspace.SelectedIndex = i + 1;
+                            }
+                            else if (i > 0)
+                            {
+                                tabWorkspace.SelectedIndex = i - 1;
+                            }
+                        }
+
+                        tabWorkspace.SuspendLayout();
                         var page = tabWorkspace.TabPages[i];
                         tabWorkspace.TabPages.RemoveAt(i);
                         page.Dispose();
                         TabClosed?.Invoke(this, key);
+                        tabWorkspace.ResumeLayout();
+
                         return;
                     }
+                }
+
+                }
+                finally
+                {
                 }
             });
         }

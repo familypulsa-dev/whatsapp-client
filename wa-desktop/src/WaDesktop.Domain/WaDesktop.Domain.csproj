@@ -40,6 +40,7 @@
     <Compile Include="Entities\Waba.cs" />
     <Compile Include="Interfaces\ILimitBillingView.cs" />
     <Compile Include="Interfaces\IPhoneNumberDetailView.cs" />
+    <Compile Include="Interfaces\IPresenterBase.cs" />
     <Compile Include="Interfaces\ISoftwareUpdateView.cs" />
     <Compile Include="Interfaces\ISplashView.cs" />
     <Compile Include="Interfaces\IUpdateService.cs" />

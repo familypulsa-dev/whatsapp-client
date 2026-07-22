@@ -6,7 +6,7 @@ using WaDesktop.Domain.Entities;
 
 namespace WaDesktop.Client.Presenters
 {
-    public class AppSettingsPresenter : IDisposable
+    public class AppSettingsPresenter : IDisposable, IPresenterBase
     {
         private readonly IAppSettingsView _view;
         private readonly IApiClient _api;
@@ -21,7 +21,7 @@ namespace WaDesktop.Client.Presenters
             _view.RefreshClicked += async (s, e) => await LoadDataAsync();
         }
 
-        public async void LoadData() => await LoadDataAsync();
+        public async void LoadData(string search = null) => await LoadDataAsync();
 
         private async Task LoadDataAsync()
         {

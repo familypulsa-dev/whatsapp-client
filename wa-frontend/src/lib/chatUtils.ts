@@ -45,7 +45,6 @@ export const formatDividerDate = (timestamp: number) => {
     const yesterday = new Date(now);
     yesterday.setDate(now.getDate() - 1);
 
-    console.log(date, now, yesterday);
     if (isSameDay(date, now)) return 'Hari Ini';
     if (isSameDay(date, yesterday)) return 'Kemarin';
 

@@ -94,7 +94,7 @@ const ChatLayout: React.FC<ChatLayoutProps> = ({ user, enableLogin }) => {
     const { messages, setMessages, isLoading, hasMore: hasMoreMsg, isFetchingMore: isFetchingMoreMsg, handleLoadMore } = useMessages({
         activeConversation, debouncedMessageSearchTerm, connection, setConversations, setActiveConversation
     });
-    const { handleCopy,handleDownload,handleResendMessage } = useExternalActions({ totalUnread, contextMenuImage });
+    const { handleCopy,handleDownload,handleResendMessage,handleOpenModule,handleSetBadge } = useExternalActions();
     const { handleGlobalRefresh } =  useGlobal({
         fetchConversations : fetchConvs,
         fetchPhoneNumbers,
@@ -121,6 +121,10 @@ const ChatLayout: React.FC<ChatLayoutProps> = ({ user, enableLogin }) => {
         conversations
     });
 
+    
+        useEffect(() => {
+            handleSetBadge(totalUnread);
+        }, [totalUnread]);
 
     // --- Side Effects ---
     useEffect(() => {
@@ -448,13 +452,13 @@ const ChatLayout: React.FC<ChatLayoutProps> = ({ user, enableLogin }) => {
                     style={{ top: contextMenuImage.y, left: contextMenuImage.x }}
                 >
                     <button
-                        onClick={handleCopy}
+                        onClick={() => handleCopy(contextMenuImage)}
                         className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors"
                     >
                         Copy Image
                     </button>
                     <button
-                        onClick={handleDownload}
+                        onClick={() => handleDownload(contextMenuImage)}
                         className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors"
                     >
                         Download Image

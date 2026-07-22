@@ -37,6 +37,7 @@ namespace WaDesktop.Client.Presenters
             _loginSub = bus.Subscribe<LoginCompletedMessage>(_ => InjectToken());
             _tokenRefreshSub = bus.Subscribe<TokenRefreshedMessage>(_ => InjectToken());
 
+
             // Inject token via preload script BEFORE React loads
             SetupPreloadScript();
 
@@ -111,12 +112,20 @@ namespace WaDesktop.Client.Presenters
                         _bus.Publish(new SessionExpiredMessage());
                         break;
 
-                    case "open_module":
+                    case "OPEN_MODULE":
                         var module = msg.Value<string>("module");
                         if (!string.IsNullOrEmpty(module))
                             _bus.Publish(new RequestOpenTabMessage(module, module));
                         break;
-
+                    case "CLOSE_MODULE":
+                        var closeModule = msg.Value<string>("module");
+                        if (!string.IsNullOrEmpty(closeModule))
+                            _bus.Publish(new RequestCloseTabMessage(closeModule));
+                        break;
+                    case "REFRESH_MODULE":
+                        var refreshModule = msg.Value<string>("module");
+                            _bus.Publish(new RequestRefreshTabMessage(refreshModule));
+                        break;
                     case "SAVE_IMAGE":
                         HandleSaveImage(msg);
                         break;

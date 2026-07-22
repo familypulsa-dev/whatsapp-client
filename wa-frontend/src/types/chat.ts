@@ -4,6 +4,12 @@ export interface ApiResponse<T> {
     data: T;
 }
 
+export interface ErrorResponse {
+    success: boolean;
+    message: string;
+    error: string;
+}
+
 export interface ConversationResponse{
     conversations : Conversation[],
     has_more : boolean,
@@ -31,6 +37,7 @@ export interface SendTextResponse {
 }
 
 export interface SendTextRequest {
+    id : string;
     to : string;
     body : string;
     phone_number_id : string;
@@ -38,6 +45,7 @@ export interface SendTextRequest {
 }
 
 export interface SendReactionRequest {
+    id : string;
     to : string;
     reaction : string;
     phone_number_id : string;
@@ -46,6 +54,7 @@ export interface SendReactionRequest {
 }
 
 export interface SendMediaRequest {
+    id : string;
     to : string;
     file : File;
     body : string;
@@ -55,6 +64,7 @@ export interface SendMediaRequest {
 }
 
 export interface SendTemplateRequest {
+    id : string;
     to : string;
     phone_number_id : string;
     template_name : string;

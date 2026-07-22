@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.Web.UI.WebControls;
 using System.Windows.Forms;
 using WaDesktop.Client.Views;
 using WaDesktop.Client.Views.ManagementViews;
@@ -23,11 +22,14 @@ namespace WaDesktop.Client.Presenters
         private readonly string _apiBaseUrl;
         private readonly IServiceProvider _serviceProvider;
         private readonly Dictionary<string, IServiceScope> _activeTabScopes = new Dictionary<string, IServiceScope>();
-        
+        private readonly Dictionary<string, IPresenterBase> _activePresenterScopes = new Dictionary<string, IPresenterBase>();
+
         private IDisposable _tabSub;
         private IDisposable _sessionSub;
         private IDisposable _notifSub;
         private IDisposable _badgeSub;
+        private IDisposable _closeTabSub;
+        private IDisposable _refreshTabSub;
         private bool _disposed;
 
         public ShellPresenter(IShellView view, IAuthService auth, IEventAggregator bus, AppState state,
@@ -42,9 +44,11 @@ namespace WaDesktop.Client.Presenters
             _serviceProvider = serviceProvider;
 
             _tabSub = bus.Subscribe<RequestOpenTabMessage>(OnRequestOpenTab);
+            _closeTabSub = bus.Subscribe<RequestCloseTabMessage>(OnRequestCloseTab);
             _sessionSub = bus.Subscribe<SessionExpiredMessage>(OnSessionExpired);
             _notifSub = bus.Subscribe<ShowNotificationMessage>(m => _view.ShowNotification(m.Title, m.Body));
             _badgeSub = bus.Subscribe<SetBadgeMessage>(m => _view.SetBadge(m.Count));
+            _refreshTabSub = bus.Subscribe<RequestRefreshTabMessage>(OnRefreshTabMessage);
 
             view.MessagesClicked += (s, e) => OpenMessages();
             view.CompanyClicked += (s, e) => OpenCompany();
@@ -76,12 +80,30 @@ namespace WaDesktop.Client.Presenters
             }
         }
 
+        private void OnRefreshTabMessage(RequestRefreshTabMessage message)
+        {
+            //each tab presenter should implement IRefreshable interface to handle refresh logic
+            foreach (var kvp in _activePresenterScopes)
+            {
+                if (kvp.Key == message.ModuleKey && kvp.Value is IPresenterBase refreshable)
+                {
+                    refreshable.LoadData();
+                    break;
+                }
+            }
+        }
+
         private void OnTabClosed(object sender, string moduleKey)
         {
             if (_activeTabScopes.TryGetValue(moduleKey, out var scope))
             {
                 scope.Dispose(); // Otomatis dispose View & Presenter di tab ini
                 _activeTabScopes.Remove(moduleKey);
+            }
+
+            if(_activePresenterScopes.TryGetValue(moduleKey, out var presenter))
+            {
+                _activePresenterScopes.Remove(moduleKey);
             }
         }
 
@@ -96,6 +118,12 @@ namespace WaDesktop.Client.Presenters
 
             _view.AddOrSelectTab(msg.ModuleKey, msg.Title, CreateModuleView(msg.ModuleKey));
         }
+
+        private void OnRequestCloseTab(RequestCloseTabMessage msg)
+        {
+            _view.CloseTab(msg.ModuleKey);
+        }
+
 
         private IViewBase CreateModuleView(string moduleKey)
         {
@@ -113,36 +141,42 @@ namespace WaDesktop.Client.Presenters
                 case "company":
                     var coView = provider.GetRequiredService<CompanyView>();
                     var coPresenter = ActivatorUtilities.CreateInstance<CompanyPresenter>(provider, coView);
+                    _activePresenterScopes.Add(moduleKey, coPresenter);
                     coPresenter.LoadData();
                     return coView;
 
                 case "users":
                     var usrView = provider.GetRequiredService<UsersView>();
                     var usrPresenter = ActivatorUtilities.CreateInstance<UsersPresenter>(provider, usrView);
+                    _activePresenterScopes.Add(moduleKey, usrPresenter);
                     usrPresenter.LoadData();
                     return usrView;
 
                 case "phonenumbers":
                     var pnView = provider.GetRequiredService<PhoneNumberView>();
                     var pnPresenter = ActivatorUtilities.CreateInstance<PhoneNumbersPresenter>(provider, pnView);
+                    _activePresenterScopes.Add(moduleKey, pnPresenter);
                     pnPresenter.LoadData();
                     return pnView;
 
                 case "waba":
                     var wbView = provider.GetRequiredService<WabaView>();
                     var wbPresenter = ActivatorUtilities.CreateInstance<WabasPresenter>(provider, wbView);
+                    _activePresenterScopes.Add(moduleKey, wbPresenter);
                     wbPresenter.LoadData();
                     return wbView;
 
                 case "templates":
                     var tplView = provider.GetRequiredService<TemplatesView>();
                     var tplPresenter = ActivatorUtilities.CreateInstance<TemplatesPresenter>(provider, tplView);
+                    _activePresenterScopes.Add(moduleKey, tplPresenter);
                     tplPresenter.LoadData();
                     return tplView;
 
                 case "appsettings":
                     var setView = provider.GetRequiredService<AppSettingsView>();
                     var setPresenter = ActivatorUtilities.CreateInstance<AppSettingsPresenter>(provider, setView);
+                    _activePresenterScopes.Add(moduleKey, setPresenter);
                     setPresenter.LoadData();
                     return setView;
                 case "template_create":
@@ -230,13 +264,13 @@ namespace WaDesktop.Client.Presenters
                 _sessionSub?.Dispose();
                 _notifSub?.Dispose();
                 _badgeSub?.Dispose();
+                _closeTabSub?.Dispose();
                 
                 foreach (var scope in _activeTabScopes.Values)
                 {
                     scope.Dispose();
                 }
                 _activeTabScopes.Clear();
-
                 _disposed = true;
             }
         }

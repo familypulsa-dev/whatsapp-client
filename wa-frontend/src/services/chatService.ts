@@ -1,6 +1,6 @@
 import { Contact } from '@/types';
 import { get, post, put } from '../api/client';
-import type { ApiResponse, PagedResponse, Conversation, PhoneNumber,  Bubble, SendTextResponse, SendTextRequest, SendMediaRequest, SendMediaResponse, SendTemplateRequest, SendTemplateResponse, SendReactionRequest, ConversationResponse, MessageResponse } from '../types/chat';
+import type { ApiResponse, PagedResponse, Conversation, PhoneNumber,  Bubble, SendTextResponse, SendTextRequest, SendMediaRequest, SendMediaResponse, SendTemplateRequest, SendTemplateResponse, SendReactionRequest, ConversationResponse, MessageResponse, ErrorResponse } from '../types/chat';
 
 function qs(params: Record<string, string | number | undefined>): string {
     const sp = new URLSearchParams();
@@ -153,8 +153,8 @@ export const sendMessage = async (payload : SendTextRequest): Promise<ApiRespons
     try {
         const res = await post<ApiResponse<SendTextResponse>>('/api/v1/messages/text', payload);
         return { success: true, message: 'Success', data: res.data };
-    } catch {
-        return { success: false, message: 'Gagal mengirim pesan', data: null };
+    } catch (err : Error | any) {
+        return { success: false, message: err?.message || 'Gagal mengirim pesan', data: null };
     }
 };
 
@@ -170,8 +170,9 @@ export const sendMedia = async (payload : SendMediaRequest): Promise<ApiResponse
 
         const res = await post<ApiResponse<SendMediaResponse>>('/api/v1/messages/media', formData);
         return { success: true, message: 'Success', data: res?.data };
-    } catch {
-        return { success: false, message: 'Gagal mengirim media', data: null };
+    } catch (err : Error | any) {
+        console.log('error response',err);
+        return { success: false, message: err?.message || 'Gagal mengirim media', data: null };
     }
 };
 
@@ -188,8 +189,8 @@ export const sendTemplate = async (payload : SendTemplateRequest): Promise<ApiRe
 
         const res = await post<ApiResponse<SendTemplateResponse>>('/api/v1/messages/template', formData);
         return { success: true, message: res?.message, data: res?.data };
-    } catch {
-        return { success: false, message: 'Gagal mengirim template', data: null };
+    } catch (err : Error | any) {
+        return { success: false, message: err?.message || 'Gagal mengirim template', data: null };
     }
 };
 

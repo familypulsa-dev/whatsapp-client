@@ -100,9 +100,13 @@ export const useChatActions = ({
         }
         const context_id = replyingTo?.id;
 
+        
+        setMessages(prev => [...prev, newBubble]);
+
         clearInput();
 
         const payload : SendTextRequest = {
+            id,
             to: currentConv.wa_id,
             body: text,
             phone_number_id: currentConv.phone_number_id,
@@ -115,7 +119,6 @@ export const useChatActions = ({
                    setMessages(prev => prev.map(m => m.id === id ? { ...m, status: 'failed', id : id, error_message: res?.message } : m));
                 }else{
                     newBubble.id = res?.data?.id; 
-                    setMessages(prev => [...prev, newBubble]);
                 }
             }).catch((err: Error) => {
                 const errMsg = err.message;
@@ -248,8 +251,11 @@ export const useChatActions = ({
         });
         }
 
+        setMessages(prev => [...prev, newBubble]);
+
         try{
             const payload : SendTemplateRequest = {
+                id,
                 to : currentConv.wa_id,
                 phone_number_id : currentConv.phone_number_id,
                 template_name : template.name,
@@ -262,8 +268,10 @@ export const useChatActions = ({
                if (!res.success) {
                    setMessages(prev => prev.map(m => m.id === id ? { ...m, status: 'failed', id : id, error_message: res?.message } : m));
                 }else{
-                    newBubble.id = res?.data?.id; 
-                    setMessages(prev => [...prev, newBubble]);
+                    // newBubble.id = res?.data?.id; 
+                    // setMessages(prev => [...prev, newBubble]);
+
+                    // setMessages(prev => prev.map(m => m.id === id ? { ...m, id : res?.data?.id } : m));
                 }
             }).catch((err: any) => {
                 
@@ -345,9 +353,12 @@ export const useChatActions = ({
             }
         }
 
+        setMessages(prev => [...prev, newBubble]);
+
         try {
 
             const payload : SendMediaRequest = {
+                id,
                 to: currentConv.wa_id,
                 body: caption,
                 phone_number_id: currentConv.phone_number_id,
@@ -363,7 +374,7 @@ export const useChatActions = ({
                 } else{
                     newBubble.id = res?.data?.id; 
                     newBubble.content.body.url = res?.data?.media_url;
-                    setMessages(prev => [...prev, newBubble]);
+                    setMessages(prev => prev.map(m => m.id === id ? { ...m, content: newBubble.content } : m));
                 }
             }).catch((err: Error) => {
                 const errMsg =  err?.message || '';
@@ -379,6 +390,7 @@ export const useChatActions = ({
         if (!activeConversation) return;
         try {
             const payload : SendReactionRequest = {
+                id : Guid.newGuid().toString(),
                 to: activeConversation.wa_id,
                 reaction: emoji,
                 phone_number_id: activeConversation.phone_number_id,

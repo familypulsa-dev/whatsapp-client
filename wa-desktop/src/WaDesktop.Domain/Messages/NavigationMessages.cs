@@ -15,10 +15,17 @@ namespace WaDesktop.Domain.Messages
     }
 
     /// <summary>Immutable message untuk menutup tab.</summary>
-    public class CloseTabMessage
+    public class RequestCloseTabMessage
     {
         public string ModuleKey { get; }
-        public CloseTabMessage(string moduleKey) => ModuleKey = moduleKey;
+        public RequestCloseTabMessage(string moduleKey) => ModuleKey = moduleKey;
+    }
+
+    /// <summary>Refresh Tab</summary>
+    public class RequestRefreshTabMessage
+    {
+        public string ModuleKey { get; }
+        public RequestRefreshTabMessage(string moduleKey) => ModuleKey = moduleKey;
     }
 
     /// <summary>Immutable message: login berhasil.</summary>

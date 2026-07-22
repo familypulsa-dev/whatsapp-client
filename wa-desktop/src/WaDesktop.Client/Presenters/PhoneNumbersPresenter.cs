@@ -10,7 +10,7 @@ using WaDesktop.Client.Views.ManagementViews;
 
 namespace WaDesktop.Client.Presenters
 {
-    public class PhoneNumbersPresenter : IDisposable
+    public class PhoneNumbersPresenter : IDisposable, IPresenterBase
     {
         private readonly IManagementView<PhoneNumberDetail> _view;
         private readonly IApiClient _api;

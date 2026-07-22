@@ -12,7 +12,6 @@ export const usePhoneNumber = ({
       const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[]>([]); 
       const [totalUnread, setTotalUnread] = useState(0);
 
-
     const fetchPhoneNumbers = async () => {
         try {
             const phoneNumbers = await getPhoneNumbers();
