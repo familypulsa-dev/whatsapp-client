@@ -239,12 +239,42 @@ namespace WaDesktop.Infrastructure.Services
 
         // ── Templates ──
 
-        public async Task<List<Template>> GetTemplatesAsync(string search = null)
+        public async Task<List<Template>> GetTemplatesAsync(string search = null, string waba_id = null)
         {
-            var data = await GetListAsync<Template>("/api/v1/templates");
-            if (!string.IsNullOrEmpty(search))
-                data = data.Where(t => t.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+            var url = "/api/v1/templates";
+            var parameters = new List<string>();
+            if (!string.IsNullOrEmpty(waba_id))
+            {
+                parameters.Add($"waba_id={waba_id}");
+            }
+            
+            if(!string.IsNullOrEmpty(search))
+            {
+                parameters.Add($"search={search}");
+            }
+
+            // Append query parameters if any
+            url += parameters.Count > 0 ? "?" + string.Join("&", parameters) : "";
+
+
+            var data = await GetListAsync<Template>(url);
             return data;
+        }
+
+        public async Task SyncTemplatesAsync(string wabaId)
+        {
+            var content = new StringContent(
+                Newtonsoft.Json.JsonConvert.SerializeObject(new { waba_id = wabaId }),
+                System.Text.Encoding.UTF8,
+                "application/json");
+            var res = await _http.PostAsync($"{_baseUrl}/api/v1/templates/sync", content);
+            res.EnsureSuccessStatusCode();
+        }
+
+        public async Task DeleteTemplateAsync(string id)
+        {
+            var res = await _http.DeleteAsync($"{_baseUrl}/api/v1/templates/{id}");
+            res.EnsureSuccessStatusCode();
         }
 
         // ── Settings ──
@@ -450,6 +480,25 @@ namespace WaDesktop.Infrastructure.Services
                 var err = await res.Content.ReadAsStringAsync();
                 throw new HttpRequestException($"Update failed ({res.StatusCode}): {err}");
             }
+        }
+
+        // ── Billing / Tagihan ──
+
+        public async Task<List<WaWabaUsageSummary>> GetBillingSummaryAsync(DateTime? start = null, DateTime? end = null, string wabaId = null)
+        {
+            var parameters = new List<string>();
+            if (start.HasValue)
+                parameters.Add($"start={new DateTimeOffset(start.Value.ToUniversalTime()).ToUnixTimeSeconds()}");
+            if (end.HasValue)
+                parameters.Add($"end={new DateTimeOffset(end.Value.ToUniversalTime()).ToUnixTimeSeconds()}");
+            if (!string.IsNullOrEmpty(wabaId))
+                parameters.Add($"waba_id={wabaId}");
+
+            var url = "/api/v1/waba/usage";
+            if (parameters.Count > 0)
+                url += "?" + string.Join("&", parameters);
+
+            return await GetListAsync<WaWabaUsageSummary>(url);
         }
 
         // ── Helpers ──

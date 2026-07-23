@@ -17,7 +17,7 @@ namespace WaDesktop.Domain.Entities
         [JsonProperty("company_id")]
         public string CompanyId { get; set; }
         [JsonProperty("is_active")]
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
         [JsonIgnore]
         public string NewPassword { get; set; }

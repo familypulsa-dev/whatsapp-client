@@ -22,7 +22,7 @@ namespace WaDesktop.Domain.Interfaces
         /// <summary>Add event.</summary>
         event EventHandler AddClicked;
         /// <summary>Edit event.</summary>
-        event EventHandler EditClicked;
+        event EventHandler<string> EditClicked;
         /// <summary>Delete event.</summary>
         event EventHandler DeleteClicked;
     }

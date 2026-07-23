@@ -23,6 +23,12 @@ namespace WaDesktop.Client.Views.ManagementViews
         private void InitializeComponent()
         {
             this.dataGridView = new System.Windows.Forms.DataGridView();
+            this.txtSearch = new System.Windows.Forms.TextBox();
+            this.btnSearch = new System.Windows.Forms.Button();
+            this.btnRefresh = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
+            this.panelToolbar = new System.Windows.Forms.Panel();
+            this.panelFooter = new System.Windows.Forms.Panel();
             this.DgvId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DgvUsername = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DgvName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -31,12 +37,6 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.Company = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.DgvPassword = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Reset = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.txtSearch = new System.Windows.Forms.TextBox();
-            this.btnSearch = new System.Windows.Forms.Button();
-            this.btnRefresh = new System.Windows.Forms.Button();
-            this.btnSave = new System.Windows.Forms.Button();
-            this.panelToolbar = new System.Windows.Forms.Panel();
-            this.panelFooter = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             this.panelToolbar.SuspendLayout();
             this.panelFooter.SuspendLayout();
@@ -66,60 +66,6 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dataGridView.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView_CellEndEdit);
             this.dataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.DataGridView_DataError);
             this.dataGridView.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.DataGridView_UserDeletingRow);
-            // 
-            // DgvId
-            // 
-            this.DgvId.DataPropertyName = "Id";
-            this.DgvId.HeaderText = "ID";
-            this.DgvId.Name = "DgvId";
-            // 
-            // DgvUsername
-            // 
-            this.DgvUsername.DataPropertyName = "Username";
-            this.DgvUsername.HeaderText = "Username";
-            this.DgvUsername.Name = "DgvUsername";
-            // 
-            // DgvName
-            // 
-            this.DgvName.DataPropertyName = "Name";
-            this.DgvName.HeaderText = "Name";
-            this.DgvName.Name = "DgvName";
-            // 
-            // Role
-            // 
-            this.Role.HeaderText = "Role";
-            this.Role.Items.AddRange(new object[] {
-            "super_admin",
-            "admin",
-            "cs"});
-            this.Role.Name = "Role";
-            // 
-            // Status
-            // 
-            this.Status.FalseValue = false;
-            this.Status.HeaderText = "Active";
-            this.Status.Name = "Status";
-            this.Status.TrueValue = true;
-            // 
-            // Company
-            // 
-            this.Company.HeaderText = "Server";
-            this.Company.Name = "Company";
-            // 
-            // DgvPassword
-            // 
-            this.DgvPassword.DataPropertyName = "password";
-            this.DgvPassword.HeaderText = "Password";
-            this.DgvPassword.Name = "DgvPassword";
-            // 
-            // Reset
-            // 
-            this.Reset.HeaderText = "Reset";
-            this.Reset.Name = "Reset";
-            this.Reset.ReadOnly = true;
-            this.Reset.Text = "Reset";
-            this.Reset.UseColumnTextForButtonValue = true;
-            this.Reset.Visible = false;
             // 
             // txtSearch
             // 
@@ -182,6 +128,61 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.panelFooter.Size = new System.Drawing.Size(1000, 32);
             this.panelFooter.TabIndex = 2;
             // 
+            // DgvId
+            // 
+            this.DgvId.DataPropertyName = "Id";
+            this.DgvId.HeaderText = "ID";
+            this.DgvId.Name = "DgvId";
+            // 
+            // DgvUsername
+            // 
+            this.DgvUsername.DataPropertyName = "Username";
+            this.DgvUsername.HeaderText = "Username";
+            this.DgvUsername.Name = "DgvUsername";
+            // 
+            // DgvName
+            // 
+            this.DgvName.DataPropertyName = "Name";
+            this.DgvName.HeaderText = "Name";
+            this.DgvName.Name = "DgvName";
+            // 
+            // Role
+            // 
+            this.Role.HeaderText = "Role";
+            this.Role.Items.AddRange(new object[] {
+            "super_admin",
+            "admin",
+            "cs"});
+            this.Role.Name = "Role";
+            // 
+            // Status
+            // 
+            this.Status.FalseValue = false;
+            this.Status.HeaderText = "Active";
+            this.Status.Name = "Status";
+            this.Status.TrueValue = true;
+            this.Status.Visible = false;
+            // 
+            // Company
+            // 
+            this.Company.HeaderText = "Server";
+            this.Company.Name = "Company";
+            // 
+            // DgvPassword
+            // 
+            this.DgvPassword.DataPropertyName = "password";
+            this.DgvPassword.HeaderText = "Password";
+            this.DgvPassword.Name = "DgvPassword";
+            // 
+            // Reset
+            // 
+            this.Reset.HeaderText = "Reset";
+            this.Reset.Name = "Reset";
+            this.Reset.ReadOnly = true;
+            this.Reset.Text = "Reset";
+            this.Reset.UseColumnTextForButtonValue = true;
+            this.Reset.Visible = false;
+            // 
             // UsersView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -198,7 +199,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.ResumeLayout(false);
 
         }
-
+        private System.Windows.Forms.Panel panelFooter;
         private System.Windows.Forms.DataGridViewTextBoxColumn DgvId;
         private System.Windows.Forms.DataGridViewTextBoxColumn DgvUsername;
         private System.Windows.Forms.DataGridViewTextBoxColumn DgvName;
@@ -207,6 +208,5 @@ namespace WaDesktop.Client.Views.ManagementViews
         private System.Windows.Forms.DataGridViewComboBoxColumn Company;
         private System.Windows.Forms.DataGridViewTextBoxColumn DgvPassword;
         private System.Windows.Forms.DataGridViewButtonColumn Reset;
-        private System.Windows.Forms.Panel panelFooter;
     }
 }

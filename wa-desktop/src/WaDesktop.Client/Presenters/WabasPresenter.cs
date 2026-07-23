@@ -123,7 +123,7 @@ namespace WaDesktop.Client.Presenters
             }
         }
 
-        private void OnEdit(object sender, EventArgs e)
+        private void OnEdit(object sender, string wabaId)
         {
             if (_view.SelectedIndex < 0) { MessageBox.Show("Pilih baris dulu.", "Info"); return; }
             MessageBox.Show("Edit WABA — implement form dialog.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);

@@ -63,7 +63,7 @@ namespace WaDesktop.Client.Views.ManagementViews
         public event EventHandler<string> SearchClicked;
         public event EventHandler RefreshClicked;
         public event EventHandler AddClicked;
-        public event EventHandler EditClicked;
+        public event EventHandler<string> EditClicked;
         public event EventHandler DeleteClicked;
         public event EventHandler SaveClicked;
         public event EventHandler<string> ResetPasswordClicked;

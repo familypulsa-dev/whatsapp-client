@@ -31,10 +31,11 @@ namespace WaDesktop.Domain.Interfaces
         Task UpdateUserAsync(string id, string displayName, string role, string companyId, bool? isActive = null);
         Task DeactivateUserAsync(string id);
         Task ResetPasswordAsync(string id, string newPassword);
-        Task<List<Template>> GetTemplatesAsync(string search = null);
+        Task<List<Template>> GetTemplatesAsync(string search = null, string waba_id = null);
+        Task SyncTemplatesAsync(string wabaId);
+        Task DeleteTemplateAsync(string id);
         Task<AppSetting> GetAppSettingsAsync();
         Task<List<string>> SaveAppSettingsAsync(AppSetting settings);
-
         Task<PhoneNumberDetail> GetPhoneDetailAsync(string phoneNumberId);
         Task<SavePhoneResult> SavePhoneDetailAsync(string phoneNumberId, string displayName, string description, string email, string about, string address, string vertical, List<string> websites);
         Task<PhoneNumberDetail> SyncPhoneProfileAsync(string phoneNumberId);
@@ -44,6 +45,7 @@ namespace WaDesktop.Domain.Interfaces
         Task UpdateWabaAsync(string wabaId, string companyId);
         Task SyncWabasFromMetaAsync();
         Task<byte[]> GetPhoneProfilePictureAsync(string url);
+        Task<List<WaWabaUsageSummary>> GetBillingSummaryAsync(DateTime? start = null, DateTime? end = null, string wabaId = null);
     }
 
     public class SavePhoneResult

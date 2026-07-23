@@ -56,6 +56,7 @@ namespace WaDesktop.Client.Presenters
             view.PhoneNumbersClicked += (s, e) => OpenPhoneNumbers();
             view.WabaClicked += (s, e) => OpenWaba();
             view.TemplatesClicked += (s, e) => OpenTemplates();
+            view.BillingClicked += (s, e) => OpenBilling();
             view.AppSettingsClicked += (s, e) => OpenAppSettings();
             view.SoftwareUpdateClicked += (s, e) => OnSoftwareUpdate();
             view.LogoutClicked += OnLogout;
@@ -68,6 +69,7 @@ namespace WaDesktop.Client.Presenters
             view.PhoneNumbersVisible = !isAgent;
             view.WabaVisible = auth.IsSuperAdmin;
             view.TemplatesVisible = !isAgent;
+            view.BillingVisible = !isAgent;
             view.StatusText = $"Logged in as {_auth.DisplayName}";
 
             if (isAgent)
@@ -168,7 +170,7 @@ namespace WaDesktop.Client.Presenters
 
                 case "templates":
                     var tplView = provider.GetRequiredService<TemplatesView>();
-                    var tplPresenter = ActivatorUtilities.CreateInstance<TemplatesPresenter>(provider, tplView);
+                    var tplPresenter = ActivatorUtilities.CreateInstance<TemplatesPresenter>(provider, tplView, _messagesUrl, _apiBaseUrl);
                     _activePresenterScopes.Add(moduleKey, tplPresenter);
                     tplPresenter.LoadData();
                     return tplView;
@@ -179,11 +181,14 @@ namespace WaDesktop.Client.Presenters
                     _activePresenterScopes.Add(moduleKey, setPresenter);
                     setPresenter.LoadData();
                     return setView;
-                case "template_create":
-                    var tmpView = provider.GetRequiredService<MessagesView>();
-                    var tmpPresenter = ActivatorUtilities.CreateInstance<MessagesPresenter>(
-                            provider, tmpView, _messagesUrl + $"templates/create", _apiBaseUrl);
-                    return tmpView;
+
+                case "billing":
+                    var billView = provider.GetRequiredService<TagihanView>();
+                    var billPresenter = ActivatorUtilities.CreateInstance<TagihanPresenter>(provider, billView);
+                    _activePresenterScopes.Add(moduleKey, billPresenter);
+                    billPresenter.LoadData();
+                    return billView;
+
                 default:
                     if (moduleKey.StartsWith("phonedetail_"))
                     {
@@ -195,13 +200,22 @@ namespace WaDesktop.Client.Presenters
                             
                         detailPresenter.LoadData();
                         return detailView;
-                    } else if(moduleKey.StartsWith("templatedetail_"))
+                    } else if(moduleKey.StartsWith("template_detail_"))
                     {
-                        var templateId = moduleKey.Substring("templatedetail_".Length);
+                        var templateId = moduleKey.Substring("template_detail_".Length);
                         var detailView = provider.GetRequiredService<MessagesView>();
 
                         var detailPresenter = ActivatorUtilities.CreateInstance<MessagesPresenter>(
                             provider, detailView, _messagesUrl + $"templates/edit/{templateId}", _apiBaseUrl);
+
+                        return detailView;
+                    }else if (moduleKey.StartsWith("template_create_"))
+                    {
+                        var waba_id = moduleKey.Substring("template_create_".Length);
+                        var detailView = provider.GetRequiredService<MessagesView>();
+
+                        var detailPresenter = ActivatorUtilities.CreateInstance<MessagesPresenter>(
+                            provider, detailView, _messagesUrl + $"templates/create?{waba_id}", _apiBaseUrl);
 
                         return detailView;
                     }
@@ -215,6 +229,7 @@ namespace WaDesktop.Client.Presenters
         private void OpenPhoneNumbers() => OnRequestOpenTab(new RequestOpenTabMessage("phonenumbers", "Nomor HP"));
         private void OpenWaba() => OnRequestOpenTab(new RequestOpenTabMessage("waba", "WABA"));
         private void OpenTemplates() => OnRequestOpenTab(new RequestOpenTabMessage("templates", "Templates"));
+        private void OpenBilling() => OnRequestOpenTab(new RequestOpenTabMessage("billing", "Tagihan"));
         private void OpenAppSettings() => OnRequestOpenTab(new RequestOpenTabMessage("appsettings", "App Settings"));
 
         private void OnSoftwareUpdate()

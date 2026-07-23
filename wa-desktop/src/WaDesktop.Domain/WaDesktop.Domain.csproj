@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\Waba.cs" />
+    <Compile Include="Entities\WaWabaUsageSummary.cs" />
     <Compile Include="Interfaces\ILimitBillingView.cs" />
     <Compile Include="Interfaces\IPhoneNumberDetailView.cs" />
     <Compile Include="Interfaces\IPresenterBase.cs" />

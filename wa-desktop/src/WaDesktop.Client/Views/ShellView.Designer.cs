@@ -10,6 +10,7 @@ namespace WaDesktop.Client.Views
         private System.Windows.Forms.ToolStripMenuItem phoneNumbersToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem wabaToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem templatesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem billingToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem appSettingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem logoutToolStripMenuItem;
         private System.Windows.Forms.SplitContainer splitContainer;
@@ -36,6 +37,7 @@ namespace WaDesktop.Client.Views
             this.wabaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.phoneNumbersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.templatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.billingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.appSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.logoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
@@ -60,6 +62,7 @@ namespace WaDesktop.Client.Views
             this.wabaToolStripMenuItem,
             this.phoneNumbersToolStripMenuItem,
             this.templatesToolStripMenuItem,
+            this.billingToolStripMenuItem,
             this.appSettingsToolStripMenuItem,
             this.logoutToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
@@ -119,12 +122,19 @@ namespace WaDesktop.Client.Views
             this.phoneNumbersToolStripMenuItem.Click += new System.EventHandler(this.phoneNumbersToolStripMenuItem_Click);
             // 
             // templatesToolStripMenuItem
-            // 
+            //
             this.templatesToolStripMenuItem.Name = "templatesToolStripMenuItem";
             this.templatesToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
             this.templatesToolStripMenuItem.Text = "Templates";
             this.templatesToolStripMenuItem.Click += new System.EventHandler(this.templatesToolStripMenuItem_Click);
-            // 
+            //
+            // billingToolStripMenuItem
+            //
+            this.billingToolStripMenuItem.Name = "billingToolStripMenuItem";
+            this.billingToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.billingToolStripMenuItem.Text = "Tagihan";
+            this.billingToolStripMenuItem.Click += new System.EventHandler(this.billingToolStripMenuItem_Click);
+            //
             // appSettingsToolStripMenuItem
             // 
             this.appSettingsToolStripMenuItem.Name = "appSettingsToolStripMenuItem";

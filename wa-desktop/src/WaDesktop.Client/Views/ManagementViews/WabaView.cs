@@ -93,7 +93,7 @@ namespace WaDesktop.Client.Views.ManagementViews
         public event EventHandler<string> SearchClicked;
         public event EventHandler RefreshClicked;
         public event EventHandler AddClicked;
-        public event EventHandler EditClicked;
+        public event EventHandler<string> EditClicked;
         public event EventHandler DeleteClicked;
         public event EventHandler SaveClicked;
         public event EventHandler SyncClicked;
@@ -138,7 +138,6 @@ namespace WaDesktop.Client.Views.ManagementViews
         private void btnSearch_Click(object sender, EventArgs e) => SearchClicked?.Invoke(this, txtSearch.Text);
         private void btnRefresh_Click(object sender, EventArgs e) => RefreshClicked?.Invoke(this, EventArgs.Empty);
         private void btnAdd_Click(object sender, EventArgs e) => AddClicked?.Invoke(this, EventArgs.Empty);
-        private void btnEdit_Click(object sender, EventArgs e) => EditClicked?.Invoke(this, EventArgs.Empty);
         private void btnDelete_Click(object sender, EventArgs e) => DeleteClicked?.Invoke(this, EventArgs.Empty);
         private void btnSync_Click(object sender, EventArgs e) => SyncClicked?.Invoke(this, EventArgs.Empty);
         private void BtnSave_Click(object sender, EventArgs e)

@@ -1,60 +1,295 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Link, MessageSquare, Info, Copy } from 'lucide-react';
+import { Plus, X, Send, Save, Link, MessageSquare, Info, Copy } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { get } from '../../api/client';
-import type { Template, TextComponent, ImageComponent, ButtonComponent, SubButtonComponent, Component, ExampleComponent } from '../../types/template';
+import { get, put } from '../../api/client';
+import type { Template, TextComponent, ImageComponent, ButtonComponent, SubButtonComponent, Component, ButtonType } from '../../types/template';
 import { useExternalActions } from '../hooks/useExternalActions';
 
-const statusColor = (status?: string) => {
-  switch (status?.toUpperCase()) {
-    case 'APPROVED': return 'bg-green-100 text-green-800 border-green-200';
-    case 'PENDING': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    case 'REJECTED': return 'bg-red-100 text-red-800 border-red-200';
-    default: return 'bg-gray-100 text-gray-800 border-gray-200';
-  }
-};
-
-const isTextComp = (c: Component): c is TextComponent => 'text' in c;
-const isImageComp = (c: Component): c is ImageComponent => 'format' in c && (c as ImageComponent).format === 'IMAGE';
-const isButtonComp = (c: Component): c is ButtonComponent => c.type === 'BUTTONS';
-
-function replaceWithExample(text: string, comp: TextComponent | undefined): string {
-  if (!comp?.example) return text;
-  const example: ExampleComponent = comp.example;
-  const exampleKey = `${comp.type.toLowerCase()}_text` as keyof ExampleComponent;
-  const values = example[exampleKey] || example[Object.keys(example)[0] as keyof ExampleComponent] || [];
-  let idx = 0;
-  return text.replace(/\{\{(\d+)\}\}/g, () => {
-    const val = values[idx];
-    idx++;
-    return val ? `<span class="bg-blue-100 text-blue-700 font-bold px-1 rounded mx-0.5">${val}</span>` : `{{${idx}}}`;
-  });
+interface DraftButton {
+  id: string;
+  text: string;
+  type: ButtonType;
+  url?: string;
+  otp_type?: string;
+  url_type?: 'STATIC' | 'DYNAMIC';
+  url_example?: string;
+  example?: string;
 }
 
+const detectVars = (text: string): number[] =>
+  [...new Set([...text.matchAll(/\{\{(\d+)\}\}/g)].map(m => parseInt(m[1])))].sort();
+
+const BUTTON_TYPES: { value: ButtonType; label: string; icon: any }[] = [
+  { value: 'url', label: 'URL', icon: Link },
+  { value: 'quick_reply', label: 'Balas', icon: MessageSquare },
+  { value: 'copy_code', label: 'Copy', icon: Copy },
+];
+
+function ExampleInputs({ vars, examples, setExamples, color }: {
+  vars: number[];
+  examples: Record<number, string>;
+  setExamples: (fn: (prev: Record<number, string>) => Record<number, string>) => void;
+  color: string;
+}) {
+  if (!vars.length) return null;
+  return (
+    <div className="space-y-2 mt-2 border-t border-dashed border-slate-200 pt-2">
+      {vars.map(v => {
+        const label = `{{${v}}}`;
+        return (
+          <div key={v} className="flex items-center gap-2">
+            <span className="text-[10px] font-mono text-slate-400 w-8 shrink-0">{label}</span>
+            <input
+              className={`flex-1 h-6 px-2 text-[11px] border rounded focus:outline-none focus:ring-1 focus:ring-[#00a884]/20 ${color}`}
+              placeholder={`Contoh untuk ${label}...`}
+              value={examples[v] || ''}
+              onChange={e => setExamples(prev => ({ ...prev, [v]: e.target.value }))}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+let idCounter = 0;
+const freshId = () => `b${++idCounter}`;
+
 export default function TemplateEditor() {
+  const { handleOpenModule,handleCloseModule,handleShowNotif,handleRefreshModule} = useExternalActions();
   const { id } = useParams();
   const navigate = useNavigate();
-  const { handleOpenModule,handleCloseModule } = useExternalActions();
 
   const [template, setTemplate] = useState<Template | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const [name, setName] = useState('');
+  const [category, setCategory] = useState<'UTILITY' | 'AUTHENTICATION' | 'MARKETING'>('UTILITY');
+  const [language, setLanguage] = useState('id');
+  const [headerText, setHeaderText] = useState('');
+  const [bodyText, setBodyText] = useState('');
+  const [footerText, setFooterText] = useState('');
+  const [timeExp, setTimeExp] = useState(60);
+  const [buttons, setButtons] = useState<DraftButton[]>([]);
+  const [examplesBody, setExamplesBody] = useState<Record<number, string>>({});
+  const [examplesHeader, setExamplesHeader] = useState<Record<number, string>>({});
+  const [isSaving, setIsSaving] = useState(false);
+
+  const isAuth = category === 'AUTHENTICATION';
+
   useEffect(() => {
     if (!id) return;
     setLoading(true);
     get<{ success: boolean; data: Template }>(`/api/v1/templates/${id}`)
-      .then(res => setTemplate(res.data))
-      .catch(err => setError(err.message || 'Failed to load template'))
+      .then(res => {
+        const tpl = res.data;
+        setTemplate(tpl);
+
+        setName(tpl.name);
+        setCategory(tpl.category);
+        setLanguage(tpl.language)
+
+        const raw = (tpl as any).components || tpl.component;
+        let comps: Component[] = [];
+        if (typeof raw === 'string') {
+          try { comps = JSON.parse(raw); } catch { comps = []; }
+        } else {
+          comps = raw || [];
+        }
+
+        const findComp = <T extends Component>(type: string): T | undefined =>
+          comps.find(c => c.type?.toUpperCase() === type) as T | undefined;
+
+        const isTextComp = (c: Component): c is TextComponent => 'text' in c;
+
+        const header = findComp<TextComponent | ImageComponent>('HEADER');
+        const body = findComp<TextComponent>('BODY');
+        const footer = findComp<TextComponent>('FOOTER');
+        const btnComp = findComp<ButtonComponent>('BUTTONS');
+
+        if (header && isTextComp(header)) {
+          setHeaderText(header.text);
+          const ex = (header as any).example;
+          if (ex?.header_text) {
+            const vals: Record<number, string> = {};
+            const vars = detectVars(header.text);
+            (ex.header_text as string[]).forEach((v: string, i: number) => {
+              if (vars[i] !== undefined) vals[vars[i]] = v;
+            });
+            setExamplesHeader(vals);
+          }
+        }
+        if (body && isTextComp(body)) {
+          setBodyText(body.text);
+          const ex = (body as any).example;
+          if (ex?.body_text?.[0]) {
+            const vals: Record<number, string> = {};
+            const vars = detectVars(body.text);
+            (ex.body_text[0] as string[]).forEach((v: string, i: number) => {
+              if (vars[i] !== undefined) vals[vars[i]] = v;
+            });
+            setExamplesBody(vals);
+          }
+        }
+        if (footer && isTextComp(footer)) {
+          setFooterText(footer.text);
+        }
+        setTimeExp(tpl.message_send_ttl_seconds || 60);
+
+        if (btnComp?.buttons) {
+          const mapped = btnComp.buttons.map((b: SubButtonComponent, i: number) => {
+            const btnType = (b.type as string).toLowerCase();
+            const base: DraftButton = {
+              id: `b${i}`,
+              text: b.text || '',
+              type: btnType as ButtonType,
+            };
+            if (btnType === 'url') {
+              const url = b.url || '';
+              const isDynamic = url.includes('{{1}}');
+              base.url = isDynamic ? url.replace('{{1}}', '') : url;
+              base.url_type = isDynamic ? 'DYNAMIC' : 'STATIC';
+              if (isDynamic) {
+                const ex = (b as any).example;
+                base.url_example = Array.isArray(ex) ? ex[0] : '';
+              }
+            } else if (btnType === 'copy_code') {
+              base.example = (b as any).example || '';
+            } else if (btnType === 'otp') {
+              base.otp_type = b.otp_type || 'COPY_CODE';
+            }
+            return base;
+          });
+          setButtons(mapped);
+        }
+      })
+      .catch(err => setError(err.message || 'Gagal memuat template'))
       .finally(() => setLoading(false));
   }, [id]);
+
+  const headerVars = useMemo(() => detectVars(headerText), [headerText]);
+  const bodyVars = useMemo(() => detectVars(bodyText), [bodyText]);
+  const allHeaderVars = useMemo(() => [...new Set([...headerVars])], [headerVars]);
+  const allBodyVars = useMemo(() => [...new Set([...bodyVars])], [bodyVars]);
+
+  useEffect(() => {
+    setExamplesHeader(prev => {
+      const next = { ...prev };
+      Object.keys(next).forEach(k => { if (!headerVars.includes(Number(k))) delete next[Number(k)]; });
+      return next;
+    });
+  }, [headerVars]);
+
+  useEffect(() => {
+    setExamplesBody(prev => {
+      const next = { ...prev };
+      Object.keys(next).forEach(k => { if (!bodyVars.includes(Number(k))) delete next[Number(k)]; });
+      return next;
+    });
+  }, [bodyVars]);
+
+  const highlight = (text: string, examples: Record<number, string> = {}) =>
+    text.replace(/\{\{(\d+)\}\}/g, (_, n) => {
+      const val = examples[parseInt(n)];
+      return `<span class="bg-[#00a884] text-white font-bold px-1 rounded mx-0.5">${val || `{{${n}}}`}</span>`;
+    });
+
+  const previewHeader = useMemo(() => highlight(headerText, examplesHeader), [headerText, examplesHeader]);
+  const previewBody = useMemo(() => highlight(bodyText, examplesBody), [bodyText, examplesBody]);
+  const previewFooter = useMemo(() => highlight(footerText), [footerText]);
+
+  const addBtn = (type: ButtonType) =>
+    setButtons(prev => [...prev, {
+      id: freshId(),
+      text: '',
+      type,
+      ...(type === 'otp' ? { otp_type: 'COPY_CODE' } : {}),
+      ...(type === 'url' ? { url_type: 'STATIC' } : {}),
+      ...(type === 'copy_code' ? { example: '' } : {}),
+    }]);
+
+  const updBtn = (id: string, patch: Partial<DraftButton>) =>
+    setButtons(prev => prev.map(b => b.id === id ? { ...b, ...patch } : b));
+
+  const delBtn = (id: string) =>
+    setButtons(prev => prev.filter(b => b.id !== id));
+
+  const hasCopyCode = buttons.some(b => b.type === 'copy_code');
+
+  const handleSave = async () => {
+    if (!name.trim()) return alert('Nama template harus diisi');
+    if (!bodyText.trim()) return alert('Body template harus diisi');
+
+    setIsSaving(true);
+    try {
+      const components: any[] = [];
+
+      if (headerText.trim()) {
+        const comp: any = { type: 'HEADER', format: 'TEXT', text: headerText };
+        const vals = headerVars.map(v => examplesHeader[v] || '');
+        if (vals.some(Boolean)) comp.example = { header_text: vals };
+        components.push(comp);
+      }
+
+      if (bodyText.trim()) {
+        const comp: any = { type: 'BODY', text: bodyText };
+        const vals = bodyVars.map(v => examplesBody[v] || '');
+        if (vals.some(Boolean)) comp.example = { body_text: [vals] };
+        components.push(comp);
+      }
+
+      if (footerText.trim()) {
+        components.push({ type: 'FOOTER', text: footerText });
+      }
+
+      if (buttons.length) {
+        components.push({ type: 'BUTTONS', buttons: buttons.map(b => {
+          if (b.type === 'otp') return { type: 'OTP', otp_type: b.otp_type };
+          if (b.type === 'copy_code') return { type: 'COPY_CODE', example: b.example || '' };
+          const btn: any = { type: b.type.toUpperCase(), text: b.text };
+          if (b.type === 'url') {
+            btn.url = b.url || '';
+            if (b.url_type === 'DYNAMIC') {
+              btn.url += '{{1}}';
+              if (b.url_example) btn.example = [b.url_example];
+            }
+          }
+          return btn;
+        }) });
+      }
+
+      const res = await put<{ success: boolean; data?: any; error?: string }>(`/api/v1/templates/${id}`, {
+        name: name.trim(),
+        category,
+        language: language.trim(),
+        message_send_ttl_seconds: isAuth ? timeExp : undefined,
+        components,
+      });
+
+       if (!res.success) {
+        alert(res.error || 'Gagal menyimpan template');
+        handleShowNotif('Gagal', 'Gagal menyimpan template');
+        return;
+      }
+
+        handleShowNotif('Berhasil', 'Template berhasil disimpan');
+        handleRefreshModule('templates');
+        handleOpenModule('templates');
+        handleCloseModule('templatedetail_' + id);
+    } catch (err: any) {
+      alert(err?.message || 'Terjadi kesalahan');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-[#f0f2f5]">
-        <div className="text-slate-400 animate-pulse">Loading template...</div>
+        <div className="text-slate-400 animate-pulse">Memuat template...</div>
       </div>
     );
   }
@@ -62,203 +297,221 @@ export default function TemplateEditor() {
   if (error || !template) {
     return (
       <div className="flex items-center justify-center h-screen bg-[#f0f2f5]">
-        <div className="text-red-500 text-sm">{error || 'Template not found'}</div>
+        <div className="text-red-500 text-sm">{error || 'Template tidak ditemukan'}</div>
       </div>
     );
   }
 
-  const rawComponents = ((): Component[] => {
-    const raw = (template as any).components || template.component;
-    if (typeof raw === 'string') {
-      try { return JSON.parse(raw); } catch { return []; }
-    }
-    return raw || [];
-  })();
-
-  const findComp = <T extends Component>(type: string): T | undefined =>
-    rawComponents.find(c => c.type?.toUpperCase() === type) as T | undefined;
-
-  const headerComp = findComp<TextComponent | ImageComponent>('HEADER');
-  const bodyComp = findComp<TextComponent>('BODY');
-  const footerComp = findComp<TextComponent>('FOOTER');
-  const buttonComp = findComp<ButtonComponent>('BUTTONS');
-
-  const headerText = headerComp && isTextComp(headerComp) ? headerComp.text : '';
-  const bodyText = bodyComp && isTextComp(bodyComp) ? bodyComp.text : '';
-  const footerText = footerComp && isTextComp(footerComp) ? footerComp.text : '';
-  const buttons = buttonComp?.buttons || [];
-
-  const previewHeader = headerComp && isTextComp(headerComp) ? replaceWithExample(headerComp.text, headerComp) : '';
-  const previewBody = bodyComp && isTextComp(bodyComp) ? replaceWithExample(bodyComp.text, bodyComp) : '';
-  const previewFooter = footerComp && isTextComp(footerComp) ? replaceWithExample(footerComp.text, footerComp) : '';
-
-  const timeExpiration = template.message_send_ttl_seconds || 60;
-  const isAuth = template.category === 'AUTHENTICATION';
-
   return (
     <div className="flex flex-col h-screen bg-[#f0f2f5] overflow-hidden">
-      {/* Header */}
       <header className="bg-white border-b px-6 py-4 flex items-center justify-between shadow-sm z-10">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-full">
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="text-base font-bold text-slate-800">{template.name || 'Edit Template'}</h1>
-            <div className="flex items-center gap-2 mt-0.5">
-              <Badge variant="outline" className={`text-[9px] uppercase font-bold tracking-tighter shadow-none border-none py-0 ${statusColor(template.status)}`}>
-                {template.status || 'UNKNOWN'}
-              </Badge>
-              <span className="text-[10px] text-slate-400 uppercase font-medium tracking-wider">{template.category?.replace(/_/g, ' ')}</span>
-              <span className="text-[10px] text-slate-400">•</span>
-              <span className="text-[10px] text-slate-400">{template.language}</span>
-            </div>
-          </div>
+          <h1 className="text-base font-bold text-slate-800">
+            Edit Template
+          </h1>
+          <Badge variant="outline" className={`text-[9px] uppercase font-bold tracking-tighter shadow-none border-none py-0 ${(() => {
+            switch (template.status) {
+              case 'APPROVED': return 'bg-green-100 text-green-800';
+              case 'PENDING': return 'bg-yellow-100 text-yellow-800';
+              case 'REJECTED': return 'bg-red-100 text-red-800';
+              default: return 'bg-gray-100 text-gray-800';
+            }
+          })()}`}>
+            {template.status || 'UNKNOWN'}
+          </Badge>
         </div>
-        <Button variant="outline" size="sm" onClick={() => handleCloseModule('templatedetail_'+ template.id)}>Cancel</Button>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" onClick={() => {
+            handleOpenModule('templates');
+            handleCloseModule('templatedetail_' + id);
+          }}>
+            Batal
+          </Button>
+          <Button onClick={handleSave} disabled={isSaving} className="bg-[#00a884] text-white hover:bg-[#009a7a]">
+            <Save className="w-4 h-4 mr-1.5" />
+            {isSaving ? 'Menyimpan...' : 'Simpan'}
+          </Button>
+        </div>
       </header>
 
       <main className="flex-1 flex overflow-hidden">
-        {/* Left Panel: Read-only Form */}
-        <div className="w-[450px] bg-white border-r flex flex-col shadow-inner">
-          <div className="flex-1 overflow-y-auto p-6 space-y-8">
-            {/* Section 1: Basic Info */}
-            <div className="space-y-4">
-              <h3 className="text-[13px] font-semibold text-slate-900 border-l-4 border-[#00a884] pl-3">
-                Basic Information
-              </h3>
-              <div className="space-y-3 pl-4">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Template Name</label>
-                  <div className="h-8 flex items-center text-sm text-slate-800 font-medium bg-slate-50 px-3 rounded border border-slate-200">
-                    {template.name}
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Category</label>
-                    <div className="h-8 flex items-center text-xs bg-slate-50 px-3 rounded border border-slate-200">
-                      <Badge variant="outline" className="text-[10px] uppercase font-bold bg-slate-100 text-slate-700 border-slate-200">
-                        {template.category?.replace(/_/g, ' ')}
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Language</label>
-                    <div className="h-8 flex items-center text-xs text-slate-800 bg-slate-50 px-3 rounded border border-slate-200">
-                      {template.language}
-                    </div>
-                  </div>
-                </div>
-                {template.meta_template_id && (
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Meta Template ID</label>
-                    <div className="h-8 flex items-center text-xs text-slate-600 bg-slate-50 px-3 rounded border border-slate-200 font-mono">
-                      {template.meta_template_id}
-                    </div>
-                  </div>
-                )}
-              </div>
+        <div className="w-[420px] bg-white border-r flex flex-col shadow-inner overflow-y-auto p-5 space-y-4">
+          {/* Template Name Card */}
+          <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-3 shadow-sm">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nama Template</label>
+            <input disabled={true}
+              className="w-full h-6 px-3 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00a884]/20 border-slate-200"
+              placeholder="cth: registration_otp"
+              value={name}
+              onChange={e => setName(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '_'))}
+            />
+            <div className="flex rounded-md border border-slate-200 overflow-hidden">
+              {(['UTILITY', 'MARKETING', 'AUTHENTICATION'] as const).map(c => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setCategory(c)}
+                  className={`flex-1 h-7 text-[11px] font-medium transition-colors
+                    ${category === c
+                      ? 'bg-[#00a884] text-white shadow-sm'
+                      : 'bg-white text-slate-500 hover:bg-slate-50'
+                    }`}
+                >
+                  {c === 'AUTHENTICATION' ? 'Auth' : c.charAt(0) + c.slice(1).toLowerCase()}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Content Card */}
+          <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-4 shadow-sm">
+            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Konten</h3>
+
+            {/* Header */}
+            <div>
+              <label className="text-[11px] font-medium text-slate-600">Header / Judul (Opsional)</label>
+              <input
+                className="w-full h-6 px-3 text-xs border rounded-md mt-1 mb-1 focus:outline-none focus:ring-2 focus:ring-[#00a884]/20 border-slate-200"
+                placeholder="cth: Informasi Status Pesanan"
+                value={headerText}
+                onChange={e => setHeaderText(e.target.value)}
+              />
+              <ExampleInputs vars={headerVars} examples={examplesHeader} setExamples={setExamplesHeader} color="border-blue-200 bg-blue-50/30" />
             </div>
 
-            {/* Section 2: Header */}
-            {headerComp && (
-              <div className="space-y-4">
-                <h3 className="text-[13px] font-semibold text-slate-900 border-l-4 border-slate-300 pl-3">
-                  Header {isImageComp(headerComp) ? '(Image)' : '(Optional)'}
-                </h3>
-                <div className="pl-4">
-                  {isImageComp(headerComp) ? (
-                    <div className="h-24 bg-slate-100 rounded flex items-center justify-center text-slate-400 text-xs border border-slate-200">
-                      [Image Header]
-                    </div>
-                  ) : (
-                    <div className="min-h-[32px] text-sm text-slate-800 bg-slate-50 px-3 py-1.5 rounded border border-slate-200 whitespace-pre-wrap break-words">
-                      {headerText || <span className="text-slate-300 italic">No header</span>}
-                    </div>
+            {/* Body */}
+            <div>
+              <label className="text-[11px] font-medium text-slate-600">Isi / Body</label>
+              <textarea
+                className="w-full h-20 px-3 py-1.5 text-xs border rounded-md mt-1 mb-1 focus:outline-none focus:ring-2 focus:ring-[#00a884]/20 border-slate-200 resize-none"
+                placeholder="Ketik pesan di sini... Gunakan {{1}} untuk variabel."
+                value={bodyText}
+                onChange={e => setBodyText(e.target.value)}
+              />
+              <ExampleInputs vars={bodyVars} examples={examplesBody} setExamples={setExamplesBody} color="border-green-200 bg-green-50/30" />
+            </div>
+
+            {/* Footer */}
+            <div>
+              <label className="text-[11px] font-medium text-slate-600">Catatan Kaki / Footer (Opsional)</label>
+              <input
+                className="w-full h-6 px-3 text-xs border rounded-md mt-1 mb-1 focus:outline-none focus:ring-2 focus:ring-[#00a884]/20 border-slate-200"
+                placeholder="cth: Salam, Family Pulsa"
+                value={footerText}
+                onChange={e => setFooterText(e.target.value)}
+              />
+            </div>
+
+            {/* Auth */}
+            {isAuth && (
+              <div>
+                <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Kedaluwarsa (Menit)</label>
+                <input
+                  type="number"
+                  className="w-20 h-6 px-2 text-xs border rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-[#00a884]/20 border-slate-200"
+                  value={timeExp}
+                  onChange={e => setTimeExp(Math.max(1, parseInt(e.target.value) || 1))}
+                  min={1}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Buttons Card */}
+          <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-3 shadow-sm">
+            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Tombol</h3>
+
+            {buttons.map(btn => (
+              <div key={btn.id} className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
+                <div className="flex items-center justify-between">
+                  <select
+                    className="h-6 text-[10px] border rounded px-1 bg-white border-slate-200 focus:outline-none focus:ring-1 focus:ring-[#00a884]/20"
+                    value={btn.type}
+                    onChange={e => updBtn(btn.id, { type: e.target.value as ButtonType })}
+                    disabled={isAuth}
+                  >
+                    {BUTTON_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                  </select>
+                  {!isAuth && (
+                    <button onClick={() => delBtn(btn.id)} className="text-red-400 hover:text-red-600">
+                      <X className="h-3.5 w-3.5" />
+                    </button>
                   )}
                 </div>
-              </div>
-            )}
-
-            {/* Section 3: Body */}
-            <div className="space-y-4">
-              <h3 className="text-[13px] font-semibold text-slate-900 border-l-4 border-[#00a884] pl-3">
-                Message Content
-              </h3>
-              <div className="pl-4">
-                <div className="w-full min-h-[80px] p-3 text-sm text-slate-800 bg-slate-50 rounded border border-slate-200 whitespace-pre-wrap break-words">
-                  {bodyText || <span className="text-slate-300 italic">No body content</span>}
-                </div>
-              </div>
-            </div>
-
-            {/* Section 4: Auth Settings */}
-            {isAuth && (
-              <div className="space-y-4">
-                <h3 className="text-[13px] font-semibold text-slate-900 border-l-4 border-amber-500 pl-3">
-                  Authentication Settings
-                </h3>
-                <div className="pl-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Code Expiration (Minutes)</label>
-                    <div className="h-8 flex items-center text-sm text-slate-800 bg-slate-50 px-3 rounded border border-slate-200">
-                      {timeExpiration} minutes
+                <input
+                  className="w-full h-6 px-2 text-[11px] border rounded border-slate-200 focus:outline-none focus:ring-1 focus:ring-[#00a884]/20 bg-white"
+                  placeholder="Teks tombol"
+                  value={btn.text}
+                  onChange={e => updBtn(btn.id, { text: e.target.value })}
+                />
+                {btn.type === 'url' && (
+                  <>
+                    <div className="flex gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => updBtn(btn.id, { url_type: 'STATIC', url_example: undefined })}
+                        className={`flex-1 h-6 text-[10px] font-medium rounded transition-colors ${btn.url_type === 'STATIC' ? 'bg-[#00a884] text-white' : 'bg-white text-slate-500 border border-slate-200'}`}
+                      >
+                        Static
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updBtn(btn.id, { url_type: 'DYNAMIC' })}
+                        className={`flex-1 h-6 text-[10px] font-medium rounded transition-colors ${btn.url_type === 'DYNAMIC' ? 'bg-[#00a884] text-white' : 'bg-white text-slate-500 border border-slate-200'}`}
+                      >
+                        Dinamis
+                      </button>
                     </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Section 5: Footer */}
-            {footerComp && (
-              <div className="space-y-4">
-                <h3 className="text-[13px] font-semibold text-slate-900 border-l-4 border-slate-300 pl-3">
-                  Footer (Optional)
-                </h3>
-                <div className="pl-4">
-                  <div className="h-8 flex items-center text-sm text-slate-800 bg-slate-50 px-3 rounded border border-slate-200">
-                    {footerText || <span className="text-slate-300 italic">No footer</span>}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Section 6: Buttons */}
-            {buttons.length > 0 && (
-              <div className="space-y-4">
-                <h3 className="text-[13px] font-semibold text-slate-900 border-l-4 border-slate-300 pl-3 flex items-center justify-between">
-                  Buttons
-                  <Badge variant="outline" className="text-[9px] h-4 bg-slate-100 text-slate-600 border-slate-200">{buttons.length}</Badge>
-                </h3>
-                <div className="pl-4 space-y-2">
-                  {buttons.map((btn, idx) => (
-                    <div key={idx} className="flex items-center gap-3 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                      <div className="w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-[10px] shrink-0">
-                        {btn.type === 'url' ? <Link className="h-3 w-3" /> :
-                         btn.type === 'quick_reply' ? <MessageSquare className="h-3 w-3" /> :
-                         btn.type === 'copy_code' ? <Copy className="h-3 w-3" /> :
-                         'OTP'}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-[10px] text-slate-400 uppercase mb-0.5">{btn.type}</div>
-                        <div className="text-xs text-slate-800 font-medium">{btn.text}</div>
-                      </div>
+                    <div className="flex items-center gap-0">
+                      <input
+                        className="flex-1 h-6 px-2 text-[11px] border rounded-l border-slate-200 focus:outline-none focus:ring-1 focus:ring-[#00a884]/20 bg-white"
+                        placeholder="https://example.com"
+                        value={btn.url || ''}
+                        onChange={e => updBtn(btn.id, { url: e.target.value })}
+                      />
+                      {btn.url_type === 'DYNAMIC' && (
+                        <div className="flex items-center h-6 px-1.5 text-[10px] font-bold text-slate-500 bg-slate-100 border border-l-0 border-slate-200 rounded-r" title="Parameter dinamis akan ditambahkan">
+                          <span className="text-[#00a884]">{'{{1}}'}</span>
+                          <Info className="h-2.5 w-2.5 ml-1 text-slate-400" />
+                        </div>
+                      )}
                     </div>
-                  ))}
-                </div>
+                    {btn.url_type === 'DYNAMIC' && (
+                      <input
+                        className="w-full h-6 px-2 text-[11px] border rounded border-slate-200 focus:outline-none focus:ring-1 focus:ring-[#00a884]/20 bg-white"
+                        placeholder="Contoh parameter (cth: user123)"
+                        value={btn.url_example || ''}
+                        onChange={e => updBtn(btn.id, { url_example: e.target.value })}
+                      />
+                    )}
+                  </>
+                )}
+                {btn.type === 'copy_code' && (
+                  <input
+                    className="w-full h-6 px-2 text-[11px] border rounded border-slate-200 focus:outline-none focus:ring-1 focus:ring-[#00a884]/20 bg-white"
+                    placeholder="Contoh kode (cth: KUPON50)"
+                    value={btn.example || ''}
+                    onChange={e => updBtn(btn.id, { example: e.target.value })}
+                  />
+                )}
+              </div>
+            ))}
+
+            {!isAuth && (
+              <div className="flex flex-wrap gap-2">
+                {BUTTON_TYPES.filter(t => t.value !== 'copy_code' || !hasCopyCode).map(t => (
+                  <Button
+                    key={t.value}
+                    variant="outline"
+                    size="sm"
+                    className="h-6 text-[10px] border-slate-300 text-slate-600"
+                    onClick={() => addBtn(t.value)}
+                  >
+                    <t.icon className="h-3 w-3 mr-1" /> {t.label}
+                  </Button>
+                ))}
               </div>
             )}
-
-            {/* Metadata */}
-            {template.message_send_ttl_seconds && (
-              <div className="text-[10px] text-slate-400 pt-2 border-t border-slate-100">
-                TTL: {template.message_send_ttl_seconds}s
-                {template.parameter_format && <> • Format: {template.parameter_format}</>}
-              </div>
-            )}
-
-            <div className="h-10" />
           </div>
         </div>
 
@@ -268,7 +521,7 @@ export default function TemplateEditor() {
             <div className="p-6 border-b flex items-center justify-between bg-white">
               <h2 className="text-lg font-bold text-[#142e3e]">Pratinjau template</h2>
               <div className="p-2 border rounded-md hover:bg-slate-50 cursor-pointer">
-                <Info className="h-5 w-5 fill-[#142e3e]" />
+                <Send className="h-5 w-5 fill-[#142e3e]" />
               </div>
             </div>
 
@@ -277,39 +530,20 @@ export default function TemplateEditor() {
                 <div className="absolute top-0 left-[-8px] w-0 h-0 border-t-[10px] border-t-white border-l-[10px] border-l-transparent"></div>
 
                 <div className="p-4 space-y-2">
-                  {headerComp && isImageComp(headerComp) ? (
-                    <div className="w-full h-32 bg-slate-100 rounded flex items-center justify-center text-slate-400 text-xs">
-                      [Image Header]
-                    </div>
-                  ) : previewHeader ? (
-                    <h4
-                      className="font-bold text-[#111b21] text-base leading-tight break-words"
-                      dangerouslySetInnerHTML={{ __html: previewHeader }}
-                    />
-                  ) : null}
-
-                  <div
-                    className="text-[#111b21] text-sm leading-relaxed whitespace-pre-wrap break-words"
-                    dangerouslySetInnerHTML={{ __html: previewBody || '<span class="text-slate-300 italic">Body message goes here...</span>' }}
-                  />
-
+                  {previewHeader && (
+                    <h4 className="font-bold text-[#111b21] text-base leading-tight break-words" dangerouslySetInnerHTML={{ __html: previewHeader }} />
+                  )}
+                  <div className="text-[#111b21] text-sm leading-relaxed whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{ __html: previewBody || '<span class="text-slate-300 italic">Isi pesan di sini...</span>' }} />
                   <div className="flex items-end justify-between gap-4 mt-2">
-                    {previewFooter ? (
-                      <div
-                        className="text-[11px] text-[#667781] leading-tight flex-1"
-                        dangerouslySetInnerHTML={{ __html: previewFooter }}
-                      />
-                    ) : <div className="flex-1" />}
-                    <span className="text-[10px] text-[#667781] shrink-0">
-                      {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
+                    {previewFooter ? <div className="text-[11px] text-[#667781] leading-tight flex-1" dangerouslySetInnerHTML={{ __html: previewFooter }} /> : <div className="flex-1" />}
+                    <span className="text-[10px] text-[#667781] shrink-0">{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
                 </div>
 
                 {buttons.length > 0 && (
                   <div className="border-t border-[#f2f2f2] flex flex-col divide-y divide-[#f2f2f2]">
-                    {buttons.map((btn, bIdx) => (
-                      <div key={bIdx} className="py-2.5 px-3 text-[#00a8e6] font-medium text-center flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors cursor-default">
+                    {buttons.map(btn => (
+                      <div key={btn.id} className="py-2.5 px-3 text-[#00a8e6] font-medium text-center flex items-center justify-center gap-2 cursor-default">
                         {btn.type === 'url' ? <Link className="h-3 w-3" /> :
                          btn.type === 'quick_reply' ? <MessageSquare className="h-3 w-3" /> :
                          btn.type === 'copy_code' ? <Copy className="h-3 w-3" /> :

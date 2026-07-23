@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Plus, X, Send, Save, Link, MessageSquare, Info, Copy } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { post } from '../../api/client';
@@ -56,8 +56,20 @@ function ExampleInputs({ vars, examples, setExamples, color }: {
 let idCounter = 0;
 const freshId = () => `b${++idCounter}`;
 
+interface TemplateParams {
+  waba_id : string
+}
+
 export default function TemplateCreate() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // 2. Extract and cast parameters safely
+  const queryParams: TemplateParams = {
+    waba_id: searchParams.get('waba_id'), // Returns string or null
+  };
+
+
+
   const { handleOpenModule,handleCloseModule,handleShowNotif,handleRefreshModule} = useExternalActions();
 
   const [name, setName] = useState('');
@@ -206,6 +218,7 @@ export default function TemplateCreate() {
         category,
         language: 'id',
         components,
+        waba_id :queryParams.waba_id
       });
 
       if (!res.success) {
@@ -217,7 +230,7 @@ export default function TemplateCreate() {
       handleShowNotif('Berhasil', 'Template berhasil disimpan');
       handleRefreshModule('templates');
       handleOpenModule('templates');
-      handleCloseModule('template_create');
+      handleCloseModule('template_create_' + queryParams.waba_id);
     } catch (err: any) {
       alert(err?.message || 'Terjadi kesalahan'); 
     } finally {
@@ -234,7 +247,7 @@ export default function TemplateCreate() {
           </h1>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" onClick={() => {  handleRefreshModule('templates');handleCloseModule('template_create')}}>
+          <Button variant="ghost" onClick={() => {  handleRefreshModule('templates');handleCloseModule('template_create' + queryParams.waba_id)}}>
             Batal
           </Button>
           <Button onClick={handleSave} disabled={isSaving} className="bg-[#00a884] text-white hover:bg-[#009a7a]">

@@ -7,6 +7,7 @@ using WaDesktop.Domain.Messages;
 using System.Collections.Generic;
 
 using WaDesktop.Client.Views.ManagementViews;
+using System.Linq;
 
 namespace WaDesktop.Client.Presenters
 {
@@ -147,12 +148,14 @@ namespace WaDesktop.Client.Presenters
             }
         }
 
-        private void OnEdit(object sender, EventArgs e)
+        private void OnEdit(object sender, string phoneID)
         {
             if (_view.SelectedIndex < 0) { MessageBox.Show("Pilih baris dulu.", "Info"); return; }
-            var item = _data[_view.SelectedIndex];
-            var key = $"phonedetail_{item.PhoneNumberId}";
-            _bus.Publish(new RequestOpenTabMessage(key, item.DisplayName ?? item.PhoneNumberId));
+            var item = _data.Where(p => p.PhoneNumberId == phoneID).FirstOrDefault();
+            if(item != null) {
+                var key = $"phonedetail_{item.PhoneNumberId}";
+                _bus.Publish(new RequestOpenTabMessage(key, item.DisplayName ?? item.PhoneNumberId));
+            }
         }
 
         private void OnDelete(object sender, EventArgs e)

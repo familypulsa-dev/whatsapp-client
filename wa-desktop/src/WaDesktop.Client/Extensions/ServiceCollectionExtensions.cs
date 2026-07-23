@@ -30,6 +30,7 @@ namespace WaDesktop.Client.Extensions
             services.AddTransient<TemplatesView>();
             services.AddTransient<AppSettingsView>();
             services.AddTransient<PhoneNumberDetailView>();
+            services.AddTransient<TagihanView>();
             
             services.AddTransient<LoginView>();
             services.AddTransient<SidebarView>();

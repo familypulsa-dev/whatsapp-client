@@ -22,7 +22,7 @@ namespace WaDesktop.Client.Views.ManagementViews
                 {
                     dataGridView.Rows.Clear();
                     foreach (var p in value)
-                        dataGridView.Rows.Add(p.DisplayPhone, p.DisplayName, p.QualityRating, p.CreatedAt);
+                        dataGridView.Rows.Add(p.PhoneNumberId,p.DisplayPhone, p.DisplayName, p.QualityRating, p.CreatedAt);
                 });
             }
         }
@@ -33,7 +33,7 @@ namespace WaDesktop.Client.Views.ManagementViews
         public event EventHandler<string> SearchClicked;
         public event EventHandler RefreshClicked;
         public event EventHandler AddClicked;
-        public event EventHandler EditClicked;
+        public event EventHandler<string> EditClicked;
         public event EventHandler DeleteClicked;
         public event EventHandler SaveClicked; // dummy for IManagementView constraint if any
         public event EventHandler SyncClicked;
@@ -91,7 +91,6 @@ namespace WaDesktop.Client.Views.ManagementViews
         private void btnSearch_Click(object sender, EventArgs e) => SearchClicked?.Invoke(this, txtSearch.Text);
         private void btnRefresh_Click(object sender, EventArgs e) => RefreshClicked?.Invoke(this, EventArgs.Empty);
         private void btnAdd_Click(object sender, EventArgs e) => AddClicked?.Invoke(this, EventArgs.Empty);
-        private void btnEdit_Click(object sender, EventArgs e) => EditClicked?.Invoke(this, EventArgs.Empty);
         private void btnDelete_Click(object sender, EventArgs e) => DeleteClicked?.Invoke(this, EventArgs.Empty);
         private void txtSearch_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -100,7 +99,9 @@ namespace WaDesktop.Client.Views.ManagementViews
 
         private void dataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0) EditClicked?.Invoke(this, EventArgs.Empty);
+            var phoneId = dataGridView.Rows[e.RowIndex].Cells[0].Value?.ToString();
+            if (!string.IsNullOrEmpty(phoneId))
+                EditClicked?.Invoke(this, phoneId);
         }
     }
 }
