@@ -8,10 +8,12 @@ namespace WaDesktop.Domain.Interfaces
         string AppId { get; set; }
         string BusinessId { get; set; }
         string VerifyToken { get; set; }
+        string WebhookBaseUrl { get; set; }
         bool IsSaving { set; }
 
         event EventHandler SaveClicked;
         event EventHandler RefreshClicked;
+        event EventHandler SetupWebhookClicked;
 
         void ShowSuccess(string message);
         void ShowWarning(string message);

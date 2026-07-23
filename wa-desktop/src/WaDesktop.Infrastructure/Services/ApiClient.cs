@@ -291,6 +291,7 @@ namespace WaDesktop.Infrastructure.Services
                     case "wa_app_id":       setting.AppId = item.Value; break;
                     case "wa_bussiness_id": setting.BusinessId = item.Value; break;
                     case "wa_verify_token": setting.VerifyToken = item.Value; break;
+                    case "wa_webhook_url":  setting.WebhookUrl = item.Value; break;
                 }
             }
             return setting;
@@ -303,6 +304,7 @@ namespace WaDesktop.Infrastructure.Services
             if (!string.IsNullOrEmpty(settings.AppId))       payload["wa_app_id"] = settings.AppId;
             if (!string.IsNullOrEmpty(settings.BusinessId))  payload["wa_bussiness_id"] = settings.BusinessId;
             if (!string.IsNullOrEmpty(settings.VerifyToken)) payload["wa_verify_token"] = settings.VerifyToken;
+            if (settings.WebhookUrl != null) payload["wa_webhook_url"] = settings.WebhookUrl; // Accept empty string to clear it
 
             var body = JsonConvert.SerializeObject(payload);
             var res = await SendWithRefreshAsync(() =>
@@ -318,6 +320,20 @@ namespace WaDesktop.Infrastructure.Services
             var json = await res.Content.ReadAsStringAsync();
             var wrapped = JsonConvert.DeserializeObject<SaveSettingsResponse>(json);
             return wrapped?.Warnings ?? new List<string>();
+        }
+
+        public async Task SetupWebhookAsync(string callbackUrl)
+        {
+            var body = JsonConvert.SerializeObject(new { callback_url = callbackUrl });
+            var res = await SendWithRefreshAsync(() =>
+                _http.PostAsync($"{_baseUrl}/api/v1/webhook/setup",
+                    new StringContent(body, Encoding.UTF8, "application/json")));
+
+            if (!res.IsSuccessStatusCode)
+            {
+                var err = await res.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Setup webhook failed ({res.StatusCode}): {err}");
+            }
         }
 
         private class SaveSettingsResponse

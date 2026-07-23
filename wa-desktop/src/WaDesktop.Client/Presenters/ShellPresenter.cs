@@ -70,6 +70,7 @@ namespace WaDesktop.Client.Presenters
             view.WabaVisible = auth.IsSuperAdmin;
             view.TemplatesVisible = !isAgent;
             view.BillingVisible = !isAgent;
+            view.AppSettingsVisible = auth.IsSuperAdmin;
             view.StatusText = $"Logged in as {_auth.DisplayName}";
 
             if (isAgent)

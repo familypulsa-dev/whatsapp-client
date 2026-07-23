@@ -14,6 +14,8 @@ namespace WaDesktop.Client.Views
 
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SidebarView));
             this.labelHeader = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -32,6 +34,7 @@ namespace WaDesktop.Client.Views
             this.lbMarketingCount = new System.Windows.Forms.Label();
             this.tbMarketingCount = new System.Windows.Forms.TextBox();
             this.btnSettingLimit = new System.Windows.Forms.Button();
+            this.imageList_0 = new System.Windows.Forms.ImageList(this.components);
             this.panel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -245,6 +248,24 @@ namespace WaDesktop.Client.Views
             this.btnSettingLimit.Text = "Setting Limit";
             this.btnSettingLimit.UseVisualStyleBackColor = true;
             // 
+            // imageList_0
+            // 
+            this.imageList_0.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList_0.ImageStream")));
+            this.imageList_0.TransparentColor = System.Drawing.Color.Fuchsia;
+            this.imageList_0.Images.SetKeyName(0, "Stop1Disabled_.png");
+            this.imageList_0.Images.SetKeyName(1, "Play.png");
+            this.imageList_0.Images.SetKeyName(2, "StepForwardNormalYellow_.png");
+            this.imageList_0.Images.SetKeyName(3, "Play1Normal_.png");
+            this.imageList_0.Images.SetKeyName(4, "connectedbusy.png");
+            this.imageList_0.Images.SetKeyName(5, "modems_.png");
+            this.imageList_0.Images.SetKeyName(6, "ym.png");
+            this.imageList_0.Images.SetKeyName(7, "class.png");
+            this.imageList_0.Images.SetKeyName(8, "center.png");
+            this.imageList_0.Images.SetKeyName(9, "sender.png");
+            this.imageList_0.Images.SetKeyName(10, "backgroundworker.png");
+            this.imageList_0.Images.SetKeyName(11, "messagequeue.png");
+            this.imageList_0.Images.SetKeyName(12, "yahoo.gif");
+            // 
             // SidebarView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -278,5 +299,6 @@ namespace WaDesktop.Client.Views
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label lbEstMaxBill;
         private System.Windows.Forms.Button btnSettingLimit;
+        private System.Windows.Forms.ImageList imageList_0;
     }
 }

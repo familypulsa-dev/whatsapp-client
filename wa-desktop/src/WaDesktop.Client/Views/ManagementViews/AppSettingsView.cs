@@ -36,6 +36,12 @@ namespace WaDesktop.Client.Views.ManagementViews
             set => this.InvokeIfRequired(() => txtVerifyToken.Text = value);
         }
 
+        public string WebhookBaseUrl
+        {
+            get => txtWebhookBaseUrl.Text;
+            set => this.InvokeIfRequired(() => txtWebhookBaseUrl.Text = value);
+        }
+
         public bool IsSaving
         {
             set
@@ -43,6 +49,7 @@ namespace WaDesktop.Client.Views.ManagementViews
                 this.InvokeIfRequired(() =>
                 {
                     btnSave.Enabled = !value;
+                    btnSetupWebhook.Enabled = !value;
                     Cursor = value ? Cursors.WaitCursor : Cursors.Default;
                 });
             }
@@ -50,6 +57,7 @@ namespace WaDesktop.Client.Views.ManagementViews
 
         public event EventHandler SaveClicked;
         public event EventHandler RefreshClicked;
+        public event EventHandler SetupWebhookClicked;
 
         public void ShowSuccess(string message) => MessageBox.Show(message, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         public void ShowWarning(string message) => MessageBox.Show(message, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -57,5 +65,6 @@ namespace WaDesktop.Client.Views.ManagementViews
 
         private void btnSave_Click(object sender, EventArgs e) => SaveClicked?.Invoke(this, EventArgs.Empty);
         private void btnRefresh_Click(object sender, EventArgs e) => RefreshClicked?.Invoke(this, EventArgs.Empty);
+        private void btnSetupWebhook_Click(object sender, EventArgs e) => SetupWebhookClicked?.Invoke(this, EventArgs.Empty);
     }
 }

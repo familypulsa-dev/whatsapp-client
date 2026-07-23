@@ -19,6 +19,7 @@ namespace WaDesktop.Client.Presenters
 
             _view.SaveClicked += async (s, e) => await SaveAsync();
             _view.RefreshClicked += async (s, e) => await LoadDataAsync();
+            _view.SetupWebhookClicked += async (s, e) => await SetupWebhookAsync();
         }
 
         public async void LoadData(string search = null) => await LoadDataAsync();
@@ -33,6 +34,7 @@ namespace WaDesktop.Client.Presenters
                 _view.AppId = settings.AppId;
                 _view.BusinessId = settings.BusinessId;
                 _view.VerifyToken = settings.VerifyToken;
+                _view.WebhookBaseUrl = settings.WebhookUrl;
             }
             catch (Exception ex)
             {
@@ -44,7 +46,7 @@ namespace WaDesktop.Client.Presenters
             }
         }
 
-        private async Task SaveAsync()
+        private async Task<bool> SaveAsync(bool silent = false)
         {
             _view.IsSaving = true;
             try
@@ -54,17 +56,58 @@ namespace WaDesktop.Client.Presenters
                     WabaToken = _view.WabaToken,
                     AppId = _view.AppId,
                     BusinessId = _view.BusinessId,
-                    VerifyToken = _view.VerifyToken
+                    VerifyToken = _view.VerifyToken,
+                    WebhookUrl = _view.WebhookBaseUrl
                 };
                 var warnings = await Task.Run(() => _api.SaveAppSettingsAsync(settings));
                 if (warnings != null && warnings.Any())
-                    _view.ShowWarning(string.Join("\n", warnings));
+                {
+                    if (!silent) _view.ShowWarning(string.Join("\n", warnings));
+                }
                 else
-                    _view.ShowSuccess("Settings saved.");
+                {
+                    if (!silent) _view.ShowSuccess("Settings saved.");
+                }
+                return true;
             }
             catch (Exception ex)
             {
-                _view.ShowError($"Gagal save: {ex.Message}");
+                if (!silent) _view.ShowError($"Gagal save: {ex.Message}");
+                return false;
+            }
+            finally
+            {
+                _view.IsSaving = false;
+            }
+        }
+
+        private async Task SetupWebhookAsync()
+        {
+            var baseUrl = _view.WebhookBaseUrl?.TrimEnd('/');
+            if (string.IsNullOrEmpty(baseUrl))
+            {
+                _view.ShowWarning("Base Webhook URL tidak boleh kosong.");
+                return;
+            }
+
+            // Simpan konfigurasi secara silent terlebih dahulu
+            var saved = await SaveAsync(silent: true);
+            if (!saved)
+            {
+                _view.ShowError("Gagal menyimpan konfigurasi. Proses setup webhook dibatalkan.");
+                return;
+            }
+
+            _view.IsSaving = true;
+            try
+            {
+                var fullUrl = baseUrl + "/api/v1/webhook";
+                await Task.Run(() => _api.SetupWebhookAsync(fullUrl));
+                _view.ShowSuccess("Pengaturan tersimpan permanen dan Webhook berhasil di-setup ke Meta!");
+            }
+            catch (Exception ex)
+            {
+                _view.ShowError($"Gagal setup webhook ke Meta: {ex.Message}");
             }
             finally
             {
@@ -78,6 +121,7 @@ namespace WaDesktop.Client.Presenters
             {
                 _view.SaveClicked -= null;
                 _view.RefreshClicked -= null;
+                _view.SetupWebhookClicked -= null;
                 _disposed = true;
             }
         }

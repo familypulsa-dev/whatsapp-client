@@ -6,5 +6,6 @@ namespace WaDesktop.Domain.Entities
         public string AppId { get; set; }
         public string BusinessId { get; set; }
         public string VerifyToken { get; set; }
+        public string WebhookUrl { get; set; }
     }
 }
