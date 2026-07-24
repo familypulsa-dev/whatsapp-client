@@ -37,6 +37,7 @@ namespace WaDesktop.Tests.PresenterTests
             public bool TemplatesVisible { get; set; }
             public bool PhoneNumbersVisible { get; set; }
             public bool WabaVisible { get; set; }
+            public bool BillingVisible { get; set; }
             public bool InvokeRequired => false;
             public event EventHandler MessagesClicked;
             public event EventHandler CompanyClicked;
@@ -44,6 +45,7 @@ namespace WaDesktop.Tests.PresenterTests
             public event EventHandler PhoneNumbersClicked;
             public event EventHandler WabaClicked;
             public event EventHandler TemplatesClicked;
+            public event EventHandler BillingClicked;
             public event EventHandler AppSettingsClicked;
             public event EventHandler LogoutClicked;
             public event EventHandler SoftwareUpdateClicked;
@@ -54,6 +56,9 @@ namespace WaDesktop.Tests.PresenterTests
             public void ClearTabs() { }
             public void ShowNotification(string title, string body) { }
             public void SetBadge(int count) { }
+            public void SetFooterVersion(string version) { }
+            public void SetFooterServerName(string name) { }
+            public void SetFooterTime(string time) { }
             public ISoftwareUpdateView CreateSoftwareUpdateView() => null;
             public bool ShowDialog(ISoftwareUpdateView view) => false;
             public void RenderSidebar(IViewBase sidebarContent) { }
