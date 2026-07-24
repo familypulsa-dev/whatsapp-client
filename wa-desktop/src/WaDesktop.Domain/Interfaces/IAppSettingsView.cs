@@ -6,9 +6,12 @@ namespace WaDesktop.Domain.Interfaces
     {
         string WabaToken { get; set; }
         string AppId { get; set; }
+        string AppSecret { get; set; }
         string BusinessId { get; set; }
         string VerifyToken { get; set; }
         string WebhookBaseUrl { get; set; }
+        bool MessageCleanupEnabled { get; set; }
+        int MessageRetentionDays { get; set; }
         bool IsSaving { set; }
 
         event EventHandler SaveClicked;

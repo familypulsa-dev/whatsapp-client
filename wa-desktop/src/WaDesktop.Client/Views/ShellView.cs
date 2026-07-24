@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using WaDesktop.Domain.Interfaces;
 using WaDesktop.Client.Extensions;
 using WaDesktop.Client.Helpers;
+using Shared.Views.Footer;
 
 namespace WaDesktop.Client.Views
 {
@@ -360,5 +361,9 @@ namespace WaDesktop.Client.Views
             // Matikan TopMost setelah aplikasi berhasil tampil di depan
             this.TopMost = false;
         }
+
+        public void SetFooterVersion(string version) => footerView1.SetVersion(version);
+        public void SetFooterServerName(string name) => footerView1.SetServerName(name);
+        public void SetFooterTime(string time) => footerView1.SetTimeServer(time);
     }
 }

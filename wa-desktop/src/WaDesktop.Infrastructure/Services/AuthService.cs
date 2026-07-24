@@ -36,6 +36,7 @@ namespace WaDesktop.Infrastructure.Services
             {
                 var result = await _api.LoginAsync(username, password);
                 _state.SetSession(result.AccessToken, result.RefreshToken, result.User.Role, result.User.DisplayName);
+                _state.CompanyName = result.CompanyName;
                 return true;
             }
             catch

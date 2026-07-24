@@ -42,7 +42,7 @@ export const useChatActions = ({
                                 setActiveConversation(existing);
                                 // setShowTemplateQuickAction(true);
                             } else {
-                                const selectedChannel = phoneNumbers.find(c => c.id === phoneNumberId);
+                                const selectedChannel = phoneNumbers.find(c => c.phone_number_id === phoneNumberId);
                                 const id = Guid.newGuid().toString();
                                 const tempConv: Conversation = {
                                     id: id,

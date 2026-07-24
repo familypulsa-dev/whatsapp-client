@@ -49,7 +49,7 @@ export const getPhoneNumbers = async (): Promise<ApiResponse<PhoneNumber[]>> => 
     try {
         const res = await get<ApiResponse<any[]>>('/api/v1/phone-numbers');
         const items: PhoneNumber[] = (res.data || []).map(p => ({
-            id: p.phone_number_id,
+            phone_number_id: p.phone_number_id,
             display_name: p.display_name || p.display_phone_number || 'WA Number',
             unread_count: p.unread_count || 0,
             display_phone_number: p.display_phone_number || '',

@@ -9,6 +9,7 @@ namespace WaDesktop.Domain.State
         public string RefreshToken { get; set; }
         public string Role { get; set; }
         public string DisplayName { get; set; }
+        public string CompanyName { get; set; }
         public bool IsLoggedIn => !string.IsNullOrEmpty(AccessToken);
         public bool IsSuperAdmin => Role == "super_admin";
 
@@ -26,6 +27,7 @@ namespace WaDesktop.Domain.State
             RefreshToken = null;
             Role = null;
             DisplayName = null;
+            CompanyName = null;
         }
     }
 }

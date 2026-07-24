@@ -72,6 +72,9 @@ export const useChatConnection = () => {
                     console.log('WS Event received [USER_TYPING]:', ev);
                     const {conversation_id, sender_name} = ev.data;
                     emitterRef.current.emit('UserTyping', conversation_id, sender_name);
+                }else if(payload.event_type === EventType.PHONE_NUMBER_UPDATE){
+                    console.log('WS Event received [PHONE_NUMBER_UPDATE]:', ev);
+                    emitterRef.current.emit('UpdatePhoneNumbers', payload.data);
                 }
             }
         });

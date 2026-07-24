@@ -16,8 +16,6 @@ namespace WaDesktop.Client.Views
         {
             InitializeComponent();
 
-            _phoneContextMenu = new ContextMenuStrip();
-            _phoneContextMenu.Items.Add("Refresh", null, (s, e) => RefreshRequested?.Invoke(this, EventArgs.Empty));
 
             components = components ?? new System.ComponentModel.Container();
             _refreshTimer = new Timer(components);
@@ -71,6 +69,34 @@ namespace WaDesktop.Client.Views
                 tbBillMeta.Text = company.CurrentCost.ToString("C2", idId);
                 tbMaxCost.Text = company.MetaCost.ToString("C2", idId);
                 textBox1.Text = company.MaxEstimatedCost.HasValue ? company.MaxEstimatedCost.Value.ToString("C2", idId) : "~";
+            });
+        }
+
+        public void UpdateWebhookStatus(bool isRunning, string message)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                treeView.ShowNodeToolTips = true; // Enable tooltips
+                
+                var nodeKey = "webhook_status";
+                TreeNode[] nodes = treeView.Nodes.Find(nodeKey, false);
+                TreeNode node;
+                if (nodes.Length > 0)
+                {
+                    node = nodes[0];
+                }
+                else
+                {
+                    node = new TreeNode { Name = nodeKey };
+                    treeView.Nodes.Insert(0, node); // Letakkan di paling atas
+                }
+
+                node.Text = isRunning ? "Webhook: Running" : "Webhook: Stopped / Error";
+                node.ToolTipText = message;
+                
+                // Gunakan "Play1Normal_.png" (index 3) dan "Stop1Disabled_.png" (index 0)
+                node.ImageKey = isRunning ? "Play1Normal_.png" : "Stop1Disabled_.png";
+                node.SelectedImageKey = node.ImageKey;
             });
         }
 

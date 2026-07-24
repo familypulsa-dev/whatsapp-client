@@ -55,12 +55,12 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             <Separator className="w-10 bg-slate-200" />
 
             {phoneNumbers.map(phoneNumber => (
-                <div key={phoneNumber.id} className="relative group">
+                <div key={phoneNumber.phone_number_id} className="relative group">
                     <Button
                         variant="ghost"
                         size="icon"
-                        className={`w-12 h-12 rounded-xl transition-all duration-200 ${activeAppId === phoneNumber.id ? 'bg-[#00a884] text-white rounded-lg' : 'bg-white text-slate-600 hover:bg-[#00a884] hover:text-white'}`}
-                        onClick={() => setActiveAppId(phoneNumber.id)}
+                        className={`w-12 h-12 rounded-xl transition-all duration-200 ${activeAppId === phoneNumber.phone_number_id ? 'bg-[#00a884] text-white rounded-lg' : 'bg-white text-slate-600 hover:bg-[#00a884] hover:text-white'}`}
+                        onClick={() => setActiveAppId(phoneNumber.phone_number_id)}
                         title={phoneNumber.display_name}
                     >
                         <span className="text-sm font-bold">{getInitials(phoneNumber.display_name)}</span>
@@ -70,7 +70,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                             {phoneNumber.unread_count > 99 ? '99+' : phoneNumber.unread_count}
                         </div>
                     )}
-                    {activeAppId === phoneNumber.id && (
+                    {activeAppId === phoneNumber.phone_number_id && (
                         <div className="absolute left-[-15px] top-1/2 -translate-y-1/2 w-1 h-8 bg-[#00a884] rounded-r-full" />
                     )}
                 </div>

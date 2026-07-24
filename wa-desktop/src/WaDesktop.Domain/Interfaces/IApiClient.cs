@@ -37,6 +37,7 @@ namespace WaDesktop.Domain.Interfaces
         Task<AppSetting> GetAppSettingsAsync();
         Task<List<string>> SaveAppSettingsAsync(AppSetting settings);
         Task SetupWebhookAsync(string callbackUrl);
+        Task<WebhookStatus> GetWebhookStatusAsync();
         Task<PhoneNumberDetail> GetPhoneDetailAsync(string phoneNumberId);
         Task<SavePhoneResult> SavePhoneDetailAsync(string phoneNumberId, string displayName, string description, string email, string about, string address, string vertical, List<string> websites);
         Task<PhoneNumberDetail> SyncPhoneProfileAsync(string phoneNumberId);
@@ -65,5 +66,7 @@ namespace WaDesktop.Domain.Interfaces
         public string RefreshToken { get; set; }
         [JsonProperty("user")]
         public User User { get; set; }
+        [JsonProperty("company_name")]
+        public string CompanyName { get; set; }
     }
 }

@@ -17,14 +17,14 @@ interface NewChatDialogProps {
 const NewChatDialog: React.FC<NewChatDialogProps> = ({ open, onOpenChange, onStartChat, phoneNumbers: phoneNumbers, defaultPhoneNumberId }) => {
     const [waId, setWaId] = useState('');
     const [name, setName] = useState('');
-    const [selectedPhoneNumberId, setSelectedPhoneNumberId] = useState<string>(defaultPhoneNumberId || (phoneNumbers[0]?.id || ''));
+    const [selectedPhoneNumberId, setSelectedPhoneNumberId] = useState<string>(defaultPhoneNumberId || (phoneNumbers[0]?.phone_number_id || ''));
 
     // Update selected channel when default changes or dialog opens
     React.useEffect(() => {
         if (open && defaultPhoneNumberId) {
             setSelectedPhoneNumberId(defaultPhoneNumberId);
         } else if (open && !selectedPhoneNumberId && phoneNumbers.length > 0) {
-            setSelectedPhoneNumberId(phoneNumbers[0].id);
+            setSelectedPhoneNumberId(phoneNumbers[0].phone_number_id);
         }
     }, [open, defaultPhoneNumberId, phoneNumbers]);
 
@@ -64,7 +64,7 @@ const NewChatDialog: React.FC<NewChatDialogProps> = ({ open, onOpenChange, onSta
                                 >
                                     {phoneNumbers
                                         .map(ch => (
-                                            <option key={ch.id} value={ch.id}>
+                                            <option key={ch.phone_number_id} value={ch.phone_number_id}>
                                                 {ch.display_name} ({ch.display_phone_number})
                                             </option>
                                         ))}

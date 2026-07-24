@@ -162,7 +162,7 @@ export interface MessageContent {
 }
 
 export interface PhoneNumber {
-    id: string ;
+    phone_number_id: string;
     display_name: string;
     display_phone_number: string;
     unread_count: number;

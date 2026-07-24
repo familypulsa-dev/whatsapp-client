@@ -9,7 +9,8 @@ namespace WaDesktop.Domain.Interfaces
         /// <summary>Set data tree dari WA Phone Numbers.</summary>
         void LoadPhoneNumbers(IList<PhoneNumberNode> nodes);
         void UpdateUsageSummary(Company company);
-        
+        void UpdateWebhookStatus(bool isRunning, string message);
+
         ILimitBillingView CreateLimitBillingView();
         bool ShowDialog(ILimitBillingView view);
 

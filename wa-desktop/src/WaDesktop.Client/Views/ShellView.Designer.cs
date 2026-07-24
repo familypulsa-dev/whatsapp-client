@@ -28,6 +28,7 @@ namespace WaDesktop.Client.Views
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShellView));
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.toolStripSystem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSoftwareUpdate = new System.Windows.Forms.ToolStripMenuItem();
@@ -122,19 +123,19 @@ namespace WaDesktop.Client.Views
             this.phoneNumbersToolStripMenuItem.Click += new System.EventHandler(this.phoneNumbersToolStripMenuItem_Click);
             // 
             // templatesToolStripMenuItem
-            //
+            // 
             this.templatesToolStripMenuItem.Name = "templatesToolStripMenuItem";
             this.templatesToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
             this.templatesToolStripMenuItem.Text = "Templates";
             this.templatesToolStripMenuItem.Click += new System.EventHandler(this.templatesToolStripMenuItem_Click);
-            //
+            // 
             // billingToolStripMenuItem
-            //
+            // 
             this.billingToolStripMenuItem.Name = "billingToolStripMenuItem";
             this.billingToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.billingToolStripMenuItem.Text = "Tagihan";
             this.billingToolStripMenuItem.Click += new System.EventHandler(this.billingToolStripMenuItem_Click);
-            //
+            // 
             // appSettingsToolStripMenuItem
             // 
             this.appSettingsToolStripMenuItem.Name = "appSettingsToolStripMenuItem";
@@ -213,6 +214,7 @@ namespace WaDesktop.Client.Views
             this.Controls.Add(this.splitContainer);
             this.Controls.Add(this.menuStrip);
             this.Controls.Add(this.footerView1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip;
             this.MinimumSize = new System.Drawing.Size(1439, 791);
             this.Name = "ShellView";

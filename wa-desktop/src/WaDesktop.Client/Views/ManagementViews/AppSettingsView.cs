@@ -24,6 +24,12 @@ namespace WaDesktop.Client.Views.ManagementViews
             set => this.InvokeIfRequired(() => txtAppId.Text = value);
         }
 
+        public string AppSecret
+        {
+            get => txtAppSecret.Text;
+            set => this.InvokeIfRequired(() => txtAppSecret.Text = value);
+        }
+
         public string BusinessId
         {
             get => txtBusinessId.Text;
@@ -40,6 +46,25 @@ namespace WaDesktop.Client.Views.ManagementViews
         {
             get => txtWebhookBaseUrl.Text;
             set => this.InvokeIfRequired(() => txtWebhookBaseUrl.Text = value);
+        }
+
+        public bool MessageCleanupEnabled
+        {
+            get => chkCleanupEnabled.Checked;
+            set => this.InvokeIfRequired(() => chkCleanupEnabled.Checked = value);
+        }
+
+        public int MessageRetentionDays
+        {
+            get => (int)numRetentionDays.Value;
+            set => this.InvokeIfRequired(() =>
+            {
+                if (value < (int)numRetentionDays.Minimum)
+                    value = (int)numRetentionDays.Minimum;
+                if (value > (int)numRetentionDays.Maximum)
+                    value = (int)numRetentionDays.Maximum;
+                numRetentionDays.Value = value;
+            });
         }
 
         public bool IsSaving

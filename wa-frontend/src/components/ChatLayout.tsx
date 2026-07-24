@@ -90,7 +90,7 @@ const ChatLayout: React.FC<ChatLayoutProps> = ({ user, enableLogin }) => {
     const { conversations, messageConversations, messageHasMore, setConversations, isLoading: isConvLoading, hasMoreConvs, isFetchingMoreConvs, handleLoadMoreConversations, fetchConvs, typingUsers } = useConversations({
         activeAppId, debouncedSearchTerm, convFilter, connection, activeConversation, setActiveConversation, user
     });
-    const { fetchPhoneNumbers ,phoneNumbers, totalUnread } = usePhoneNumber({conversations});
+    const { fetchPhoneNumbers ,phoneNumbers, totalUnread } = usePhoneNumber({connection});
     const { messages, setMessages, isLoading, hasMore: hasMoreMsg, isFetchingMore: isFetchingMoreMsg, handleLoadMore } = useMessages({
         activeConversation, debouncedMessageSearchTerm, connection, setConversations, setActiveConversation
     });
@@ -396,7 +396,7 @@ const ChatLayout: React.FC<ChatLayoutProps> = ({ user, enableLogin }) => {
                 onOpenChange={setIsNewChatDialogOpen}
                 onStartChat={initialChat}
                 phoneNumbers={phoneNumbers}
-                defaultPhoneNumberId={phoneNumbers.find(c => c.id === activeConversation?.phone_number_id)?.id}
+                defaultPhoneNumberId={phoneNumbers.find(c => c.phone_number_id === activeConversation?.phone_number_id)?.phone_number_id}
             />
 
             <Dialog open={isRenameDialogOpen} onOpenChange={setIsRenameDialogOpen}>

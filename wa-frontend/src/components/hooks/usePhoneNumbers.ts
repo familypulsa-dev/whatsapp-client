@@ -1,16 +1,16 @@
 import { getPhoneNumbers } from "@/services/chatService";
-import { Conversation, PhoneNumber } from "@/types/chat";
+import { PhoneNumber } from "@/types/chat";
 import { useEffect, useState } from "react";
 
 interface PhoneNumberProps {
-    conversations : Conversation[]
+    connection: any
 }
 
 export const usePhoneNumber = ({
-    conversations
+    connection
 }: PhoneNumberProps) => {
-      const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[]>([]); 
-      const [totalUnread, setTotalUnread] = useState(0);
+    const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[]>([]);
+    const [totalUnread, setTotalUnread] = useState(0);
 
     const fetchPhoneNumbers = async () => {
         try {
@@ -19,16 +19,45 @@ export const usePhoneNumber = ({
 
         } catch (error) { console.error("Initial fetch failed", error); }
     };
-    
+
     useEffect(() => {
-        phoneNumbers.map((phone) => {
-            const conversationUnreadCount = conversations.filter((c) => c.phone_number_id === phone.id).reduce((acc, c) => acc + (c.unread_count || 0), 0);
-            phone.unread_count = conversationUnreadCount;
-        })
+        const totalUnread = phoneNumbers.reduce((acc, app) => acc + (app.unread_count || 0), 0);
+        setTotalUnread(totalUnread);
+    }, [phoneNumbers, fetchPhoneNumbers]);
+
+    useEffect(() => {
+        connection.on("UpdatePhoneNumbers", handleUpdatePhoneNumbers);
+
+        return () => {
+            connection.off("UpdatePhoneNumbers", handleUpdatePhoneNumbers);
+        };
+    }, [connection]);
+
+
+    const handleUpdatePhoneNumbers = (conv: PhoneNumber[]) => {
+        setPhoneNumbers((prevPhoneNumbers) => {
+            // 1. Buat salinan dari state saat ini agar tidak mengubahnya langsung
+            const updated = [...prevPhoneNumbers];
+
+            conv.forEach((newPn) => {
+                // 2. Cari apakah ID sudah ada di dalam list
+                const index = updated.findIndex((pn) => pn.phone_number_id === newPn.phone_number_id);
+
+                if (index !== -1) {
+                    // 3. Jika ada, perbarui datanya
+                    updated[index] = newPn;
+                } else {
+                    // 4. Jika tidak ada, tambahkan data baru ke paling belakang
+                    updated.push(newPn);
+                }
+            });
+
+            return updated;
+        });
 
         const totalUnread = phoneNumbers.reduce((acc, app) => acc + (app.unread_count || 0), 0);
         setTotalUnread(totalUnread);
-    }, [phoneNumbers,fetchPhoneNumbers]);
+    }
 
     return {
         phoneNumbers,

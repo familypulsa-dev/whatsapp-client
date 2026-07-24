@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using WaDesktop.Client.Views;
 using WaDesktop.Client.Views.ManagementViews;
@@ -81,6 +83,18 @@ namespace WaDesktop.Client.Presenters
             {
                 OpenPhoneNumbers();
             }
+
+            // ── Footer: Version ──
+            var ver = Assembly.GetExecutingAssembly().GetName().Version;
+            _view.SetFooterVersion($"v {ver?.ToString(3) ?? "1.0.0"}");
+
+            // ── Footer: Server Name ──
+            _view.SetFooterServerName(_state.DisplayName + " - " + _state.CompanyName ?? "Unknown");
+
+            // ── Footer: DateTime ──
+            var timer = new Timer { Interval = 1000 };
+            timer.Tick += (s, e) => _view.SetFooterTime(DateTime.Now.ToString("dd/MM/yy HH:mm:ss"));
+            timer.Start();
         }
 
         private void OnRefreshTabMessage(RequestRefreshTabMessage message)
@@ -253,6 +267,7 @@ namespace WaDesktop.Client.Presenters
             if (loginView.ShowDialog() == DialogResult.OK)
             {
                 _view.StatusText = $"Logged in as {_auth.DisplayName}";
+                _view.SetFooterServerName(_state.DisplayName + " - " + _state.CompanyName ?? "Unknown");
                 OpenMessages();
             }
             else

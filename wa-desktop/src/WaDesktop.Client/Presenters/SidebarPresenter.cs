@@ -16,6 +16,7 @@ namespace WaDesktop.Client.Presenters
         private readonly IEventAggregator _bus;
         private Company _currentCompany;
         private bool _disposed;
+        private readonly System.Timers.Timer _webhookStatusTimer;
 
         public SidebarPresenter(ISidebarView view, IApiClient api, IEventAggregator bus)
         {
@@ -26,6 +27,23 @@ namespace WaDesktop.Client.Presenters
             _view.PhoneNumberSelected += OnPhoneNumberSelected;
             _view.RefreshRequested += OnRefreshRequested;
             _view.SettingLimitClicked += OnSettingLimitClicked;
+
+            _webhookStatusTimer = new System.Timers.Timer(15000); // 15 detik
+            _webhookStatusTimer.Elapsed += async (s, e) => await CheckWebhookStatusAsync();
+            _webhookStatusTimer.Start();
+        }
+
+        private async Task CheckWebhookStatusAsync()
+        {
+            try
+            {
+                var status = await Task.Run(() => _api.GetWebhookStatusAsync());
+                _view.UpdateWebhookStatus(status.IsRunning, status.Message);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to load webhook status: {ex.Message}");
+            }
         }
 
         public async Task LoadDataAsync()
@@ -38,6 +56,9 @@ namespace WaDesktop.Client.Presenters
 
                 _currentCompany = await Task.Run(() => _api.GetBillingAnalyticsAsync());
                 _view.UpdateUsageSummary(_currentCompany);
+
+                // Initial webhook status check
+                await CheckWebhookStatusAsync();
             }
             catch (Exception ex)
             {
@@ -88,6 +109,9 @@ namespace WaDesktop.Client.Presenters
         {
             if (!_disposed)
             {
+                _webhookStatusTimer?.Stop();
+                _webhookStatusTimer?.Dispose();
+
                 _view.PhoneNumberSelected -= OnPhoneNumberSelected;
                 _view.RefreshRequested -= OnRefreshRequested;
                 _view.SettingLimitClicked -= OnSettingLimitClicked;

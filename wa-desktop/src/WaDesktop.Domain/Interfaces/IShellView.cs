@@ -44,5 +44,9 @@ namespace WaDesktop.Domain.Interfaces
         ISoftwareUpdateView CreateSoftwareUpdateView();
         bool ShowDialog(ISoftwareUpdateView view);
         void RenderSidebar(IViewBase sidebarContent);
+
+        void SetFooterVersion(string version);
+        void SetFooterServerName(string name);
+        void SetFooterTime(string time);
     }
 }

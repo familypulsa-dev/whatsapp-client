@@ -32,9 +32,12 @@ namespace WaDesktop.Client.Presenters
                 var settings = await Task.Run(() => _api.GetAppSettingsAsync());
                 _view.WabaToken = settings.WabaToken;
                 _view.AppId = settings.AppId;
+                _view.AppSecret = settings.AppSecret;
                 _view.BusinessId = settings.BusinessId;
                 _view.VerifyToken = settings.VerifyToken;
                 _view.WebhookBaseUrl = settings.WebhookUrl;
+                _view.MessageCleanupEnabled = settings.MessageCleanupEnabled;
+                _view.MessageRetentionDays = settings.MessageRetentionDays;
             }
             catch (Exception ex)
             {
@@ -55,9 +58,12 @@ namespace WaDesktop.Client.Presenters
                 {
                     WabaToken = _view.WabaToken,
                     AppId = _view.AppId,
+                    AppSecret = _view.AppSecret,
                     BusinessId = _view.BusinessId,
                     VerifyToken = _view.VerifyToken,
-                    WebhookUrl = _view.WebhookBaseUrl
+                    WebhookUrl = _view.WebhookBaseUrl,
+                    MessageCleanupEnabled = _view.MessageCleanupEnabled,
+                    MessageRetentionDays = _view.MessageRetentionDays
                 };
                 var warnings = await Task.Run(() => _api.SaveAppSettingsAsync(settings));
                 if (warnings != null && warnings.Any())

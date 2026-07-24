@@ -35,6 +35,7 @@ namespace WaDesktop.Client.Views
             this.tbMarketingCount = new System.Windows.Forms.TextBox();
             this.btnSettingLimit = new System.Windows.Forms.Button();
             this.imageList_0 = new System.Windows.Forms.ImageList(this.components);
+            this.treeView = new System.Windows.Forms.TreeView();
             this.panel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -54,6 +55,7 @@ namespace WaDesktop.Client.Views
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.treeView);
             this.panel1.Controls.Add(this.tableLayoutPanel1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 43);
@@ -247,6 +249,20 @@ namespace WaDesktop.Client.Views
             this.btnSettingLimit.TabIndex = 15;
             this.btnSettingLimit.Text = "Setting Limit";
             this.btnSettingLimit.UseVisualStyleBackColor = true;
+                        // 
+            // treeView
+            // 
+            this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView.ImageIndex = 0;
+            this.treeView.ImageList = this.imageList_0;
+            this.treeView.Location = new System.Drawing.Point(0, 0);
+            this.treeView.Name = "treeView";
+            this.treeView.SelectedImageIndex = 0;
+            this.treeView.Size = new System.Drawing.Size(280, 489);
+            this.treeView.TabIndex = 2;
+            this.treeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.TreeView_NodeMouseClick);
+            this.treeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.TreeView_NodeMouseDoubleClick);
             // 
             // imageList_0
             // 
@@ -300,5 +316,6 @@ namespace WaDesktop.Client.Views
         private System.Windows.Forms.Label lbEstMaxBill;
         private System.Windows.Forms.Button btnSettingLimit;
         private System.Windows.Forms.ImageList imageList_0;
+        private System.Windows.Forms.TreeView treeView;
     }
 }

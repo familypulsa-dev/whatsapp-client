@@ -289,9 +289,12 @@ namespace WaDesktop.Infrastructure.Services
                 {
                     case "wa_waba_token":   setting.WabaToken = item.Value; break;
                     case "wa_app_id":       setting.AppId = item.Value; break;
+                    case "wa_app_secret":   setting.AppSecret = item.Value; break;
                     case "wa_bussiness_id": setting.BusinessId = item.Value; break;
                     case "wa_verify_token": setting.VerifyToken = item.Value; break;
                     case "wa_webhook_url":  setting.WebhookUrl = item.Value; break;
+                    case "wa_message_cleanup_enabled": setting.MessageCleanupEnabled = item.Value == "true"; break;
+                    case "wa_message_retention_days": setting.MessageRetentionDays = ParseRetentionDays(item.Value); break;
                 }
             }
             return setting;
@@ -302,9 +305,13 @@ namespace WaDesktop.Infrastructure.Services
             var payload = new Dictionary<string, string>();
             if (!string.IsNullOrEmpty(settings.WabaToken))   payload["wa_waba_token"] = settings.WabaToken;
             if (!string.IsNullOrEmpty(settings.AppId))       payload["wa_app_id"] = settings.AppId;
+            if (!string.IsNullOrEmpty(settings.AppSecret))   payload["wa_app_secret"] = settings.AppSecret;
             if (!string.IsNullOrEmpty(settings.BusinessId))  payload["wa_bussiness_id"] = settings.BusinessId;
             if (!string.IsNullOrEmpty(settings.VerifyToken)) payload["wa_verify_token"] = settings.VerifyToken;
             if (settings.WebhookUrl != null) payload["wa_webhook_url"] = settings.WebhookUrl; // Accept empty string to clear it
+
+            payload["wa_message_cleanup_enabled"] = settings.MessageCleanupEnabled ? "true" : "false";
+            payload["wa_message_retention_days"] = settings.MessageRetentionDays.ToString();
 
             var body = JsonConvert.SerializeObject(payload);
             var res = await SendWithRefreshAsync(() =>
@@ -333,6 +340,29 @@ namespace WaDesktop.Infrastructure.Services
             {
                 var err = await res.Content.ReadAsStringAsync();
                 throw new HttpRequestException($"Setup webhook failed ({res.StatusCode}): {err}");
+            }
+        }
+
+        public async Task<WebhookStatus> GetWebhookStatusAsync()
+        {
+            try
+            {
+                var json = await GetStringAsync("/api/v1/health");
+                var wrapper = JObject.Parse(json);
+                var data = wrapper["data"];
+                
+                var status = new WebhookStatus { IsRunning = false, Message = "Unknown error" };
+                if (data != null && data["webhook"] != null)
+                {
+                    var webhookData = data["webhook"];
+                    if (webhookData["is_running"] != null) status.IsRunning = webhookData["is_running"].Value<bool>();
+                    if (webhookData["message"] != null) status.Message = webhookData["message"].Value<string>();
+                }
+                return status;
+            }
+            catch (Exception ex)
+            {
+                return new WebhookStatus { IsRunning = false, Message = ex.Message };
             }
         }
 
@@ -604,6 +634,13 @@ namespace WaDesktop.Infrastructure.Services
             var wrapper = JObject.Parse(json);
             var data = wrapper["data"];
             return data != null ? data.ToObject<T>() : default;
+        }
+
+        private static int ParseRetentionDays(string value)
+        {
+            if (int.TryParse(value, out var days) && days >= 1)
+                return days;
+            return 90;
         }
     }
 }

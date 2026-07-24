@@ -4,13 +4,14 @@ export enum EventType {
     NEW_MESSAGE   = "NEW_MESSAGE",
     UPDATE_STATUS = "UPDATE_STATUS",
     CONVERSATION_UPDATE = "CONVERSATION_UPDATE",
+    PHONE_NUMBER_UPDATE = "PHONE_NUMBER_UPDATE",
     USER_TYPING = "USER_TYPING"
 }
 
 export interface WebsocketEvent{
     event_type: EventType;
     company_id: string;
-    data: PayloadNewMessage | StatusUpdatePayload | Conversation;
+    data: PayloadNewMessage | StatusUpdatePayload | PayloadUserTyping | PayloadConversationUpdate | PayloadPhoneNumberUpdate[];
 }
 
 export interface PayloadUserTyping{
@@ -44,4 +45,11 @@ export interface PayloadConversationUpdate{
     display_name: string;
     display_phone_number: string;
     is_template_required: boolean;
+}
+
+export interface PayloadPhoneNumberUpdate{
+    id: string ;
+    display_name: string;
+    display_phone_number: string;
+    unread_count: number;
 }
