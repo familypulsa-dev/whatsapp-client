@@ -24,6 +24,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.btnAdd = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnSync = new System.Windows.Forms.Button();
+            this.btnRegister = new System.Windows.Forms.Button();
             this.cmbWabaSync = new System.Windows.Forms.ComboBox();
             this.panelHeader = new System.Windows.Forms.Panel();
             this.panelFooter = new System.Windows.Forms.Panel();
@@ -32,6 +33,9 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgvNameStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgvCodeStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgvMetaStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             this.panelHeader.SuspendLayout();
             this.panelFooter.SuspendLayout();
@@ -47,7 +51,10 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dataGridViewTextBoxColumn1,
             this.dataGridViewTextBoxColumn2,
             this.dataGridViewTextBoxColumn3,
-            this.dataGridViewTextBoxColumn4});
+            this.dataGridViewTextBoxColumn4,
+            this.dgvNameStatus,
+            this.dgvCodeStatus,
+            this.dgvMetaStatus});
             this.dataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView.Location = new System.Drawing.Point(0, 33);
             this.dataGridView.Name = "dataGridView";
@@ -86,6 +93,17 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.btnAdd.UseVisualStyleBackColor = true;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             // 
+            // btnRegister
+            // 
+            this.btnRegister.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRegister.Location = new System.Drawing.Point(644, 4);
+            this.btnRegister.Name = "btnRegister";
+            this.btnRegister.Size = new System.Drawing.Size(75, 23);
+            this.btnRegister.TabIndex = 8;
+            this.btnRegister.Text = "Register";
+            this.btnRegister.UseVisualStyleBackColor = true;
+            this.btnRegister.Click += new System.EventHandler(this.btnRegister_Click);
+            // 
             // btnDelete
             // 
             this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -100,7 +118,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             // btnSync
             // 
             this.btnSync.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSync.Location = new System.Drawing.Point(644, 4);
+            this.btnSync.Location = new System.Drawing.Point(563, 4);
             this.btnSync.Name = "btnSync";
             this.btnSync.Size = new System.Drawing.Size(75, 23);
             this.btnSync.TabIndex = 7;
@@ -132,6 +150,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             // panelFooter
             // 
             this.panelFooter.Controls.Add(this.btnDelete);
+            this.panelFooter.Controls.Add(this.btnRegister);
             this.panelFooter.Controls.Add(this.btnAdd);
             this.panelFooter.Controls.Add(this.btnSync);
             this.panelFooter.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -171,6 +190,27 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
             this.dataGridViewTextBoxColumn4.ReadOnly = true;
             // 
+            // dgvNameStatus
+            // 
+            this.dgvNameStatus.HeaderText = "Nama";
+            this.dgvNameStatus.Name = "dgvNameStatus";
+            this.dgvNameStatus.ReadOnly = true;
+            this.dgvNameStatus.Width = 80;
+            // 
+            // dgvCodeStatus
+            // 
+            this.dgvCodeStatus.HeaderText = "Verifikasi";
+            this.dgvCodeStatus.Name = "dgvCodeStatus";
+            this.dgvCodeStatus.ReadOnly = true;
+            this.dgvCodeStatus.Width = 80;
+            // 
+            // dgvMetaStatus
+            // 
+            this.dgvMetaStatus.HeaderText = "Status";
+            this.dgvMetaStatus.Name = "dgvMetaStatus";
+            this.dgvMetaStatus.ReadOnly = true;
+            this.dgvMetaStatus.Width = 80;
+            // 
             // PhoneNumberView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -188,6 +228,7 @@ namespace WaDesktop.Client.Views.ManagementViews
 
         }
         private System.Windows.Forms.Button btnSync;
+        private System.Windows.Forms.Button btnRegister;
         private System.Windows.Forms.ComboBox cmbWabaSync;
         private System.Windows.Forms.Panel panelHeader;
         private System.Windows.Forms.Panel panelFooter;
@@ -196,5 +237,8 @@ namespace WaDesktop.Client.Views.ManagementViews
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgvNameStatus;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgvCodeStatus;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgvMetaStatus;
     }
 }

@@ -22,7 +22,8 @@ namespace WaDesktop.Client.Views.ManagementViews
                 {
                     dataGridView.Rows.Clear();
                     foreach (var p in value)
-                        dataGridView.Rows.Add(p.PhoneNumberId,p.DisplayPhone, p.DisplayName, p.QualityRating, p.CreatedAt);
+                        dataGridView.Rows.Add(p.PhoneNumberId, p.DisplayPhone, p.DisplayName, p.QualityRating, p.CreatedAt,
+                            FormatStatus(p.NameStatus), FormatStatus(p.CodeVerificationStatus), FormatStatus(p.MetaStatus));
                 });
             }
         }
@@ -38,6 +39,7 @@ namespace WaDesktop.Client.Views.ManagementViews
         public event EventHandler SaveClicked; // dummy for IManagementView constraint if any
         public event EventHandler SyncClicked;
         public event EventHandler<string> WabaFilterChanged;
+        public event EventHandler<string> RegisterClicked;
 
         // Dummy SaveClicked handler (tidak terpakai, tapi wajib ada jika IManagementView punya SaveClicked)
         private void btnSave_Click(object sender, EventArgs e) => SaveClicked?.Invoke(this, EventArgs.Empty);
@@ -88,6 +90,20 @@ namespace WaDesktop.Client.Views.ManagementViews
 
         private void btnSync_Click(object sender, EventArgs e) => SyncClicked?.Invoke(this, EventArgs.Empty);
 
+        private void btnRegister_Click(object sender, EventArgs e)
+        {
+            if (dataGridView.SelectedRows.Count > 0)
+            {
+                var phoneId = dataGridView.SelectedRows[0].Cells[0].Value?.ToString();
+                if (!string.IsNullOrEmpty(phoneId))
+                    RegisterClicked?.Invoke(this, phoneId);
+            }
+            else
+            {
+                MessageBox.Show("Pilih nomor telepon yang ingin dilanjutkan registrasinya.", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
         private void btnSearch_Click(object sender, EventArgs e) => SearchClicked?.Invoke(this, txtSearch.Text);
         private void btnRefresh_Click(object sender, EventArgs e) => RefreshClicked?.Invoke(this, EventArgs.Empty);
         private void btnAdd_Click(object sender, EventArgs e) => AddClicked?.Invoke(this, EventArgs.Empty);
@@ -103,5 +119,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             if (!string.IsNullOrEmpty(phoneId))
                 EditClicked?.Invoke(this, phoneId);
         }
+
+        private static string FormatStatus(string s) => string.IsNullOrEmpty(s) ? "-" : s;
     }
 }

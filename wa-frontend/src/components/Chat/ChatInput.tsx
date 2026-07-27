@@ -72,7 +72,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
             <div className="flex items-end gap-3">
                 <div className="flex items-center gap-1 mb-1">
-                    <input type="file" className="hidden" ref={fileInputRef} onChange={handleFileSelect} />
+                    <input type="file" className="hidden" ref={fileInputRef} onChange={handleFileSelect} accept="audio/aac,audio/mp4,audio/mpeg,audio/amr,audio/ogg,audio/opus,application/vnd.ms-powerpoint,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/pdf,text/plain,application/vnd.ms-excel,image/jpeg,image/png,image/webp,video/mp4,video/3gpp" />
                     <Button
                         variant="ghost"
                         size="icon"

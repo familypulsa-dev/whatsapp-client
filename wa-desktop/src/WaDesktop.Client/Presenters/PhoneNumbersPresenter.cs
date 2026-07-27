@@ -6,6 +6,7 @@ using WaDesktop.Domain.Entities;
 using WaDesktop.Domain.Messages;
 using System.Collections.Generic;
 
+using WaDesktop.Client.Views;
 using WaDesktop.Client.Views.ManagementViews;
 using System.Linq;
 
@@ -37,6 +38,7 @@ namespace WaDesktop.Client.Presenters
             {
                 _realView.SyncClicked += OnSync;
                 _realView.WabaFilterChanged += OnWabaFilterChanged;
+                _realView.RegisterClicked += OnRegister;
             }
         }
 
@@ -112,7 +114,20 @@ namespace WaDesktop.Client.Presenters
 
         private void OnAdd(object sender, EventArgs e)
         {
-            MessageBox.Show("Tambah Nomor Telepon — implement form dialog jika diperlukan.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            var wabaId = _realView?.SelectedWabaForSyncId;
+            if (string.IsNullOrEmpty(wabaId))
+            {
+                MessageBox.Show("Silakan pilih WABA terlebih dahulu.", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var dialog = new PhoneRegistrationDialog(_api, wabaId);
+            var form = _view as System.Windows.Forms.Control;
+            var parent = form?.FindForm();
+            if (dialog.ShowDialog(parent) == DialogResult.OK)
+            {
+                _ = LoadDataAsync();
+            }
         }
 
         private void OnSync(object sender, EventArgs e)
@@ -164,6 +179,24 @@ namespace WaDesktop.Client.Presenters
             MessageBox.Show("Delete phone number — implement API call if needed.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        private void OnRegister(object sender, string phoneId)
+        {
+            var wabaId = _realView?.SelectedWabaForSyncId;
+            if (string.IsNullOrEmpty(wabaId))
+            {
+                MessageBox.Show("Silakan pilih WABA terlebih dahulu.", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var dialog = new PhoneRegistrationDialog(_api, wabaId, phoneId);
+            var form = _view as System.Windows.Forms.Control;
+            var parent = form?.FindForm();
+            if (dialog.ShowDialog(parent) == DialogResult.OK)
+            {
+                _ = LoadDataAsync();
+            }
+        }
+
         public void Dispose()
         {
             if (!_disposed)
@@ -178,6 +211,7 @@ namespace WaDesktop.Client.Presenters
                 {
                     _realView.SyncClicked -= OnSync;
                     _realView.WabaFilterChanged -= OnWabaFilterChanged;
+                    _realView.RegisterClicked -= OnRegister;
                 }
 
                 _disposed = true;

@@ -16,6 +16,14 @@ namespace WaDesktop.Domain.Entities
         public string DisplayPhone { get; set; }
         [JsonProperty("quality_rating")]
         public string QualityRating { get; set; }
+        [JsonProperty("name_status")]
+        public string NameStatus { get; set; }
+        [JsonProperty("code_verification_status")]
+        public string CodeVerificationStatus { get; set; }
+        [JsonProperty("meta_status")]
+        public string MetaStatus { get; set; }
+        [JsonProperty("pin_enabled")]
+        public bool PinEnabled { get; set; }
         [JsonProperty("description")]
         public string Description { get; set; }
         [JsonProperty("email")]

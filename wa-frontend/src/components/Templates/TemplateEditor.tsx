@@ -323,7 +323,7 @@ export default function TemplateEditor() {
         <div className="flex items-center gap-2">
           <Button variant="ghost" onClick={() => {
             handleOpenModule('templates');
-            handleCloseModule('templatedetail_' + id);
+            handleCloseModule('template_detail_' + id);
           }}>
             Batal
           </Button>
@@ -405,7 +405,7 @@ export default function TemplateEditor() {
             {/* Auth */}
             {isAuth && (
               <div>
-                <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Kedaluwarsa (Menit)</label>
+                <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Kedaluwarsa (Detik)</label>
                 <input
                   type="number"
                   className="w-20 h-6 px-2 text-xs border rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-[#00a884]/20 border-slate-200"

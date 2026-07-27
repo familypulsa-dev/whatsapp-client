@@ -471,6 +471,67 @@ namespace WaDesktop.Infrastructure.Services
             }
         }
 
+        // ── Phone Registration Flow ──
+
+        public async Task<CreatePhoneNumberResponse> CreatePhoneNumberAsync(string wabaId, CreatePhoneNumberRequest req)
+        {
+            var body = JsonConvert.SerializeObject(req);
+            var res = await SendWithRefreshAsync(() =>
+                _http.PostAsync($"{_baseUrl}/api/v1/wabas/{wabaId}/phone-numbers",
+                    new StringContent(body, Encoding.UTF8, "application/json")));
+
+            if (!res.IsSuccessStatusCode)
+            {
+                var err = await res.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Create phone number failed ({res.StatusCode}): {err}");
+            }
+
+            var json = await res.Content.ReadAsStringAsync();
+            return UnwrapData<CreatePhoneNumberResponse>(json);
+        }
+
+        public async Task RequestVerificationCodeAsync(string phoneNumberId, RequestCodeRequest req)
+        {
+            var body = JsonConvert.SerializeObject(req);
+            var res = await SendWithRefreshAsync(() =>
+                _http.PostAsync($"{_baseUrl}/api/v1/phone-numbers/{phoneNumberId}/request-code",
+                    new StringContent(body, Encoding.UTF8, "application/json")));
+
+            if (!res.IsSuccessStatusCode)
+            {
+                var err = await res.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Request code failed ({res.StatusCode}): {err}");
+            }
+        }
+
+        public async Task VerifyCodeAsync(string phoneNumberId, VerifyCodeRequest req)
+        {
+            var body = JsonConvert.SerializeObject(req);
+            var res = await SendWithRefreshAsync(() =>
+                _http.PostAsync($"{_baseUrl}/api/v1/phone-numbers/{phoneNumberId}/verify-code",
+                    new StringContent(body, Encoding.UTF8, "application/json")));
+
+            if (!res.IsSuccessStatusCode)
+            {
+                var err = await res.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Verify code failed ({res.StatusCode}): {err}");
+            }
+        }
+
+        public async Task RegisterPhoneAsync(string phoneNumberId, RegisterPhoneRequest req)
+        {
+            var body = JsonConvert.SerializeObject(req);
+            var res = await SendWithRefreshAsync(() =>
+                _http.PostAsync($"{_baseUrl}/api/v1/phone-numbers/{phoneNumberId}/register",
+                    new StringContent(body, Encoding.UTF8, "application/json")));
+
+            if (!res.IsSuccessStatusCode)
+            {
+                var err = await res.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Register phone failed ({res.StatusCode}): {err}");
+            }
+        }
+
         public async Task<PhoneNumberDetail> UploadPhonePictureAsync(string phoneNumberId, string filePath)
         {
             var bytes = System.IO.File.ReadAllBytes(filePath);

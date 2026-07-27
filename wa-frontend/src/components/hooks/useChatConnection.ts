@@ -55,25 +55,17 @@ export const useChatConnection = () => {
         useWS.setState({
             onEvent: (ev: any) => {
                 const payload: WebsocketEvent = ev;
-
-                console.log('WS Event received:', ev);
                 if (ev.event_type === EventType.NEW_MESSAGE) {
-                    console.log('WS Event received [NEW_MESSAGE]:', ev);
                     emitterRef.current.emit('ReceiveMessage', payload.data);
                 }else if (payload.event_type === EventType.UPDATE_STATUS) {
-                    console.log('WS Event received [UPDATE_STATUS]:', ev);
                     emitterRef.current.emit('MessageStatusUpdated', payload.data);
                 }
                 else if (payload.event_type === EventType.CONVERSATION_UPDATE) {
-                    console.log('WS Event received [CONVERSATION_UPDATE]:', ev);
                     emitterRef.current.emit('UpdateConversation', payload.data);
                 }else if(payload.event_type === EventType.USER_TYPING){
-                    // conversation_id and sender_name
-                    console.log('WS Event received [USER_TYPING]:', ev);
                     const {conversation_id, sender_name} = ev.data;
                     emitterRef.current.emit('UserTyping', conversation_id, sender_name);
                 }else if(payload.event_type === EventType.PHONE_NUMBER_UPDATE){
-                    console.log('WS Event received [PHONE_NUMBER_UPDATE]:', ev);
                     emitterRef.current.emit('UpdatePhoneNumbers', payload.data);
                 }
             }

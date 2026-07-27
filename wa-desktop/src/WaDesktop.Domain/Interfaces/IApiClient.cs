@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using WaDesktop.Domain.Entities;
 using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 namespace WaDesktop.Domain.Interfaces
 {
@@ -48,6 +49,12 @@ namespace WaDesktop.Domain.Interfaces
         Task SyncWabasFromMetaAsync();
         Task<byte[]> GetPhoneProfilePictureAsync(string url);
         Task<List<WaWabaUsageSummary>> GetBillingSummaryAsync(DateTime? start = null, DateTime? end = null, string wabaId = null);
+
+        // ── Phone Number Registration Flow ──
+        Task<CreatePhoneNumberResponse> CreatePhoneNumberAsync(string wabaId, CreatePhoneNumberRequest req);
+        Task RequestVerificationCodeAsync(string phoneNumberId, RequestCodeRequest req);
+        Task VerifyCodeAsync(string phoneNumberId, VerifyCodeRequest req);
+        Task RegisterPhoneAsync(string phoneNumberId, RegisterPhoneRequest req);
     }
 
     public class SavePhoneResult

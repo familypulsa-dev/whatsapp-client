@@ -87,14 +87,14 @@ const ChatLayout: React.FC<ChatLayoutProps> = ({ user, enableLogin }) => {
     // --- Hooks Integration ---
     const { connectionStatus, connection, handleRetryConnection, handleFindServer } = useChatConnection();
     
+    const { handleCopy,handleDownload,handleResendMessage,handleOpenModule,handleSetBadge,handleShowNotif } = useExternalActions();
     const { conversations, messageConversations, messageHasMore, setConversations, isLoading: isConvLoading, hasMoreConvs, isFetchingMoreConvs, handleLoadMoreConversations, fetchConvs, typingUsers } = useConversations({
-        activeAppId, debouncedSearchTerm, convFilter, connection, activeConversation, setActiveConversation, user
+        activeAppId, debouncedSearchTerm, convFilter, connection, activeConversation, setActiveConversation, user,handleShowNotif
     });
     const { fetchPhoneNumbers ,phoneNumbers, totalUnread } = usePhoneNumber({connection});
     const { messages, setMessages, isLoading, hasMore: hasMoreMsg, isFetchingMore: isFetchingMoreMsg, handleLoadMore } = useMessages({
         activeConversation, debouncedMessageSearchTerm, connection, setConversations, setActiveConversation
     });
-    const { handleCopy,handleDownload,handleResendMessage,handleOpenModule,handleSetBadge } = useExternalActions();
     const { handleGlobalRefresh } =  useGlobal({
         fetchConversations : fetchConvs,
         fetchPhoneNumbers,
@@ -176,39 +176,6 @@ const ChatLayout: React.FC<ChatLayoutProps> = ({ user, enableLogin }) => {
         }
     }, []);
 
-    // Listen for messages from WinForms bridge
-    useEffect(() => {
-        if (!(window as any).chrome?.webview) return;
-
-        const handleMessage = (event: any) => {
-            const msg = event.data;
-            if (msg.type === 'RESEND_MEDIA_DATA') {
-                const { base64, message_type, file_name, content_type } = msg;
-
-                // Base64 to Blob
-                const byteCharacters = atob(base64);
-                const byteNumbers = new Array(byteCharacters.length);
-                for (let i = 0; i < byteCharacters.length; i++) {
-                    byteNumbers[i] = byteCharacters.charCodeAt(i);
-                }
-                const byteArray = new Uint8Array(byteNumbers);
-                const blob = new Blob([byteArray], { type: content_type });
-
-                // Blob to File
-                const file = new File([blob], file_name, { type: content_type });
-                const previewUrl = URL.createObjectURL(file);
-
-                setPendingMedia({
-                    file,
-                    previewUrl,
-                    type: message_type
-                });
-            }
-        };
-
-        (window as any).chrome.webview.addEventListener('message', handleMessage);
-        return () => (window as any).chrome.webview.removeEventListener('message', handleMessage);
-    }, []);
 
     // Typing Indicator
     useEffect(() => {
@@ -235,10 +202,31 @@ const ChatLayout: React.FC<ChatLayoutProps> = ({ user, enableLogin }) => {
         }
     };
 
+    const ALLOWED_MIME_TYPES = [
+        'audio/aac', 'audio/mp4', 'audio/mpeg', 'audio/amr', 'audio/ogg', 'audio/opus',
+        'application/vnd.ms-powerpoint', 'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/pdf', 'text/plain', 'application/vnd.ms-excel',
+        'image/jpeg', 'image/png', 'image/webp',
+        'video/mp4', 'video/3gpp',
+    ];
+
+    const MAX_FILE_MB = 10;
+    const MAX_FILE_SIZE = MAX_FILE_MB * 1024 * 1024; // 10MB
 
     const handleFiles = (files: FileList | File[] | null) => {
         const file = files?.[0];
         if (!file) return;
+        if (file.size > MAX_FILE_SIZE) {
+            handleShowNotif('Ukuran File Terlalu Besar', `Maksimal ${MAX_FILE_MB} MB`);
+            return;
+        }
+        if (!file.type || !ALLOWED_MIME_TYPES.includes(file.type)) {
+            handleShowNotif('Tipe File Tidak Didukung', 'File yang didukung (jpg,png,pdf,doc,etc..)');
+            return;
+        }
         const type = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : file.type.startsWith('audio/') ? 'audio' : 'document';
         setPendingMedia({ file, previewUrl: URL.createObjectURL(file), type });
     };

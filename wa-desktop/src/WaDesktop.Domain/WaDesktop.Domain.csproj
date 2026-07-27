@@ -37,6 +37,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\PhoneRegistration.cs" />
     <Compile Include="Entities\Waba.cs" />
     <Compile Include="Entities\WaWabaUsageSummary.cs" />
     <Compile Include="Entities\WebhookStatus.cs" />

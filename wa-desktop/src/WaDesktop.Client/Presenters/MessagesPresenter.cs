@@ -144,6 +144,7 @@ namespace WaDesktop.Client.Presenters
                         int count = msg.TryGetValue("count", out var countToken) ? countToken.Value<int>() : 0;
                         _bus.Publish(new SetBadgeMessage(count));
                         break;
+
                 }
             }
             catch

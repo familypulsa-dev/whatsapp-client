@@ -12,6 +12,7 @@ interface UseConversationsProps {
     connection: any;
     activeConversation: Conversation | null;
     setActiveConversation: (conv: Conversation | null) => void;
+    handleShowNotif : (title: string, msg: string) => void
 }
 
 export const useConversations = ({
@@ -22,6 +23,7 @@ export const useConversations = ({
     connection, 
     activeConversation,
     setActiveConversation,
+    handleShowNotif
 }: UseConversationsProps) => {
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [messageConversations, setMessageConversations] = useState<Conversation[]>([]);
@@ -106,7 +108,8 @@ export const useConversations = ({
             var res: Conversation = conv;
             // fetchPhoneNumbers();
 
-            // if (activeAppIdRef.current !== null && conv.app_id !== activeAppIdRef.current) return;
+            console.log('activeAppId', activeAppIdRef.current, 'conv', conv.id, 'res', res.id);
+            if (activeAppIdRef.current !== null && res.phone_number_id !== activeAppIdRef.current) return;
 
             if (convFilterRef.current === 'read' && res.unread_count > 0) return;
 
@@ -133,7 +136,7 @@ export const useConversations = ({
 
         const handleReceiveMessage = (message: any) => {
             const chatMsg = message as Bubble;
-            if (activeAppIdRef.current !== null && chatMsg.phone_number_id !== activeAppIdRef.current) return;
+            // if (activeAppIdRef.current !== null && chatMsg.phone_number_id !== activeAppIdRef.current) return;
 
              // Cek INBOUND + kirim notification DI LUAR setConversations
             let shouldNotify = false;
@@ -170,14 +173,7 @@ export const useConversations = ({
 
                     if (chatMsg.direction === 'inbound') {
 
-                        // Simpan info buat notif, jangan postMessage di sini
-                        if (!shouldNotify && (window as any).chrome?.webview) {
-                            (window as any).chrome.webview.postMessage({
-                                type: 'SHOW_NOTIFICATION',
-                                title: conv.custom_name,
-                                message: preview || 'Pesan baru'
-                            });
-                        }
+                        handleShowNotif(conv.custom_name, preview || 'Pesan baru');
                         shouldNotify = true;
                         
 
