@@ -306,7 +306,7 @@ namespace WaDesktop.Infrastructure.Services
             if (!string.IsNullOrEmpty(settings.WabaToken))   payload["wa_waba_token"] = settings.WabaToken;
             if (!string.IsNullOrEmpty(settings.AppId))       payload["wa_app_id"] = settings.AppId;
             if (!string.IsNullOrEmpty(settings.AppSecret))   payload["wa_app_secret"] = settings.AppSecret;
-            if (!string.IsNullOrEmpty(settings.BusinessId))  payload["wa_bussiness_id"] = settings.BusinessId;
+            if (!string.IsNullOrEmpty(settings.BusinessId))  payload["wa_business_id"] = settings.BusinessId;
             if (!string.IsNullOrEmpty(settings.VerifyToken)) payload["wa_verify_token"] = settings.VerifyToken;
             if (settings.WebhookUrl != null) payload["wa_webhook_url"] = settings.WebhookUrl; // Accept empty string to clear it
 

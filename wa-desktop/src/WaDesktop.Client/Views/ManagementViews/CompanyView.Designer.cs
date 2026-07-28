@@ -24,10 +24,14 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.btnRefresh = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
             this.panelToolbar = new System.Windows.Forms.Panel();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panelFooter = new System.Windows.Forms.Panel();
+            this.IdServer = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.LimitMarketing = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.LimitUtility = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.LimitAuthentication = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.LimitService = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             this.panelToolbar.SuspendLayout();
             this.panelFooter.SuspendLayout();
@@ -37,8 +41,12 @@ namespace WaDesktop.Client.Views.ManagementViews
             // 
             this.dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dataGridViewTextBoxColumn1,
-            this.dataGridViewTextBoxColumn2,
+            this.IdServer,
+            this.dgName,
+            this.LimitMarketing,
+            this.LimitUtility,
+            this.LimitAuthentication,
+            this.LimitService,
             this.dataGridViewTextBoxColumn3});
             this.dataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
@@ -102,21 +110,6 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.panelToolbar.Size = new System.Drawing.Size(1000, 40);
             this.panelToolbar.TabIndex = 1;
             // 
-            // dataGridViewTextBoxColumn1
-            // 
-            this.dataGridViewTextBoxColumn1.HeaderText = "ID";
-            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            // 
-            // dataGridViewTextBoxColumn2
-            // 
-            this.dataGridViewTextBoxColumn2.HeaderText = "Name";
-            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-            // 
-            // dataGridViewTextBoxColumn3
-            // 
-            this.dataGridViewTextBoxColumn3.HeaderText = "Created At";
-            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
-            // 
             // panelFooter
             // 
             this.panelFooter.Controls.Add(this.btnSave);
@@ -126,6 +119,47 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.panelFooter.Name = "panelFooter";
             this.panelFooter.Size = new System.Drawing.Size(1000, 29);
             this.panelFooter.TabIndex = 2;
+            // 
+            // IdServer
+            // 
+            this.IdServer.DataPropertyName = "IdServer";
+            this.IdServer.HeaderText = "ID";
+            this.IdServer.Name = "IdServer";
+            // 
+            // dgName
+            // 
+            this.dgName.DataPropertyName = "Name";
+            this.dgName.HeaderText = "Name";
+            this.dgName.Name = "dgName";
+            // 
+            // LimitMarketing
+            // 
+            this.LimitMarketing.DataPropertyName = "LimitMarketing";
+            this.LimitMarketing.HeaderText = "Limit Marketing";
+            this.LimitMarketing.Name = "LimitMarketing";
+            // 
+            // LimitUtility
+            // 
+            this.LimitUtility.DataPropertyName = "LimitUtility";
+            this.LimitUtility.HeaderText = "Limit Utilitas";
+            this.LimitUtility.Name = "LimitUtility";
+            // 
+            // LimitAuthentication
+            // 
+            this.LimitAuthentication.DataPropertyName = "LimitAuthentication";
+            this.LimitAuthentication.HeaderText = "Limit Autentikasi";
+            this.LimitAuthentication.Name = "LimitAuthentication";
+            // 
+            // LimitService
+            // 
+            this.LimitService.DataPropertyName = "LimitService";
+            this.LimitService.HeaderText = "Limit Service";
+            this.LimitService.Name = "LimitService";
+            // 
+            // dataGridViewTextBoxColumn3
+            // 
+            this.dataGridViewTextBoxColumn3.HeaderText = "Created At";
+            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
             // 
             // CompanyView
             // 
@@ -143,10 +177,13 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.ResumeLayout(false);
 
         }
-
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private System.Windows.Forms.Panel panelFooter;
+        private System.Windows.Forms.DataGridViewTextBoxColumn IdServer;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn LimitMarketing;
+        private System.Windows.Forms.DataGridViewTextBoxColumn LimitUtility;
+        private System.Windows.Forms.DataGridViewTextBoxColumn LimitAuthentication;
+        private System.Windows.Forms.DataGridViewTextBoxColumn LimitService;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
     }
 }

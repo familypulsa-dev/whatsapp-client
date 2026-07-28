@@ -99,11 +99,11 @@ namespace WaDesktop.Client.Views.ManagementViews
                         return null;
                     }
 
-                    var idCell = row.Cells["Id"].Value?.ToString() ?? "";
+                    var idCell = row.Cells["IdServer"].Value?.ToString() ?? "";
                     list.Add(new Company
                     {
                         Id = idCell,
-                        Name = row.Cells["Name"].Value?.ToString() ?? "",
+                        Name = row.Cells["dgName"].Value?.ToString() ?? "",
                         LimitMarketing = ParseInt(row.Cells["LimitMarketing"].Value),
                         LimitUtility = ParseInt(row.Cells["LimitUtility"].Value),
                         LimitAuthentication = ParseInt(row.Cells["LimitAuthentication"].Value),

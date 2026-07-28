@@ -9,7 +9,7 @@ function getBase(): string {
     return (window as any).__API_BASE__
   }
 
-  return "http://localhost:8080"
+  return "https://waba.mbi-software.com"
 
   return ""
 }

@@ -1,7 +1,7 @@
 
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { Search, LayoutGrid, Clock, X, RefreshCw, ChevronRight, ChevronsDown } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -323,8 +323,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                     <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-50/30">
                         <div className="text-center space-y-4">
                             <div className="w-24 h-24 bg-[#00a884]/10 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-indigo-100">
-                                <Avatar className="w-16 h-16 rounded-full">
-                                    <AvatarFallback className="bg-white text-[#00a884] font-bold text-2xl">WC</AvatarFallback>
+                                <Avatar className="w-32 h-32 rounded-full"  >
+                                    <AvatarImage src="/images/icon.png" alt="Whatsapp Client"/>
                                 </Avatar>
                             </div>
                             <h2 className="text-2xl font-bold text-slate-800">Whatsapp Client</h2>
