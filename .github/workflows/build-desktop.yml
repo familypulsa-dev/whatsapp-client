@@ -78,9 +78,15 @@ jobs:
           "@ | Out-File -FilePath "$dir/AssemblyInfo.cs" -Encoding utf8
 
       # 5. Compile App
+           # 5a. Lakukan Restore secara bersih untuk seluruh Solution terlebih dahulu
+      - name: Restore Project Dependencies
+        working-directory: wa-desktop
+        run: dotnet restore WaDesktop.sln
+
+      # 5b. Compile proyek utama dengan mematikan fungsi restore bawaan (--no-restore)
       - name: Build (Release)
         working-directory: wa-desktop
-        run: dotnet build src/WaDesktop.Client/WaDesktop.Client.csproj --configuration Release -p:AssemblyName="WhatsApp Client"
+        run: dotnet build src/WaDesktop.Client/WaDesktop.Client.csproj --configuration Release --no-restore -p:AssemblyName="WhatsApp Client"
 
       # 6. Velopack Packaging
       - name: Pack with Velopack
