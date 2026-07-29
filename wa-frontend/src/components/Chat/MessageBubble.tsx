@@ -174,15 +174,16 @@ const MessageBubble = React.memo(function MessageBubble({
                                     <Info className={cn("w-3.5 h-3.5", showErrorInfo ? "text-red-500" : "text-slate-500")} />
                                 </Button>
                                 {msg.message_type !== 'template' && (
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="w-7 h-7 rounded-full bg-white/80 backdrop-blur-sm shadow-sm border border-slate-200 hover:bg-slate-50 transition-colors"
-                                        onClick={() => onResend(msg)}
-                                        title="Kirim Ulang"
-                                    >
-                                        <RotateCw className="w-3.5 h-3.5 text-slate-500" />
-                                    </Button>
+                                    <></>
+                                    // <Button
+                                    //     variant="ghost"
+                                    //     size="icon"
+                                    //     className="w-7 h-7 rounded-full bg-white/80 backdrop-blur-sm shadow-sm border border-slate-200 hover:bg-slate-50 transition-colors"
+                                    //     onClick={() => onResend(msg)}
+                                    //     title="Kirim Ulang"
+                                    // >
+                                    //     <RotateCw className="w-3.5 h-3.5 text-slate-500" />
+                                    // </Button>
                                 )}
                             </>
                         )}

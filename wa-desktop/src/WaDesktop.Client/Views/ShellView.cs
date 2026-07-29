@@ -26,7 +26,7 @@ namespace WaDesktop.Client.Views
                 ?.SetValue(tabWorkspace, true, null);
 
             // Memaksa form menjadi yang paling depan saat dibuka
-            this.TopMost = true;
+            //this.TopMost = true;
         }
 
         // ── IShellView ──

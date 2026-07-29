@@ -11,7 +11,7 @@ namespace WaDesktop.Client.Views
             InitializeComponent();
 
             // Memaksa form menjadi yang paling depan saat dibuka
-            this.TopMost = true;
+            //this.TopMost = true;
         }
 
         public string Username => txtUsername.Text.Trim();

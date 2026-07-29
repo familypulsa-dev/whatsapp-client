@@ -422,7 +422,7 @@ const ChatLayout: React.FC<ChatLayoutProps> = ({ user, enableLogin }) => {
                         onClick={(e) => {
                             e.stopPropagation();
                             setRenamingConv(contextMenu.conversation);
-                            setRenameName(contextMenu.conversation?.display_name || '');
+                            setRenameName(contextMenu.conversation?.custom_name || '');
                             setIsRenameDialogOpen(true);
                             setContextMenu({ ...contextMenu, conversation: null });
                         }}

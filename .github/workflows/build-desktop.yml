@@ -84,7 +84,8 @@ jobs:
       - name: Pack with Velopack
         shell: pwsh
         run: |
-          vpk pack --packId "WaDesktop" --packTitle "WA Client" --packVersion $env:VERSION --packDir "wa-desktop/src/WaDesktop.Client/bin/Release" --mainExe "WaDesktop.exe" --icon "wa-desktop/src/WaDesktop.Client/app.ico"
+          git log -1 --pretty=format:"%B" | Out-File -FilePath release-notes.md -Encoding utf8
+          vpk pack --packId "WaDesktop" --packTitle "WA Client" --packVersion $env:VERSION --packDir "wa-desktop/src/WaDesktop.Client/bin/Release" --mainExe "WaDesktop.exe" --icon "wa-desktop/src/WaDesktop.Client/app.ico" --releaseNotes "release-notes.md"
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
