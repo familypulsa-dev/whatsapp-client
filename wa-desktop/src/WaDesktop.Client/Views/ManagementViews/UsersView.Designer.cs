@@ -133,6 +133,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.DgvId.DataPropertyName = "Id";
             this.DgvId.HeaderText = "ID";
             this.DgvId.Name = "DgvId";
+            this.DgvId.ReadOnly = true;
             // 
             // DgvUsername
             // 

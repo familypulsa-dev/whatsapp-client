@@ -78,11 +78,11 @@ jobs:
           using System.Reflection;
           using System.Runtime.InteropServices;
 
-          [assembly: AssemblyTitle("WaDesktop")]
+          [assembly: AssemblyTitle("Whatsapp Client")]
           [assembly: AssemblyDescription("WhatsApp Desktop Client")]
           [assembly: AssemblyConfiguration("Release")]
           [assembly: AssemblyCompany("")]
-          [assembly: AssemblyProduct("WaDesktop")]
+          [assembly: AssemblyProduct("Whatsapp Client")]
           [assembly: AssemblyCopyright("Copyright © $(Get-Date).Year")]
           [assembly: AssemblyTrademark("")]
           [assembly: AssemblyCulture("")]
@@ -101,12 +101,12 @@ jobs:
       - name: Pack with Velopack
         shell: pwsh
         run: |
-          vpk pack --packId "WaDesktop" --packTitle "WaDesktop" --packVersion $env:VERSION --packDir "wa-desktop/src/WaDesktop.Client/bin/Release" --mainExe "WaDesktop.exe"
+          vpk pack --packId "Whatsapp Client" --packTitle "Whatsapp Client" --packVersion $env:VERSION --packDir "wa-desktop/src/WaDesktop.Client/bin/Release" --mainExe "WhatsApp Client.exe"
 
       # 7. Upload to GitHub Releases
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: Releases/*
-          name: WaDesktop ${{ env.VERSION }}
+          name: Whatsapp Client ${{ env.VERSION }}
           generate_release_notes: true

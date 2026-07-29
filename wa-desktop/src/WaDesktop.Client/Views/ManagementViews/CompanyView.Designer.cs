@@ -27,11 +27,18 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.panelFooter = new System.Windows.Forms.Panel();
             this.IdServer = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LimitMarketing = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LimitUtility = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LimitAuthentication = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LimitService = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UsageMarketing = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UsageUtility = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UsageAuthentication = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UsageService = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CurrentCost = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.MetaCost = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.MaxEstimatedCost = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             this.panelToolbar.SuspendLayout();
             this.panelFooter.SuspendLayout();
@@ -43,11 +50,18 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.IdServer,
             this.dgName,
+            this.dataGridViewTextBoxColumn3,
             this.LimitMarketing,
             this.LimitUtility,
             this.LimitAuthentication,
             this.LimitService,
-            this.dataGridViewTextBoxColumn3});
+            this.UsageMarketing,
+            this.UsageUtility,
+            this.UsageAuthentication,
+            this.UsageService,
+            this.CurrentCost,
+            this.MetaCost,
+            this.MaxEstimatedCost});
             this.dataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.dataGridView.Location = new System.Drawing.Point(0, 40);
@@ -125,12 +139,18 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.IdServer.DataPropertyName = "IdServer";
             this.IdServer.HeaderText = "ID";
             this.IdServer.Name = "IdServer";
+            this.IdServer.ReadOnly = true;
             // 
             // dgName
             // 
             this.dgName.DataPropertyName = "Name";
             this.dgName.HeaderText = "Name";
             this.dgName.Name = "dgName";
+            // 
+            // dataGridViewTextBoxColumn3
+            // 
+            this.dataGridViewTextBoxColumn3.HeaderText = "Created At";
+            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
             // 
             // LimitMarketing
             // 
@@ -156,10 +176,47 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.LimitService.HeaderText = "Limit Service";
             this.LimitService.Name = "LimitService";
             // 
-            // dataGridViewTextBoxColumn3
+            // UsageMarketing
             // 
-            this.dataGridViewTextBoxColumn3.HeaderText = "Created At";
-            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            this.UsageMarketing.HeaderText = "Usage Marketing";
+            this.UsageMarketing.Name = "UsageMarketing";
+            this.UsageMarketing.ReadOnly = true;
+            // 
+            // UsageUtility
+            // 
+            this.UsageUtility.HeaderText = "Usage Utilitas";
+            this.UsageUtility.Name = "UsageUtility";
+            this.UsageUtility.ReadOnly = true;
+            // 
+            // UsageAuthentication
+            // 
+            this.UsageAuthentication.HeaderText = "Usage Autentikasi";
+            this.UsageAuthentication.Name = "UsageAuthentication";
+            this.UsageAuthentication.ReadOnly = true;
+            // 
+            // UsageService
+            // 
+            this.UsageService.HeaderText = "Usage Service";
+            this.UsageService.Name = "UsageService";
+            this.UsageService.ReadOnly = true;
+            // 
+            // CurrentCost
+            // 
+            this.CurrentCost.HeaderText = "Est Tagihan Saat Ini";
+            this.CurrentCost.Name = "CurrentCost";
+            this.CurrentCost.ReadOnly = true;
+            // 
+            // MetaCost
+            // 
+            this.MetaCost.HeaderText = "Tagihan Meta";
+            this.MetaCost.Name = "MetaCost";
+            this.MetaCost.ReadOnly = true;
+            // 
+            // MaxEstimatedCost
+            // 
+            this.MaxEstimatedCost.HeaderText = "Maks. Est. Tagihan";
+            this.MaxEstimatedCost.Name = "MaxEstimatedCost";
+            this.MaxEstimatedCost.ReadOnly = true;
             // 
             // CompanyView
             // 
@@ -180,10 +237,17 @@ namespace WaDesktop.Client.Views.ManagementViews
         private System.Windows.Forms.Panel panelFooter;
         private System.Windows.Forms.DataGridViewTextBoxColumn IdServer;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private System.Windows.Forms.DataGridViewTextBoxColumn LimitMarketing;
         private System.Windows.Forms.DataGridViewTextBoxColumn LimitUtility;
         private System.Windows.Forms.DataGridViewTextBoxColumn LimitAuthentication;
         private System.Windows.Forms.DataGridViewTextBoxColumn LimitService;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn UsageMarketing;
+        private System.Windows.Forms.DataGridViewTextBoxColumn UsageUtility;
+        private System.Windows.Forms.DataGridViewTextBoxColumn UsageAuthentication;
+        private System.Windows.Forms.DataGridViewTextBoxColumn UsageService;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CurrentCost;
+        private System.Windows.Forms.DataGridViewTextBoxColumn MetaCost;
+        private System.Windows.Forms.DataGridViewTextBoxColumn MaxEstimatedCost;
     }
 }
