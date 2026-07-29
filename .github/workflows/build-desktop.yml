@@ -68,7 +68,7 @@ jobs:
 
       - name: Build (Release)
         working-directory: wa-desktop
-        run: msbuild src/WaDesktop.Client/WaDesktop.Client.csproj /p:Configuration=Release /p:AssemblyName="WhatsApp Client"
+        run: msbuild WaDesktop.sln /p:Configuration=Release /p:AssemblyName="WhatsApp Client"
 
       - name: Cache vpk tool
         id: cache-vpk
