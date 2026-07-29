@@ -49,7 +49,7 @@ using System.Runtime.InteropServices;
 # ------------------------------
 
 nuget restore WaDesktop.sln
-msbuild WaDesktop.sln /p:Configuration=Release /p:Platform="Any CPU" /t:Rebuild /m
+msbuild WaDesktop.sln /p:Configuration=Release /p:Platform="Any CPU" /m
 Set-Location ".."
 
 # 4. Pack dengan Velopack
