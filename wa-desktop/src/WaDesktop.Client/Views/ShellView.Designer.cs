@@ -218,7 +218,7 @@ namespace WaDesktop.Client.Views
             this.MainMenuStrip = this.menuStrip;
             this.MinimumSize = new System.Drawing.Size(1439, 791);
             this.Name = "ShellView";
-            this.Text = "WA Desktop";
+            this.Text = "Whatsapp Client";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ShellView_FormClosing);
             this.Shown += new System.EventHandler(this.ShellView_Shown);
             this.menuStrip.ResumeLayout(false);

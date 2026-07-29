@@ -359,7 +359,7 @@ namespace WaDesktop.Client.Views
         private void ShellView_Shown(object sender, EventArgs e)
         {
             // Matikan TopMost setelah aplikasi berhasil tampil di depan
-            this.TopMost = false;
+            //this.TopMost = false;
         }
 
         public void SetFooterVersion(string version) => footerView1.SetVersion(version);

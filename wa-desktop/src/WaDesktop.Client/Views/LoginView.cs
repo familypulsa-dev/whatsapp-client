@@ -51,7 +51,7 @@ namespace WaDesktop.Client.Views
         private void LoginView_Shown(object sender, EventArgs e)
         {
             // Matikan TopMost setelah aplikasi berhasil tampil di depan
-            this.TopMost = false;
+            //this.TopMost = false;
         }
     }
 }
