@@ -101,7 +101,7 @@ jobs:
       - name: Pack with Velopack
         shell: pwsh
         run: |
-          vpk pack --packId "WhatsappClient" --packTitle "Whatsapp Client" --packVersion $env:VERSION --packDir "wa-desktop/src/WaDesktop.Client/bin/Release" --mainExe "WhatsApp Client.exe"
+          vpk pack --packId "WaDesktop" --packTitle "Whatsapp Client" --packVersion $env:VERSION --packDir "wa-desktop/src/WaDesktop.Client/bin/Release" --mainExe "WhatsApp Client.exe"
 
       # 7. Upload to GitHub Releases
       - name: Create Release
