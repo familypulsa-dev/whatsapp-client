@@ -43,24 +43,24 @@ jobs:
           $dir = "wa-desktop/src/WaDesktop.Client/Properties"
           New-Item -Force -ItemType Directory -Path $dir | Out-Null
           $year = (Get-Date).Year
-          $content = @"
-          using System.Reflection;
-          using System.Runtime.InteropServices;
-
-          [assembly: AssemblyTitle("Whatsapp Client")]
-          [assembly: AssemblyDescription("WhatsApp Desktop Client")]
-          [assembly: AssemblyConfiguration("Release")]
-          [assembly: AssemblyCompany("")]
-          [assembly: AssemblyProduct("Whatsapp Client")]
-          [assembly: AssemblyCopyright("Copyright © $year")]
-          [assembly: AssemblyTrademark("")]
-          [assembly: AssemblyCulture("")]
-          [assembly: ComVisible(false)]
-          [assembly: Guid("c3d4e5f6-a7b8-9012-cdef-123456789012")]
-          [assembly: AssemblyVersion("$env:VERSION.0")]
-          [assembly: AssemblyFileVersion("$env:VERSION.0")]
-"@
-          $content | Out-File -FilePath "$dir/AssemblyInfo.cs" -Encoding utf8
+          $lines = @(
+            "using System.Reflection;",
+            "using System.Runtime.InteropServices;",
+            "",
+            '[assembly: AssemblyTitle("Whatsapp Client")]',
+            '[assembly: AssemblyDescription("WhatsApp Desktop Client")]',
+            '[assembly: AssemblyConfiguration("Release")]',
+            '[assembly: AssemblyCompany("")]',
+            '[assembly: AssemblyProduct("Whatsapp Client")]',
+            "[assembly: AssemblyCopyright(`"Copyright © $year`")]",
+            '[assembly: AssemblyTrademark("")]',
+            '[assembly: AssemblyCulture("")]',
+            '[assembly: ComVisible(false)]',
+            '[assembly: Guid("c3d4e5f6-a7b8-9012-cdef-123456789012")]',
+            "[assembly: AssemblyVersion(`"$env:VERSION.0`")]",
+            "[assembly: AssemblyFileVersion(`"$env:VERSION.0`")]"
+          )
+          $lines | Out-File -FilePath "$dir/AssemblyInfo.cs" -Encoding utf8
 
       - name: Restore NuGet packages
         working-directory: wa-desktop
