@@ -80,7 +80,7 @@ jobs:
       # 5. Compile App
       - name: Build (Release)
         working-directory: wa-desktop
-        run: msbuild WaDesktop.sln /p:Configuration=Release /p:Platform="Any CPU" /p:AssemblyName="Whatsapp Client" /t:Rebuild /m
+        run: dotnet build WaDesktop.sln --configuration Release -p:AssemblyName="WhatsApp Client"
 
       # 6. Velopack Packaging
       - name: Pack with Velopack
