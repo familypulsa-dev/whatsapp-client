@@ -84,11 +84,11 @@ jobs:
       - name: Pack with Velopack
         shell: pwsh
         run: |
-          vpk pack --packId "WaDesktop" --packTitle "Whatsapp Client" --packVersion $env:VERSION --packDir "wa-desktop/src/WaDesktop.Client/bin/Release" --mainExe "WaDesktop.exe"
+          vpk pack --packId "WaDesktop" --packTitle "WA Client" --packVersion $env:VERSION --packDir "wa-desktop/src/WaDesktop.Client/bin/Release" --mainExe "WaDesktop.exe" --icon "wa-desktop/src/WaDesktop.Client/app.ico"
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: Releases/*
-          name: Whatsapp Client ${{ env.VERSION }}
+          name: WA Client ${{ env.VERSION }}
           generate_release_notes: true
