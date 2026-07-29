@@ -52,21 +52,6 @@ jobs:
         if: steps.cache-dotnet-tools.outputs.cache-hit != 'true'
         run: dotnet tool install -g vpk
 
-      # 3. Setup Build Tools
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
-
-      - name: Cache NuGet Packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('wa-desktop/**/*.csproj', 'wa-desktop/**/*.sln') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: Restore NuGet packages
-        working-directory: wa-desktop
-        run: nuget restore WaDesktop.sln
 
       # 4. Set Assembly Version
       - name: Generate AssemblyInfo
