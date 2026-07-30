@@ -216,7 +216,7 @@ namespace WaDesktop.Client.Views
             this.Controls.Add(this.footerView1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip;
-            this.MinimumSize = new System.Drawing.Size(1439, 791);
+            this.MinimumSize = new System.Drawing.Size(1000, 791);
             this.Name = "ShellView";
             this.Text = "Whatsapp Client";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ShellView_FormClosing);
