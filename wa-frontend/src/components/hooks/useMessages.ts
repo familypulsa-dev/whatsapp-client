@@ -100,8 +100,9 @@ export const useMessages = ({
             const conv = activeConversationRef.current;
             if (!conv) return;
             console.log('Received message', chatMsg);
-            console.log(`conv.id: ${conv.id}, chatMsg.conversation_id: ${chatMsg.conversation_id}`);
-            if (chatMsg.conversation_id !== conv.id) return;
+            console.log('wa_id', chatMsg.wa_id, 'conv.wa_id', conv.wa_id);
+            console.log('phone_number_id', chatMsg.phone_number_id, 'conv.phone_number_id', conv.phone_number_id);
+            if (chatMsg.wa_id !== conv.wa_id || chatMsg.phone_number_id !== conv.phone_number_id) return;
 
             setMessages(prev => {
                 const existing = prev.find(m => m.id === chatMsg.id);

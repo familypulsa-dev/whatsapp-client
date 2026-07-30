@@ -169,7 +169,6 @@ export const useChatActions = ({
             sender_name: user?.name || 'Me',
             agent_name: user?.name || 'Me',
             content: {}
-            // : replyingTo?.wa_message_id || undefined
         }
 
         if(header?.text){
