@@ -108,7 +108,6 @@ export const useConversations = ({
             var res: Conversation = conv;
             // fetchPhoneNumbers();
 
-            console.log('activeAppId', activeAppIdRef.current, 'conv', conv.id, 'res', res.id);
             if (activeAppIdRef.current !== null && res.phone_number_id !== activeAppIdRef.current) return;
 
             if (convFilterRef.current === 'read' && res.unread_count > 0) return;
