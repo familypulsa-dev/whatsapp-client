@@ -1,8 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using WaDesktop.Domain.Interfaces;
 using WaDesktop.Domain.State;
+using WaDesktop.Domain.UseCases;
 using WaDesktop.Infrastructure.EventAggregator;
 using WaDesktop.Infrastructure.Services;
+using WaDesktop.Client.Factories;
 using WaDesktop.Client.Presenters;
 using WaDesktop.Client.Views;
 using WaDesktop.Client.Views.ManagementViews;
@@ -19,6 +21,10 @@ namespace WaDesktop.Client.Extensions
             services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<IUpdateService>(updateService);
             services.AddSingleton<AppState>();
+
+            // 1.5 Module Factory (Singleton = root provider; tiap Create bikin child scope)
+            services.AddSingleton<IModuleFactory>(sp => new ModuleFactory(sp, messagesUrl, apiBaseUrl));
+            services.AddTransient<IPhoneRegistrationUseCase, PhoneRegistrationUseCase>();
 
             // 2. Views (Transient = Bikin baru tiap kali dipanggil)
             services.AddTransient<IShellView, ShellView>();

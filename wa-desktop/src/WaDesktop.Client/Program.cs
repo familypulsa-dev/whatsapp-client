@@ -8,7 +8,6 @@ using WaDesktop.Domain.State;
 using WaDesktop.Infrastructure;
 using WaDesktop.Infrastructure.EventAggregator;
 using WaDesktop.Infrastructure.Services;
-using WaDesktop.Client.Services;
 using WaDesktop.Client.Views;
 using WaDesktop.Client.Presenters;
 using WaDesktop.Client.Extensions;
@@ -44,7 +43,7 @@ namespace WaDesktop.Client
                 }
             }
 
-            var apiBaseUrl = "https://waba.mbi-software.com";
+            var apiBaseUrl = "http://localhost:8080";
             var wwwRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot");
             Directory.CreateDirectory(wwwRoot);
 
@@ -75,7 +74,7 @@ namespace WaDesktop.Client
 
                     // --- MAIN SHELL ---
                     var shellView = provider.GetRequiredService<IShellView>();
-                    var shellPresenter = ActivatorUtilities.CreateInstance<ShellPresenter>(provider, shellView, messagesUrl, apiBaseUrl, provider);
+                    var shellPresenter = ActivatorUtilities.CreateInstance<ShellPresenter>(provider, shellView);
 
                     var sidebarView = provider.GetRequiredService<SidebarView>();
                     var sidebarPresenter = ActivatorUtilities.CreateInstance<SidebarPresenter>(provider, sidebarView);

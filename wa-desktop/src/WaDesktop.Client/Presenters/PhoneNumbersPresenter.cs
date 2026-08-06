@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using WaDesktop.Client.Views;
 using WaDesktop.Client.Views.ManagementViews;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace WaDesktop.Client.Presenters
 {
@@ -17,15 +18,17 @@ namespace WaDesktop.Client.Presenters
         private readonly IManagementView<PhoneNumberDetail> _view;
         private readonly IApiClient _api;
         private readonly IEventAggregator _bus;
+        private readonly IServiceProvider _serviceProvider;
         private List<PhoneNumberDetail> _data;
         private bool _disposed;
         private PhoneNumberView _realView;
 
-        public PhoneNumbersPresenter(IManagementView<PhoneNumberDetail> view, IApiClient api, IEventAggregator bus)
+        public PhoneNumbersPresenter(IManagementView<PhoneNumberDetail> view, IApiClient api, IEventAggregator bus, IServiceProvider serviceProvider)
         {
             _view = view;
             _api = api;
             _bus = bus;
+            _serviceProvider = serviceProvider;
 
             _view.RefreshClicked += async (s, e) => await LoadDataAsync();
             _view.SearchClicked += async (s, q) => await LoadDataAsync(q);
@@ -121,12 +124,20 @@ namespace WaDesktop.Client.Presenters
                 return;
             }
 
-            var dialog = new PhoneRegistrationDialog(_api, wabaId);
-            var form = _view as System.Windows.Forms.Control;
-            var parent = form?.FindForm();
-            if (dialog.ShowDialog(parent) == DialogResult.OK)
+            var dialog = new PhoneRegistrationDialog();
+            dialog.WabaId = wabaId;
+            dialog.PhoneNumberId = "";
+
+            var useCase = _serviceProvider.GetRequiredService<IPhoneRegistrationUseCase>();
+            using (var presenter = new PhoneRegistrationPresenter(dialog, useCase))
             {
-                _ = LoadDataAsync();
+                presenter.Initialize();
+                var form = _view as System.Windows.Forms.Control;
+                var parent = form?.FindForm();
+                if (dialog.ShowDialog(parent) == DialogResult.OK)
+                {
+                    _ = LoadDataAsync();
+                }
             }
         }
 
@@ -188,12 +199,20 @@ namespace WaDesktop.Client.Presenters
                 return;
             }
 
-            var dialog = new PhoneRegistrationDialog(_api, wabaId, phoneId);
-            var form = _view as System.Windows.Forms.Control;
-            var parent = form?.FindForm();
-            if (dialog.ShowDialog(parent) == DialogResult.OK)
+            var dialog = new PhoneRegistrationDialog();
+            dialog.WabaId = wabaId;
+            dialog.PhoneNumberId = phoneId ?? "";
+
+            var useCase = _serviceProvider.GetRequiredService<IPhoneRegistrationUseCase>();
+            using (var presenter = new PhoneRegistrationPresenter(dialog, useCase))
             {
-                _ = LoadDataAsync();
+                presenter.Initialize();
+                var form = _view as System.Windows.Forms.Control;
+                var parent = form?.FindForm();
+                if (dialog.ShowDialog(parent) == DialogResult.OK)
+                {
+                    _ = LoadDataAsync();
+                }
             }
         }
 

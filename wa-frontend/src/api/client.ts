@@ -53,6 +53,32 @@ async function handleTokenRefresh(): Promise<string | null> {
   }
 }
 
+function parseApiError(body: any, fallback: string): string {
+  if (!body) return fallback
+  const errToken = body.error || body.errors || body.message
+  if (!errToken) return fallback
+
+  if (typeof errToken === "string") {
+    return errToken
+  }
+
+  if (Array.isArray(errToken)) {
+    const messages = errToken.map((item: any) => {
+      if (item && typeof item === "object") {
+        return item.field && item.message ? `${item.field}: ${item.message}` : item.message || JSON.stringify(item)
+      }
+      return String(item)
+    }).filter(Boolean)
+    if (messages.length > 0) return messages.join("\n")
+  }
+
+  if (typeof errToken === "object") {
+    return errToken.message || JSON.stringify(errToken)
+  }
+
+  return String(errToken)
+}
+
 async function request<T>(path: string, opts: RequestInit = {}): Promise<T> {
   let token = localStorage.getItem("token")
   const headers: Record<string, string> = {
@@ -68,7 +94,7 @@ async function request<T>(path: string, opts: RequestInit = {}): Promise<T> {
     const res = await fetch(`${getBase()}${path}`, { ...opts, headers })
     if (!res.ok) {
       const body = await res.json().catch(() => ({}))
-      throw new Error(body.error || `HTTP ${res.status}`)
+      throw new Error(parseApiError(body, `HTTP ${res.status}`))
     }
     return res.json()
   }
@@ -85,7 +111,7 @@ async function request<T>(path: string, opts: RequestInit = {}): Promise<T> {
           fetch(`${getBase()}${path}`, { ...opts, headers })
             .then((r) => {
               if (!r.ok) {
-                r.json().then(b => reject(new Error(b.error || `HTTP ${r.status}`))).catch(() => reject(new Error(`HTTP ${r.status}`)))
+                r.json().then(b => reject(new Error(parseApiError(b, `HTTP ${r.status}`)))).catch(() => reject(new Error(`HTTP ${r.status}`)))
               } else {
                 resolve(r.json() as Promise<T>)
               }
@@ -105,7 +131,7 @@ async function request<T>(path: string, opts: RequestInit = {}): Promise<T> {
       const retryRes = await fetch(`${getBase()}${path}`, { ...opts, headers })
       if (!retryRes.ok) {
         const body = await retryRes.json().catch(() => ({}))
-        throw new Error(body.error || `HTTP ${retryRes.status}`)
+        throw new Error(parseApiError(body, `HTTP ${retryRes.status}`))
       }
       return retryRes.json()
     } else {
@@ -124,7 +150,7 @@ async function request<T>(path: string, opts: RequestInit = {}): Promise<T> {
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
-    throw new Error(body.error || `HTTP ${res.status}`)
+    throw new Error(parseApiError(body, `HTTP ${res.status}`))
   }
   return res.json()
 }

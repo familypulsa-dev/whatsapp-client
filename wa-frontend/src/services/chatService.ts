@@ -22,10 +22,10 @@ export const getConversations = async (
             `/api/v1/conversations?${qs({ page, limit, phone_number_id, q: search, filter })}`
         );
         return res;
-    } catch {
+    } catch (err: any) {
         return { 
             success: false,
-            message: 'Gagal mengambil data percakapan',
+            message: err?.message || 'Gagal mengambil data percakapan',
             data : {
                 conversations: [],
                 has_more: false,
@@ -40,7 +40,7 @@ export const getPingInfo = async () => {
     try {
         await get('/health');
         return { status: true, allowSendTemplate: true };
-    } catch {
+    } catch (err: any) {
         return { status: false, allowSendTemplate: false };
     }
 };
@@ -55,8 +55,8 @@ export const getPhoneNumbers = async (): Promise<ApiResponse<PhoneNumber[]>> => 
             display_phone_number: p.display_phone_number || '',
         }));
         return { success: true, message: 'Success', data: items };
-    } catch {
-        return { success: false, message: 'Gagal mengambil ringkasan aplikasi', data: [] };
+    } catch (err: any) {
+        return { success: false, message: err?.message || 'Gagal mengambil ringkasan aplikasi', data: [] };
     }
 };
 
@@ -73,8 +73,8 @@ export const getMessages = async (
             `/api/v1/conversations/${conversation_id}/messages?${qs({ limit, page, q: search, type: message_type, direction })}`
         );
         return res;
-    } catch {
-        return { success: false, message: 'Gagal mengambil pesan', data: { messages: [], conversation: null , has_more: false} };
+    } catch (err: any) {
+        return { success: false, message: err?.message || 'Gagal mengambil pesan', data: { messages: [], conversation: null , has_more: false} };
     }
 };
 
@@ -89,7 +89,7 @@ export const ensureConversation = async (
         try {
             const res = await get<ApiResponse<any>>(`/api/v1/contacts/${customer_wa_id}?phone_number_id=${phone_number_id}`);
             contactData = res.data;
-        } catch { /* ignore */ }
+        } catch (err: any) { /* ignore */ }
 
         const conv: Conversation = {
             id: `${phone_number_id}_${customer_wa_id}`,
@@ -110,19 +110,19 @@ export const ensureConversation = async (
             const listRes = await get<ApiResponse<{ conversations: any[] }>>(`/api/v1/conversations?${qs({ phone_number_id, limit: 100 })}`);
             const existing = (listRes.data?.conversations || []).find((c: any) => c.wa_id === customer_wa_id);
             if (existing) return { success: true, message: 'Success', data: existing };
-        } catch { /* ignore */ }
+        } catch (err: any) { /* ignore */ }
 
         return { success: true, message: 'Success', data: conv };
-    } catch {
-        return { success: false, message: 'Gagal membuat percakapan', data: null as any };
+    } catch (err: any) {
+        return { success: false, message: err?.message || 'Gagal membuat percakapan', data: null as any };
     }
 };
 
 export const markAsRead = async (conversationId: string | number): Promise<ApiResponse<any>> => {
     try {
         return await post<ApiResponse<any>>(`/api/v1/conversations/${conversationId}/read`, {});
-    } catch {
-        return { success: true, message: 'Gagal mark as read', data: null as any };
+    } catch (err: any) {
+        return { success: true, message: err?.message || 'Gagal mark as read', data: null as any };
     }
 };
 
@@ -144,8 +144,8 @@ export const uploadMedia = async (
                 file_type: file.type
             }
         };
-    } catch {
-        return { success: false, message: 'Gagal mengunggah media', data: null as any };
+    } catch (err: any) {
+        return { success: false, message: err?.message || 'Gagal mengunggah media', data: null as any };
     }
 };
 
@@ -199,8 +199,8 @@ export const sendReaction = async (payload : SendReactionRequest
     try {
         const res = await post<ApiResponse<any>>('/api/v1/messages/reaction', payload);
         return { success: true, message: 'Reaksi berhasil dikirim', data: res };
-    } catch {
-        return { success: false, message: 'Gagal mengirim reaksi', data: null };
+    } catch (err: any) {
+        return { success: false, message: err?.message || 'Gagal mengirim reaksi', data: null };
     }
 };
 
@@ -224,8 +224,8 @@ export const updateConversationName = async (
             name: name
         });
         return { success: true, message: 'Nama berhasil diubah', data: res };
-    } catch {
-        return { success: false, message: 'Gagal mengubah nama', data: null };
+    } catch (err: any) {
+        return { success: false, message: err?.message || 'Gagal mengubah nama', data: null };
     }
 };
 
@@ -235,7 +235,7 @@ export const sendTypingIndicator = async (
     try {
         const res = await post<ApiResponse<any>>(`/api/v1/conversations/${conversation_id}/typing`);
         return { success: true, message: 'Success', data: res };
-    } catch {
-        return { success: false, message: 'Failed to send typing indicator', data: null };
+    } catch (err: any) {
+        return { success: false, message: err?.message || 'Failed to send typing indicator', data: null };
     }
 };

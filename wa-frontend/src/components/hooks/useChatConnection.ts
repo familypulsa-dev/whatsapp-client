@@ -54,19 +54,18 @@ export const useChatConnection = () => {
         // Set the event callback for native WebSocket events
         useWS.setState({
             onEvent: (ev: any) => {
-                const payload: WebsocketEvent = ev;
-                if (ev.event_type === EventType.NEW_MESSAGE) {
-                    emitterRef.current.emit('ReceiveMessage', payload.data);
-                }else if (payload.event_type === EventType.UPDATE_STATUS) {
-                    emitterRef.current.emit('MessageStatusUpdated', payload.data);
-                }
-                else if (payload.event_type === EventType.CONVERSATION_UPDATE) {
-                    emitterRef.current.emit('UpdateConversation', payload.data);
-                }else if(payload.event_type === EventType.USER_TYPING){
-                    const {conversation_id, sender_name} = ev.data;
+                const wsEvent: WebsocketEvent = ev;
+                if (wsEvent.event === EventType.NEW_MESSAGE) {
+                    emitterRef.current.emit('ReceiveMessage', wsEvent.payload);
+                } else if (wsEvent.event === EventType.UPDATE_STATUS) {
+                    emitterRef.current.emit('MessageStatusUpdated', wsEvent.payload);
+                } else if (wsEvent.event === EventType.CONVERSATION_UPDATE) {
+                    emitterRef.current.emit('UpdateConversation', wsEvent.payload);
+                } else if (wsEvent.event === EventType.USER_TYPING) {
+                    const { conversation_id, sender_name } = wsEvent.payload as any;
                     emitterRef.current.emit('UserTyping', conversation_id, sender_name);
-                }else if(payload.event_type === EventType.PHONE_NUMBER_UPDATE){
-                    emitterRef.current.emit('UpdatePhoneNumbers', payload.data);
+                } else if (wsEvent.event === EventType.PHONE_NUMBER_UPDATE) {
+                    emitterRef.current.emit('UpdatePhoneNumbers', wsEvent.payload);
                 }
             }
         });

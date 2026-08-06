@@ -1,17 +1,16 @@
 import { Conversation } from "./chat";
 
 export enum EventType {
-    NEW_MESSAGE   = "NEW_MESSAGE",
-    UPDATE_STATUS = "UPDATE_STATUS",
-    CONVERSATION_UPDATE = "CONVERSATION_UPDATE",
-    PHONE_NUMBER_UPDATE = "PHONE_NUMBER_UPDATE",
-    USER_TYPING = "USER_TYPING"
+    NEW_MESSAGE   = "new_message",
+    UPDATE_STATUS = "status_update",
+    CONVERSATION_UPDATE = "conversation_update",
+    PHONE_NUMBER_UPDATE = "phone_number_update",
+    USER_TYPING = "user_typing"
 }
 
 export interface WebsocketEvent{
-    event_type: EventType;
-    company_id: string;
-    data: PayloadNewMessage | StatusUpdatePayload | PayloadUserTyping | PayloadConversationUpdate | PayloadPhoneNumberUpdate[];
+    event: EventType;
+    payload: PayloadNewMessage | StatusUpdatePayload | PayloadUserTyping | PayloadConversationUpdate | PayloadPhoneNumberUpdate[];
 }
 
 export interface PayloadUserTyping{

@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using WaDesktop.Client.Factories;
 using WaDesktop.Domain.Interfaces;
 using WaDesktop.Domain.State;
 using WaDesktop.Domain.Messages;
@@ -11,6 +12,17 @@ namespace WaDesktop.Tests.PresenterTests
     [TestFixture]
     public class ShellPresenterTests
     {
+        private class FakeModuleFactory : IModuleFactory
+        {
+            public ModuleInstance Create(string moduleKey)
+                => new ModuleInstance(new FakeView(), null, null);
+        }
+
+        private class FakeView : IViewBase
+        {
+            public bool InvokeRequired => false;
+        }
+
         private class FakeAuthService : IAuthService
         {
             public string AccessToken => "token";
@@ -79,7 +91,7 @@ namespace WaDesktop.Tests.PresenterTests
             var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
             var provider = services.BuildServiceProvider();
 
-            var presenter = new global::WaDesktop.Client.Presenters.ShellPresenter(view, auth, bus, state, "http://localhost:5000", "http://localhost:8080", provider);
+            var presenter = new global::WaDesktop.Client.Presenters.ShellPresenter(view, auth, bus, state, new FakeModuleFactory(), provider);
 
             Assert.That(view.StatusText, Does.Contain("Test"));
             presenter.Dispose();
@@ -97,7 +109,7 @@ namespace WaDesktop.Tests.PresenterTests
             var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
             var provider = services.BuildServiceProvider();
 
-            var presenter = new global::WaDesktop.Client.Presenters.ShellPresenter(view, auth, bus, state, "http://localhost:5000", "http://localhost:8080", provider);
+            var presenter = new global::WaDesktop.Client.Presenters.ShellPresenter(view, auth, bus, state, new FakeModuleFactory(), provider);
 
             view.TriggerLogout();
 

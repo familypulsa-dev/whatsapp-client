@@ -37,6 +37,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\IPhoneRegistrationView.cs" />
+    <Compile Include="Interfaces\IPhoneRegistrationUseCase.cs" />
+    <Compile Include="UseCases\PhoneRegistrationUseCase.cs" />
     <Compile Include="Entities\PhoneRegistration.cs" />
     <Compile Include="Entities\Waba.cs" />
     <Compile Include="Entities\WaWabaUsageSummary.cs" />

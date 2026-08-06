@@ -2,47 +2,46 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using WaDesktop.Client.Factories;
 using WaDesktop.Client.Views;
-using WaDesktop.Client.Views.ManagementViews;
-using WaDesktop.Domain.Entities;
 using WaDesktop.Domain.Interfaces;
 using WaDesktop.Domain.Messages;
 using WaDesktop.Domain.State;
-using WaDesktop.Infrastructure;
 
 namespace WaDesktop.Client.Presenters
 {
+    /// <summary>
+    /// Cangkang aplikasi: router antar modul (via EventAggregator), lifecycle tab,
+    /// konfigurasi menu berbasis role, dan footer. Perakitan modul didelegasikan
+    /// ke IModuleFactory — ShellPresenter tidak tahu cara membuat View/Presenter.
+    /// </summary>
     public class ShellPresenter : IDisposable
     {
         private readonly IShellView _view;
         private readonly IAuthService _auth;
         private readonly IEventAggregator _bus;
         private readonly AppState _state;
-        private readonly string _messagesUrl;
-        private readonly string _apiBaseUrl;
+        private readonly IModuleFactory _moduleFactory;
         private readonly IServiceProvider _serviceProvider;
-        private readonly Dictionary<string, IServiceScope> _activeTabScopes = new Dictionary<string, IServiceScope>();
-        private readonly Dictionary<string, IPresenterBase> _activePresenterScopes = new Dictionary<string, IPresenterBase>();
+        private readonly Dictionary<string, ModuleInstance> _activeModules = new Dictionary<string, ModuleInstance>();
 
         private IDisposable _tabSub;
+        private IDisposable _closeTabSub;
         private IDisposable _sessionSub;
         private IDisposable _notifSub;
         private IDisposable _badgeSub;
-        private IDisposable _closeTabSub;
         private IDisposable _refreshTabSub;
         private bool _disposed;
 
         public ShellPresenter(IShellView view, IAuthService auth, IEventAggregator bus, AppState state,
-            string messagesUrl, string apiBaseUrl, IServiceProvider serviceProvider)
+            IModuleFactory moduleFactory, IServiceProvider serviceProvider)
         {
             _view = view;
             _auth = auth;
             _bus = bus;
             _state = state;
-            _messagesUrl = messagesUrl;
-            _apiBaseUrl = apiBaseUrl;
+            _moduleFactory = moduleFactory;
             _serviceProvider = serviceProvider;
 
             _tabSub = bus.Subscribe<RequestOpenTabMessage>(OnRequestOpenTab);
@@ -69,10 +68,10 @@ namespace WaDesktop.Client.Presenters
             view.CompanyVisible = _auth.IsSuperAdmin;
             view.UsersVisible = !isAgent;
             view.PhoneNumbersVisible = !isAgent;
-            view.WabaVisible = auth.IsSuperAdmin;
+            view.WabaVisible = _auth.IsSuperAdmin;
             view.TemplatesVisible = !isAgent;
             view.BillingVisible = !isAgent;
-            view.AppSettingsVisible = auth.IsSuperAdmin;
+            view.AppSettingsVisible = _auth.IsSuperAdmin;
             view.StatusText = $"Logged in as {_auth.DisplayName}";
 
             if (isAgent)
@@ -97,146 +96,40 @@ namespace WaDesktop.Client.Presenters
             timer.Start();
         }
 
+        // ── Message Handlers ──
+
         private void OnRefreshTabMessage(RequestRefreshTabMessage message)
         {
-            //each tab presenter should implement IRefreshable interface to handle refresh logic
-            foreach (var kvp in _activePresenterScopes)
-            {
-                if (kvp.Key == message.ModuleKey && kvp.Value is IPresenterBase refreshable)
-                {
-                    refreshable.LoadData();
-                    break;
-                }
-            }
-        }
-
-        private void OnTabClosed(object sender, string moduleKey)
-        {
-            if (_activeTabScopes.TryGetValue(moduleKey, out var scope))
-            {
-                scope.Dispose(); // Otomatis dispose View & Presenter di tab ini
-                _activeTabScopes.Remove(moduleKey);
-            }
-
-            if(_activePresenterScopes.TryGetValue(moduleKey, out var presenter))
-            {
-                _activePresenterScopes.Remove(moduleKey);
-            }
+            if (_activeModules.TryGetValue(message.ModuleKey, out var instance))
+                instance.Refreshable?.LoadData();
         }
 
         private void OnRequestOpenTab(RequestOpenTabMessage msg)
         {
-            if (_activeTabScopes.ContainsKey(msg.ModuleKey))
+            if (_activeModules.ContainsKey(msg.ModuleKey))
             {
                 // Tab sudah terbuka, hanya perlu difokuskan
                 _view.AddOrSelectTab(msg.ModuleKey, msg.Title, null);
                 return;
             }
 
-            _view.AddOrSelectTab(msg.ModuleKey, msg.Title, CreateModuleView(msg.ModuleKey));
+            var instance = _moduleFactory.Create(msg.ModuleKey);
+            _activeModules.Add(msg.ModuleKey, instance);
+            _view.AddOrSelectTab(msg.ModuleKey, msg.Title, instance.View);
         }
 
-        private void OnRequestCloseTab(RequestCloseTabMessage msg)
+        private void OnRequestCloseTab(RequestCloseTabMessage msg) => _view.CloseTab(msg.ModuleKey);
+
+        private void OnTabClosed(object sender, string moduleKey)
         {
-            _view.CloseTab(msg.ModuleKey);
-        }
-
-
-        private IViewBase CreateModuleView(string moduleKey)
-        {
-            var scope = _serviceProvider.CreateScope();
-            _activeTabScopes.Add(moduleKey, scope);
-            var provider = scope.ServiceProvider;
-
-            switch (moduleKey)
+            if (_activeModules.TryGetValue(moduleKey, out var instance))
             {
-                case "messages":
-                    var msgView = provider.GetRequiredService<MessagesView>();
-                    var msgPresenter = ActivatorUtilities.CreateInstance<MessagesPresenter>(provider, msgView, _messagesUrl, _apiBaseUrl);
-                    return msgView;
-
-                case "company":
-                    var coView = provider.GetRequiredService<CompanyView>();
-                    var coPresenter = ActivatorUtilities.CreateInstance<CompanyPresenter>(provider, coView);
-                    _activePresenterScopes.Add(moduleKey, coPresenter);
-                    coPresenter.LoadData();
-                    return coView;
-
-                case "users":
-                    var usrView = provider.GetRequiredService<UsersView>();
-                    var usrPresenter = ActivatorUtilities.CreateInstance<UsersPresenter>(provider, usrView);
-                    _activePresenterScopes.Add(moduleKey, usrPresenter);
-                    usrPresenter.LoadData();
-                    return usrView;
-
-                case "phonenumbers":
-                    var pnView = provider.GetRequiredService<PhoneNumberView>();
-                    var pnPresenter = ActivatorUtilities.CreateInstance<PhoneNumbersPresenter>(provider, pnView);
-                    _activePresenterScopes.Add(moduleKey, pnPresenter);
-                    pnPresenter.LoadData();
-                    return pnView;
-
-                case "waba":
-                    var wbView = provider.GetRequiredService<WabaView>();
-                    var wbPresenter = ActivatorUtilities.CreateInstance<WabasPresenter>(provider, wbView);
-                    _activePresenterScopes.Add(moduleKey, wbPresenter);
-                    wbPresenter.LoadData();
-                    return wbView;
-
-                case "templates":
-                    var tplView = provider.GetRequiredService<TemplatesView>();
-                    var tplPresenter = ActivatorUtilities.CreateInstance<TemplatesPresenter>(provider, tplView, _messagesUrl, _apiBaseUrl);
-                    _activePresenterScopes.Add(moduleKey, tplPresenter);
-                    tplPresenter.LoadData();
-                    return tplView;
-
-                case "appsettings":
-                    var setView = provider.GetRequiredService<AppSettingsView>();
-                    var setPresenter = ActivatorUtilities.CreateInstance<AppSettingsPresenter>(provider, setView);
-                    _activePresenterScopes.Add(moduleKey, setPresenter);
-                    setPresenter.LoadData();
-                    return setView;
-
-                case "billing":
-                    var billView = provider.GetRequiredService<TagihanView>();
-                    var billPresenter = ActivatorUtilities.CreateInstance<TagihanPresenter>(provider, billView);
-                    _activePresenterScopes.Add(moduleKey, billPresenter);
-                    billPresenter.LoadData();
-                    return billView;
-
-                default:
-                    if (moduleKey.StartsWith("phonedetail_"))
-                    {
-                        var phoneId = moduleKey.Substring("phonedetail_".Length);
-                        var detailView = provider.GetRequiredService<PhoneNumberDetailView>();
-                        
-                        var detailPresenter = ActivatorUtilities.CreateInstance<PhoneNumberDetailPresenter>(
-                            provider, detailView, phoneId);
-                            
-                        detailPresenter.LoadData();
-                        return detailView;
-                    } else if(moduleKey.StartsWith("template_detail_"))
-                    {
-                        var templateId = moduleKey.Substring("template_detail_".Length);
-                        var detailView = provider.GetRequiredService<MessagesView>();
-
-                        var detailPresenter = ActivatorUtilities.CreateInstance<MessagesPresenter>(
-                            provider, detailView, _messagesUrl + $"templates/edit/{templateId}", _apiBaseUrl);
-
-                        return detailView;
-                    }else if (moduleKey.StartsWith("template_create_"))
-                    {
-                        var waba_id = moduleKey.Substring("template_create_".Length);
-                        var detailView = provider.GetRequiredService<MessagesView>();
-
-                        var detailPresenter = ActivatorUtilities.CreateInstance<MessagesPresenter>(
-                            provider, detailView, _messagesUrl + $"templates/create?{waba_id}", _apiBaseUrl);
-
-                        return detailView;
-                    }
-                    throw new ArgumentException($"Unknown module key: {moduleKey}");
+                _activeModules.Remove(moduleKey);
+                instance.Dispose(); // Dispose View (via scope) + Presenter
             }
         }
+
+        // ── Navigasi ──
 
         private void OpenMessages() => OnRequestOpenTab(new RequestOpenTabMessage("messages", "Messages"));
         private void OpenCompany() => OnRequestOpenTab(new RequestOpenTabMessage("company", "Server"));
@@ -246,6 +139,8 @@ namespace WaDesktop.Client.Presenters
         private void OpenTemplates() => OnRequestOpenTab(new RequestOpenTabMessage("templates", "Templates"));
         private void OpenBilling() => OnRequestOpenTab(new RequestOpenTabMessage("billing", "Tagihan"));
         private void OpenAppSettings() => OnRequestOpenTab(new RequestOpenTabMessage("appsettings", "App Settings"));
+
+        // ── Aksi Shell Lainnya ──
 
         private void OnSoftwareUpdate()
         {
@@ -292,16 +187,17 @@ namespace WaDesktop.Client.Presenters
             if (!_disposed)
             {
                 _tabSub?.Dispose();
+                _closeTabSub?.Dispose();
                 _sessionSub?.Dispose();
                 _notifSub?.Dispose();
                 _badgeSub?.Dispose();
-                _closeTabSub?.Dispose();
-                
-                foreach (var scope in _activeTabScopes.Values)
+                _refreshTabSub?.Dispose();
+
+                foreach (var instance in _activeModules.Values)
                 {
-                    scope.Dispose();
+                    instance.Dispose();
                 }
-                _activeTabScopes.Clear();
+                _activeModules.Clear();
                 _disposed = true;
             }
         }

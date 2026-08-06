@@ -58,6 +58,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Factories\IModuleFactory.cs" />
+    <Compile Include="Factories\ModuleInstance.cs" />
+    <Compile Include="Factories\ModuleFactory.cs" />
     <Compile Include="Presenters\TagihanPresenter.cs" />
     <Compile Include="Presenters\TemplateDetailPresenter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -161,6 +164,7 @@
     </Compile>
     <Compile Include="Helpers\TaskbarHelper.cs" />
     <Compile Include="Presenters\LoginPresenter.cs" />
+    <Compile Include="Presenters\PhoneRegistrationPresenter.cs" />
     <Compile Include="Presenters\ShellPresenter.cs" />
     <Compile Include="Presenters\SidebarPresenter.cs" />
     <Compile Include="Presenters\MessagesPresenter.cs" />
@@ -169,7 +173,6 @@
     <Compile Include="Presenters\TemplatesPresenter.cs" />
     <Compile Include="Presenters\AppSettingsPresenter.cs" />
     <Compile Include="Presenters\PhoneNumberDetailPresenter.cs" />
-    <Compile Include="Services\EmbeddedServer.cs" />
     <Compile Include="Views\SoftwareUpdateView.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WaDesktop.Domain.Interfaces;
@@ -35,7 +36,14 @@ namespace WaDesktop.Client.Presenters
                 var companies = await Task.Run(() => _api.GetCompaniesAsync());
                 _view.SetCompanies(companies);
 
-                var data = await Task.Run(() => _api.GetUsersAsync(search));
+                var data = await Task.Run(() => _api.GetUsersAsync());
+                if (!string.IsNullOrEmpty(search))
+                {
+                    data = data.Where(u => 
+                        (u.DisplayName?.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0) || 
+                        (u.Username?.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+                    ).ToList();
+                }
                 _view.DataSource = data;
             }
             catch (Exception ex)

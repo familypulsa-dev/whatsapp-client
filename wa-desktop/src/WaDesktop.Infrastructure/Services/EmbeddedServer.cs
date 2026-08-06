@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WaDesktop.Client.Services
+namespace WaDesktop.Infrastructure.Services
 {
     /// <summary>
     /// Lightweight HTTP server that serves dist/ from wwwroot/.

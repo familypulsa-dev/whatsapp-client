@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WaDesktop.Domain.Interfaces;
@@ -30,7 +31,9 @@ namespace WaDesktop.Client.Presenters
             _view.IsLoading = true;
             try
             {
-                var data = await Task.Run(() => _api.GetCompaniesAsync(search));
+                var data = await Task.Run(() => _api.GetCompaniesAsync());
+                if (!string.IsNullOrEmpty(search))
+                    data = data.Where(c => c.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
                 _view.DataSource = data;
             }
             catch (Exception ex)

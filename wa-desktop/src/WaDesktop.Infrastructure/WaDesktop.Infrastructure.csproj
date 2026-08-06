@@ -39,7 +39,16 @@
   <ItemGroup>
     <Compile Include="EventAggregator\WeakAction.cs" />
     <Compile Include="EventAggregator\EventAggregator.cs" />
-    <Compile Include="Services\ApiClient.cs" />
+    <Compile Include="Constants\ApiRoutes.cs" />
+    <Compile Include="Services\ApiService\Core.cs" />
+    <Compile Include="Services\ApiService\Auth.cs" />
+    <Compile Include="Services\ApiService\Companies.cs" />
+    <Compile Include="Services\ApiService\Users.cs" />
+    <Compile Include="Services\ApiService\PhoneNumbers.cs" />
+    <Compile Include="Services\ApiService\Templates.cs" />
+    <Compile Include="Services\ApiService\Settings.cs" />
+    <Compile Include="Services\ApiService\Waba.cs" />
+    <Compile Include="Services\EmbeddedServer.cs" />
     <Compile Include="Services\AuthService.cs" />
     <Compile Include="Services\VelopackUpdateService.cs" />
   </ItemGroup>
