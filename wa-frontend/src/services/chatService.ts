@@ -1,6 +1,6 @@
 import { Contact } from '@/types';
 import { get, post, put } from '../api/client';
-import type { ApiResponse, PagedResponse, Conversation, PhoneNumber,  Bubble, SendTextResponse, SendTextRequest, SendMediaRequest, SendMediaResponse, SendTemplateRequest, SendTemplateResponse, SendReactionRequest, ConversationResponse, MessageResponse, ErrorResponse } from '../types/chat';
+import type { ApiResponse, PagedResponse, Conversation, PhoneNumber,  Bubble, SendTextResponse, SendTextRequest, SendMediaRequest, SendMediaResponse, SendTemplateRequest, SendTemplateResponse, SendReactionRequest, ConversationResponse, MessageResponse } from '../types/chat';
 
 function qs(params: Record<string, string | number | undefined>): string {
     const sp = new URLSearchParams();
@@ -18,20 +18,12 @@ export const getConversations = async (
     filter?: string
 ): Promise<ApiResponse<ConversationResponse>> => {
     try {
-        const res = await get<ApiResponse<any>>(
+        return await get<ApiResponse<any>>(
             `/api/v1/conversations?${qs({ page, limit, phone_number_id, q: search, filter })}`
         );
-        return res;
     } catch (err: any) {
         return { 
-            success: false,
-            message: err?.message || 'Gagal mengambil data percakapan',
-            data : {
-                conversations: [],
-                has_more: false,
-                message_conversations: [],
-                message_has_more: false
-            }
+            error: { message: err?.message || 'Gagal mengambil data percakapan' }
         };
     }
 };
@@ -54,9 +46,9 @@ export const getPhoneNumbers = async (): Promise<ApiResponse<PhoneNumber[]>> => 
             unread_count: p.unread_count || 0,
             display_phone_number: p.display_phone_number || '',
         }));
-        return { success: true, message: 'Success', data: items };
+        return { data: items };
     } catch (err: any) {
-        return { success: false, message: err?.message || 'Gagal mengambil ringkasan aplikasi', data: [] };
+        return { error: { message: err?.message || 'Gagal mengambil ringkasan aplikasi' } };
     }
 };
 
@@ -69,12 +61,11 @@ export const getMessages = async (
     direction?: string
 ): Promise<ApiResponse<MessageResponse>> => {
     try {
-        const res = await get<ApiResponse<any>>(
+        return await get<ApiResponse<any>>(
             `/api/v1/conversations/${conversation_id}/messages?${qs({ limit, page, q: search, type: message_type, direction })}`
         );
-        return res;
     } catch (err: any) {
-        return { success: false, message: err?.message || 'Gagal mengambil pesan', data: { messages: [], conversation: null , has_more: false} };
+        return { error: { message: err?.message || 'Gagal mengambil pesan' } };
     }
 };
 
@@ -109,12 +100,12 @@ export const ensureConversation = async (
         try {
             const listRes = await get<ApiResponse<{ conversations: any[] }>>(`/api/v1/conversations?${qs({ phone_number_id, limit: 100 })}`);
             const existing = (listRes.data?.conversations || []).find((c: any) => c.wa_id === customer_wa_id);
-            if (existing) return { success: true, message: 'Success', data: existing };
+            if (existing) return { data: existing };
         } catch (err: any) { /* ignore */ }
 
-        return { success: true, message: 'Success', data: conv };
+        return { data: conv };
     } catch (err: any) {
-        return { success: false, message: err?.message || 'Gagal membuat percakapan', data: null as any };
+        return { error: { message: err?.message || 'Gagal membuat percakapan' } };
     }
 };
 
@@ -122,7 +113,7 @@ export const markAsRead = async (conversationId: string | number): Promise<ApiRe
     try {
         return await post<ApiResponse<any>>(`/api/v1/conversations/${conversationId}/read`, {});
     } catch (err: any) {
-        return { success: true, message: err?.message || 'Gagal mark as read', data: null as any };
+        return { error: { message: err?.message || 'Gagal mark as read' } };
     }
 };
 
@@ -137,7 +128,6 @@ export const uploadMedia = async (
 
         const res = await post<ApiResponse<any>>('/api/v1/media/upload', formData);
         return {
-            success: true, message: 'Success',
             data: {
                 media_id: res.data?.media_id || res.data?.id || '',
                 file_path: `/api/v1/media/${res.data?.media_id || res.data?.id || ''}`,
@@ -145,16 +135,16 @@ export const uploadMedia = async (
             }
         };
     } catch (err: any) {
-        return { success: false, message: err?.message || 'Gagal mengunggah media', data: null as any };
+        return { error: { message: err?.message || 'Gagal mengunggah media' } };
     }
 };
 
 export const sendMessage = async (payload : SendTextRequest): Promise<ApiResponse<SendTextResponse>> => {
     try {
         const res = await post<ApiResponse<SendTextResponse>>('/api/v1/messages/text', payload);
-        return { success: true, message: 'Success', data: res.data };
+        return { data: res.data };
     } catch (err : Error | any) {
-        return { success: false, message: err?.message || 'Gagal mengirim pesan', data: null };
+        return { error: { message: err?.message || 'Gagal mengirim pesan' } };
     }
 };
 
@@ -166,13 +156,13 @@ export const sendMedia = async (payload : SendMediaRequest): Promise<ApiResponse
         formData.append('type', payload.type);
         formData.append('file', payload.file);
         formData.append('body', payload.body);
-        formData.append('context_message_id', payload.context_message_id);
+        formData.append('context_message_id', payload.context_message_id || '');
 
         const res = await post<ApiResponse<SendMediaResponse>>('/api/v1/messages/media', formData);
-        return { success: true, message: 'Success', data: res?.data };
+        return { data: res?.data };
     } catch (err : Error | any) {
         console.log('error response',err);
-        return { success: false, message: err?.message || 'Gagal mengirim media', data: null };
+        return { error: { message: err?.message || 'Gagal mengirim media' } };
     }
 };
 
@@ -188,9 +178,9 @@ export const sendTemplate = async (payload : SendTemplateRequest): Promise<ApiRe
         if(payload.template_params && Object.keys(payload.template_params).length > 0) formData.append('template_params', JSON.stringify(payload.template_params));
 
         const res = await post<ApiResponse<SendTemplateResponse>>('/api/v1/messages/template', formData);
-        return { success: true, message: res?.message, data: res?.data };
+        return { data: res?.data };
     } catch (err : Error | any) {
-        return { success: false, message: err?.message || 'Gagal mengirim template', data: null };
+        return { error: { message: err?.message || 'Gagal mengirim template' } };
     }
 };
 
@@ -198,9 +188,9 @@ export const sendReaction = async (payload : SendReactionRequest
 ): Promise<ApiResponse<any>> => {
     try {
         const res = await post<ApiResponse<any>>('/api/v1/messages/reaction', payload);
-        return { success: true, message: 'Reaksi berhasil dikirim', data: res };
+        return { data: res.data };
     } catch (err: any) {
-        return { success: false, message: err?.message || 'Gagal mengirim reaksi', data: null };
+        return { error: { message: err?.message || 'Gagal mengirim reaksi' } };
     }
 };
 
@@ -223,9 +213,9 @@ export const updateConversationName = async (
             phone_number_id: phone_number_id,
             name: name
         });
-        return { success: true, message: 'Nama berhasil diubah', data: res };
+        return { data: res.data };
     } catch (err: any) {
-        return { success: false, message: err?.message || 'Gagal mengubah nama', data: null };
+        return { error: { message: err?.message || 'Gagal mengubah nama' } };
     }
 };
 
@@ -234,8 +224,8 @@ export const sendTypingIndicator = async (
 ): Promise<ApiResponse<any>> => {
     try {
         const res = await post<ApiResponse<any>>(`/api/v1/conversations/${conversation_id}/typing`);
-        return { success: true, message: 'Success', data: res };
+        return { data: res.data };
     } catch (err: any) {
-        return { success: false, message: err?.message || 'Failed to send typing indicator', data: null };
+        return { error: { message: err?.message || 'Failed to send typing indicator' } };
     }
 };

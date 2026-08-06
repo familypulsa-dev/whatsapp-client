@@ -14,9 +14,12 @@ export const usePhoneNumber = ({
 
     const fetchPhoneNumbers = async () => {
         try {
-            const phoneNumbers = await getPhoneNumbers();
-            setPhoneNumbers(phoneNumbers.data);
-
+            const response = await getPhoneNumbers();
+            if (response.data) {
+                setPhoneNumbers(response.data);
+            } else if (response.error) {
+                console.error("Failed to fetch phone numbers", response.error.message);
+            }
         } catch (error) { console.error("Initial fetch failed", error); }
     };
 

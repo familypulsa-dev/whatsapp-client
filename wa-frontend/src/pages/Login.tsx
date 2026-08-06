@@ -18,6 +18,10 @@ export default function Login() {
     setSubmitting(true)
     try {
       const res = await login(username, password)
+      if (res.error || !res.data) {
+        setError(res.error?.message || "Login failed")
+        return
+      }
       setAuth(res.data.access_token, res.data.refresh_token, res.data.user)
       
       navigate("/inbox", { replace: true })

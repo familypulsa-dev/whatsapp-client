@@ -101,7 +101,6 @@ export const useChatActions = ({
         const context_id = replyingTo?.id;
 
         
-        setMessages(prev => [...prev, newBubble]);
 
         clearInput();
 
@@ -115,10 +114,11 @@ export const useChatActions = ({
 
         sendMessage(payload)
             .then((res : ApiResponse<SendTextResponse>) => {
-                if (!res.success) {
-                   setMessages(prev => prev.map(m => m.id === id ? { ...m, status: 'failed', id : id, error_message: res?.message } : m));
+                if (res.error || !res.data) {
+                   setMessages(prev => prev.map(m => m.id === id ? { ...m, status: 'failed', id : id, error_message: res.error?.message } : m));
                 }else{
-                    newBubble.id = res?.data?.id; 
+                    // newBubble.id = res.data.id;
+                    // setMessages(prev => [...prev, newBubble]);
                 }
             }).catch((err: Error) => {
                 const errMsg = err.message;
@@ -250,7 +250,7 @@ export const useChatActions = ({
         });
         }
 
-        setMessages(prev => [...prev, newBubble]);
+        // setMessages(prev => [...prev, newBubble]);
 
         try{
             const payload : SendTemplateRequest = {
@@ -264,8 +264,8 @@ export const useChatActions = ({
 
         sendTemplate(payload)
             .then((res: ApiResponse<SendTemplateResponse>) => {
-               if (!res.success) {
-                   setMessages(prev => prev.map(m => m.id === id ? { ...m, status: 'failed', id : id, error_message: res?.message } : m));
+               if (res.error) {
+                   setMessages(prev => prev.map(m => m.id === id ? { ...m, status: 'failed', id : id, error_message: res.error?.message } : m));
                 }else{
                     // newBubble.id = res?.data?.id; 
                     // setMessages(prev => [...prev, newBubble]);
@@ -352,7 +352,7 @@ export const useChatActions = ({
             }
         }
 
-        setMessages(prev => [...prev, newBubble]);
+        // setMessages(prev => [...prev, newBubble]);
 
         try {
 
@@ -368,12 +368,12 @@ export const useChatActions = ({
 
            sendMedia(payload)
              .then((res: ApiResponse<SendMediaResponse>) => {
-                if (!res.success) {
-                   setMessages(prev => prev.map(m => m.id === id ? { ...m, status: 'failed', error_message: res?.message } : m));
+                if (res.error || !res.data) {
+                   setMessages(prev => prev.map(m => m.id === id ? { ...m, status: 'failed', error_message: res.error?.message } : m));
                 } else{
-                    newBubble.id = res?.data?.id; 
-                    newBubble.content.body.url = res?.data?.media_url;
-                    setMessages(prev => prev.map(m => m.id === id ? { ...m, content: newBubble.content } : m));
+                    // newBubble.id = res.data.id; 
+                    // newBubble.content.body.url = res.data.media_url;
+                    // setMessages(prev => prev.map(m => m.id === id ? { ...m, content: newBubble.content } : m));
                 }
             }).catch((err: Error) => {
                 const errMsg =  err?.message || '';
@@ -407,7 +407,7 @@ export const useChatActions = ({
         if (!conv || !newName.trim()) return false;
         try {
             const response = await updateConversationName(conv.phone_number_id, conv.wa_id, newName.trim());
-            return response.success;
+            return !response.error;
         } catch (error) {
             console.error("Failed to rename conversation", error);
             return false;

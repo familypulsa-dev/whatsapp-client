@@ -55,8 +55,14 @@ export default function TemplatePreview({ template: propTemplate, onClose }: Tem
     if (!id) return;
 
     setLoading(true);
-    get<{ success: boolean; data: Template }>(`/api/v1/templates/${id}`)
-      .then(res => setTemplate(res.data))
+    get<{ data?: Template; error?: { message: string } }>(`/api/v1/templates/${id}`)
+      .then(res => {
+        if (res.error || !res.data) {
+          setError(res.error?.message || 'Failed to load template');
+        } else {
+          setTemplate(res.data);
+        }
+      })
       .catch(err => setError(err.message || 'Failed to load template'))
       .finally(() => setLoading(false));
   }, [id, propTemplate]);

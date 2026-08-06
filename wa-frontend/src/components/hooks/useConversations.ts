@@ -53,15 +53,17 @@ export const useConversations = ({
                 debouncedSearchTerm || undefined,
                 convFilter === 'all' ? undefined : convFilter,
             );
-            if (response.success) {
+            if (response.data) {
                 setConversations(response.data.conversations || []);
                 setMessageConversations(response.data.message_conversations || []);
                 setMessageHasMore(response.data.message_has_more || false);
-                setHasMoreConvs(response.data.has_more);
+                setHasMoreConvs(response.data.has_more || false);
 
-                if (activeConversation && !response?.data?.conversations.some(c => c.id === activeConversation.id)) {
+                if (activeConversation && !response.data.conversations.some(c => c.id === activeConversation.id)) {
                     setActiveConversation(null);
                 }
+            } else if (response.error) {
+                console.error("Failed to fetch conversations", response.error.message);
             }
         } catch (error) {
             console.error("Failed to fetch conversations", error);
@@ -88,10 +90,12 @@ export const useConversations = ({
                 convFilter === 'all' ? undefined : convFilter
             );
 
-            if (response.success) {
+            if (response.data) {
                 setConvPage(nextPage);
-                setConversations(prev => [...prev, ...response.data.conversations || []]);
-                setHasMoreConvs(response.data.has_more);
+                setConversations(prev => [...prev, ...response.data!.conversations || []]);
+                setHasMoreConvs(response.data!.has_more || false);
+            } else if (response.error) {
+                console.error("Failed to fetch more conversations", response.error.message);
             }
         } catch (error) {
             console.error("Failed to fetch more conversations", error);

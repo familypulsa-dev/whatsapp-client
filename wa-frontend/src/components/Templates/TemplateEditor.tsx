@@ -83,8 +83,12 @@ export default function TemplateEditor() {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    get<{ success: boolean; data: Template }>(`/api/v1/templates/${id}`)
+    get<{ data?: Template; error?: { message: string } }>(`/api/v1/templates/${id}`)
       .then(res => {
+        if (res.error || !res.data) {
+          setError(res.error?.message || 'Template tidak ditemukan');
+          return;
+        }
         const tpl = res.data;
         setTemplate(tpl);
 
@@ -261,7 +265,7 @@ export default function TemplateEditor() {
         }) });
       }
 
-      const res = await put<{ success: boolean; data?: any; error?: string }>(`/api/v1/templates/${id}`, {
+      const res = await put<{ data?: any; error?: { message: string } }>(`/api/v1/templates/${id}`, {
         name: name.trim(),
         category,
         language: language.trim(),
@@ -269,8 +273,8 @@ export default function TemplateEditor() {
         components,
       });
 
-       if (!res.success) {
-        alert(res.error || 'Gagal menyimpan template');
+       if (res.error) {
+        alert(res.error.message || 'Gagal menyimpan template');
         handleShowNotif('Gagal', 'Gagal menyimpan template');
         return;
       }

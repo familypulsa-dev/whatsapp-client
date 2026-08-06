@@ -37,6 +37,9 @@ export const useAuth = create<AuthState>((set) => ({
     }
     try {
       const res = await authApi.getMe()
+      if (res.error || !res.data) {
+        throw new Error(res.error?.message || 'Failed to get user data');
+      }
       set({ token, user : res.data, loading: false })
     } catch {
       localStorage.removeItem("token")

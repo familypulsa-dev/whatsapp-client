@@ -8,9 +8,11 @@ export interface LoginResponse {
 }
 
 export interface Meta<T>{
-  success: boolean
-  message: string
   data ?: T
+  meta ?: any
+  error ?: {
+    message: string
+  }
 }
 
 export function login(username: string, password: string): Promise<Meta<LoginResponse>> {

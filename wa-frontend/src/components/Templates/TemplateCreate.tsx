@@ -213,7 +213,7 @@ export default function TemplateCreate() {
         }) });
       }
 
-      const res = await post<{ success: boolean; data?: any; error?: string }>('/api/v1/templates', {
+      const res = await post<{ data?: any; error?: { message: string } }>('/api/v1/templates', {
         name: name.trim(),
         category,
         language: 'id',
@@ -221,8 +221,8 @@ export default function TemplateCreate() {
         waba_id :queryParams.waba_id
       });
 
-      if (!res.success) {
-        alert(res.error || 'Gagal menyimpan template');
+      if (res.error) {
+        alert(res.error.message || 'Gagal menyimpan template');
         handleShowNotif('Gagal', 'Gagal menyimpan template');
         return;
       }

@@ -49,14 +49,16 @@ export const useMessages = ({
         setMessagePage(1);
         getMessages(activeConversation.id, 50, 1, searchTerm || undefined)
             .then(res => {
-                if (res.success) {
+                if (res.data) {
                     // Backend returns newest-first; reverse for display (oldest-first)
                     setMessages([...res.data.messages].reverse());
-                    setHasMore(res.data.has_more);
+                    setHasMore(res.data.has_more || false);
                     if (res.data.conversation) {
                         setActiveConversation(res.data.conversation);
-                        setConversations(prev => prev.map(c => c.id === res.data.conversation!.id ? res.data.conversation! : c));
+                        setConversations(prev => prev.map(c => c.id === res.data!.conversation!.id ? res.data!.conversation! : c));
                     }
+                } else if (res.error) {
+                    console.error("Failed to fetch messages", res.error.message);
                 }
             })
             .catch(console.error)
@@ -72,17 +74,19 @@ export const useMessages = ({
             const previousScrollHeight = scrollViewport?.scrollHeight || 0;
             const res = await getMessages(activeConversation.id, 50, nextPage, searchTerm || undefined);
             if (activeConversationRef.current?.id !== convIdAtStart) return;
-            if (res.success) {
+            if (res.data) {
                 // Backend returns newest-first; older messages get reversed + prepended
                 const olderItems = [...res.data.messages].reverse();
                 setMessages(prev => [...olderItems, ...prev]);
                 setMessagePage(nextPage);
-                setHasMore(res.data.has_more);
+                setHasMore(res.data.has_more || false);
                 if (scrollViewport) {
                     setTimeout(() => {
                         scrollViewport.scrollTop = scrollViewport.scrollHeight - previousScrollHeight;
                     }, 0);
                 }
+            } else if (res.error) {
+                console.error("Failed to fetch older messages", res.error.message);
             }
         } catch (error) {
             console.error("Failed to fetch older messages", error);
@@ -121,6 +125,7 @@ export const useMessages = ({
 
         const handleMessageStatusUpdated = (res : StatusUpdatePayload) => {
             const conv = activeConversationRef.current;
+            console.log('Received status update', res);
             if (!conv) return;
             setMessages(prev => prev.map(m => {
                 if (m.id === res.message_id) {

@@ -43,11 +43,13 @@ export const useContact = ({
                 if (!customName.trim()) return;
                 setLoading(true);
                 try {
-                    const success = await updateConversationName(conversation.phone_number_id, conversation.wa_id, customName.trim());
-                    if (success) {
+                    const response = await updateConversationName(conversation.phone_number_id, conversation.wa_id, customName.trim());
+                    if (!response.error) {
                         setIsEditing(false);
                         const updated = { ...conversation, customer_name: customName.trim() };
                         // if (onConversationUpdated) onConversationUpdated(updated);
+                    } else {
+                        console.error("Gagal menyimpan nama:", response.error.message);
                     }
                 } catch (error) {
                     console.error("Gagal menyimpan nama:", error);

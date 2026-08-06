@@ -1,13 +1,17 @@
-export interface ApiResponse<T> {
-    success: boolean;
-    message: string;
-    data: T;
+export interface ApiMeta {
+    total?: number;
+    unread?: number;
+    has_more?: boolean;
+    next_offset?: number;
+    [key: string]: any;
 }
 
-export interface ErrorResponse {
-    success: boolean;
-    message: string;
-    error: string;
+export interface ApiResponse<T> {
+    data?: T;
+    meta?: ApiMeta;
+    error?: {
+        message: string;
+    };
 }
 
 export interface ConversationResponse{
@@ -24,12 +28,11 @@ export interface MessageResponse{
 }
 
 export interface PagedResponse<T> {
-    success : boolean;
-    message : string;
-    data: T[];
-    limit: number;
-    page: number;
-    has_more: boolean;
+    data?: T[];
+    meta?: ApiMeta;
+    error?: {
+        message: string;
+    };
 }
 
 export interface SendTextResponse {
