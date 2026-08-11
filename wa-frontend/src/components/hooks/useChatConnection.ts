@@ -36,8 +36,8 @@ class WebMetaEventEmitter {
 
 export const useChatConnection = () => {
     const emitterRef = useRef<WebMetaEventEmitter>(new WebMetaEventEmitter());
-    const { connected, connect, disconnect } = useWS();
-      const { token, user} = useAuth()
+    const { connected, connect } = useWS();
+    const { user } = useAuth();
     const [status, setStatus] = useState<ConnectionStatus>('connecting');
 
     useEffect(() => {
@@ -45,12 +45,6 @@ export const useChatConnection = () => {
     }, [connected]);
 
     useEffect(() => {
-        if (token) {
-            connect(token, user?.company_id);
-        } else {
-            setStatus('disconnected');
-        }
-
         // Set the event callback for native WebSocket events
         useWS.setState({
             onEvent: (ev: any) => {
@@ -73,15 +67,14 @@ export const useChatConnection = () => {
 
         return () => {
             useWS.setState({ onEvent: null });
-            disconnect();
         };
     }, []);
 
     const handleRetryConnection = () => {
         setStatus('reconnecting');
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('access_token');
         if (token) {
-            connect(token, user?.company_id);
+            connect(token, user?.company_id || "");
         } else {
             window.location.reload();
         }

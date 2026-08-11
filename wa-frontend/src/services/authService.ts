@@ -17,7 +17,7 @@ export const login = async (email: string, password: string) => {
         const response = await apiClient.post('/api/v1/auth/login', { email, password });
         // The Go backend returns { access_token, user }
         if (response.data && response.data.access_token) {
-            localStorage.setItem('token', response.data.access_token);
+            localStorage.setItem('access_token', response.data.access_token);
             localStorage.setItem('refresh_token', response.data.refresh_token);
             return {
                 status: true,

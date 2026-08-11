@@ -8,7 +8,7 @@ import { TooltipProvider } from "./components/ui/tooltip"
 import Template from "./pages/Template"
 
 function RootRedirect() {
-  const hasToken = typeof window !== "undefined" && !!localStorage.getItem("token")
+  const hasToken = typeof window !== "undefined" && !!localStorage.getItem("access_token")
   
   return <Navigate to={hasToken ? "/inbox" : "/login"} replace />
 }

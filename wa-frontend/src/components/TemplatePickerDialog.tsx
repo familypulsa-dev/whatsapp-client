@@ -86,7 +86,7 @@ const TemplatePickerDialog: React.FC<TemplatePickerDialogProps> = ({ isOpen, onC
   const fetchTemplates = async () => {
     setIsLoading(true);
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('access_token');
       const response = await fetch(`${getBase()}/api/v1/templates?phone_number_id=${conversation?.phone_number_id}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
