@@ -213,7 +213,7 @@ const ChatLayout: React.FC<ChatLayoutProps> = ({ user, enableLogin }) => {
         'video/mp4', 'video/3gpp',
     ];
 
-    const MAX_FILE_MB = 10;
+    const MAX_FILE_MB = 5;
     const MAX_FILE_SIZE = MAX_FILE_MB * 1024 * 1024; // 10MB
 
     const handleFiles = (files: FileList | File[] | null) => {

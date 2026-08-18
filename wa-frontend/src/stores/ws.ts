@@ -16,7 +16,7 @@ export const useWS = create<WSState>((set, get) => {
       const host = (window as any).__WS_HOST__ || "localhost:8080"
     const proto = host.startsWith("localhost") ? "ws:" : "wss:"
     company_id = company_id == undefined || company_id == null ? '00000000-0000-0000-0000-000000000000' : company_id
-    ws = new WebSocket(`${proto}//${host}/ws?company_id=${company_id}&token=${token}`)
+    ws = new WebSocket(`${proto}//${host}/ws?company_id=${company_id}&access_token=${token}`)
 
     ws.onopen = () => set({ connected: true })
     ws.onclose = () => set({ connected: false })

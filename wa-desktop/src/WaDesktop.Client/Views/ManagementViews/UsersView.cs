@@ -15,14 +15,16 @@ namespace WaDesktop.Client.Views.ManagementViews
         {
             ["super_admin"] = "super_admin",
             ["admin"] = "admin",
-            ["cs"] = "cs"
+            ["cs"] = "cs",
+            ["integration"] = "integration"
         };
 
         private static readonly Dictionary<string, string> RoleReverseMap = new Dictionary<string, string>()
         {
             ["super_admin"] = "super_admin",
             ["admin"] = "admin",
-            ["cs"] = "cs"
+            ["cs"] = "cs",
+            ["integration"] = "integration"
         };
 
         private readonly HashSet<string> _deletedIds = new HashSet<string>();

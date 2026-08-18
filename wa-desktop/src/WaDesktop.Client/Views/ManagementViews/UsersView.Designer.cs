@@ -153,7 +153,8 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.Role.Items.AddRange(new object[] {
             "super_admin",
             "admin",
-            "cs"});
+            "cs",
+            "integration"});
             this.Role.Name = "Role";
             // 
             // Status

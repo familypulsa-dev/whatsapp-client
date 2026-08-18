@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -19,6 +20,7 @@ namespace WaDesktop.Infrastructure.Services
         private readonly string _baseUrl;
         private string _accessToken;
         private string _refreshToken;
+        private readonly SemaphoreSlim _refreshLock = new SemaphoreSlim(1, 1);
 
         public event EventHandler SessionExpired;
         public event EventHandler TokenRefreshed;
@@ -119,12 +121,42 @@ namespace WaDesktop.Infrastructure.Services
 
         private async Task<HttpResponseMessage> SendWithRefreshAsync(Func<Task<HttpResponseMessage>> send)
         {
+            var initialToken = _accessToken;
             var res = await send();
-            if (res.StatusCode == System.Net.HttpStatusCode.Unauthorized && await TryRefreshAsync())
+            
+            if (res.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                res = await send();
-                if (res.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                bool refreshed = false;
+                await _refreshLock.WaitAsync();
+                try
                 {
+                    // Jika token sudah berubah saat menunggu lock, berarti thread lain sudah refresh
+                    if (initialToken != _accessToken)
+                    {
+                        refreshed = true;
+                    }
+                    else
+                    {
+                        refreshed = await TryRefreshAsync();
+                    }
+                }
+                finally
+                {
+                    _refreshLock.Release();
+                }
+
+                if (refreshed)
+                {
+                    res = await send();
+                    if (res.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                    {
+                        SessionExpired?.Invoke(this, EventArgs.Empty);
+                        throw new HttpRequestException("Session expired");
+                    }
+                }
+                else
+                {
+                    // Pastikan event ditembak kalau refresh gagal!
                     SessionExpired?.Invoke(this, EventArgs.Empty);
                     throw new HttpRequestException("Session expired");
                 }
