@@ -99,7 +99,14 @@ async function request<T>(path: string, opts: RequestInit = {}): Promise<T> {
     return res.json()
   }
 
-  const res = await fetch(`${getBase()}${path}`, { ...opts, headers })
+  let res: Response;
+  try {
+    res = await fetch(`${getBase()}${path}`, { ...opts, headers })
+  } catch (err) {
+    console.error("[auth] Fetch mati mendadak (kemungkinan CORS error pada 401) sebelum cek status!", err);
+    throw err;
+  }
+
   if (res.status === 401) {
     console.error("[auth] token expired")
     if (isRefreshing) {

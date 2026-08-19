@@ -17,6 +17,8 @@ namespace WaDesktop.Client.Presenters
         private Company _currentCompany;
         private bool _disposed;
         private readonly System.Timers.Timer _webhookStatusTimer;
+        private readonly IDisposable _sessionExpiredSub;
+        private readonly IDisposable _sessionRestoredSub;
 
         public SidebarPresenter(ISidebarView view, IApiClient api, IEventAggregator bus)
         {
@@ -31,6 +33,17 @@ namespace WaDesktop.Client.Presenters
             _webhookStatusTimer = new System.Timers.Timer(15000); // 15 detik
             _webhookStatusTimer.Elapsed += async (s, e) => await CheckWebhookStatusAsync();
             _webhookStatusTimer.Start();
+
+            _sessionExpiredSub = _bus.Subscribe<SessionExpiredMessage>(msg => 
+            {
+                _webhookStatusTimer.Stop();
+            });
+
+            _sessionRestoredSub = _bus.Subscribe<LoginCompletedMessage>(async msg => 
+            {
+                await LoadDataAsync();
+                _webhookStatusTimer.Start();
+            });
         }
 
         private async Task CheckWebhookStatusAsync()
@@ -109,6 +122,9 @@ namespace WaDesktop.Client.Presenters
         {
             if (!_disposed)
             {
+                _sessionExpiredSub?.Dispose();
+                _sessionRestoredSub?.Dispose();
+
                 _webhookStatusTimer?.Stop();
                 _webhookStatusTimer?.Dispose();
 

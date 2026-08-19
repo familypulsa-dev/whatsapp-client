@@ -163,7 +163,6 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.Status.HeaderText = "Active";
             this.Status.Name = "Status";
             this.Status.TrueValue = true;
-            this.Status.Visible = false;
             // 
             // Company
             // 

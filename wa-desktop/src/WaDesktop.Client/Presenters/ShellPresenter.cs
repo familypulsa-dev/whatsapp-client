@@ -33,6 +33,7 @@ namespace WaDesktop.Client.Presenters
         private IDisposable _badgeSub;
         private IDisposable _refreshTabSub;
         private bool _disposed;
+        private bool _isLoggingIn = false;
 
         public ShellPresenter(IShellView view, IAuthService auth, IEventAggregator bus, AppState state,
             IModuleFactory moduleFactory, IServiceProvider serviceProvider)
@@ -154,24 +155,35 @@ namespace WaDesktop.Client.Presenters
 
         private void OnSessionExpired(SessionExpiredMessage msg)
         {
-            _view.ClearTabs();
-            _view.StatusText = "Session expired — login ulang";
+            if (_isLoggingIn) return;
+            _isLoggingIn = true;
 
-            var loginView = _serviceProvider.GetRequiredService<LoginView>();
-            var loginPresenter = ActivatorUtilities.CreateInstance<LoginPresenter>(_serviceProvider, loginView);
-            if (loginView.ShowDialog() == DialogResult.OK)
+            try
             {
-                _view.StatusText = $"Logged in as {_auth.DisplayName}";
-                _view.SetFooterServerName(_state.DisplayName + " - " + _state.CompanyName ?? "Unknown");
-                OpenMessages();
+                _view.ClearTabs();
+                _view.StatusText = "Session expired — login ulang";
+
+                var loginView = _serviceProvider.GetRequiredService<LoginView>();
+                var loginPresenter = ActivatorUtilities.CreateInstance<LoginPresenter>(_serviceProvider, loginView);
+                
+                if (loginView.ShowDialog() == DialogResult.OK)
+                {
+                    _view.StatusText = $"Logged in as {_auth.DisplayName}";
+                    _view.SetFooterServerName(_state.DisplayName + " - " + (_state.CompanyName ?? "Unknown"));
+                    OpenMessages();
+                }
+                else
+                {
+                    _auth.Logout();
+                    _bus.Publish(new LogoutMessage());
+                    _view.StatusText = "Logged out";
+                }
+                loginPresenter.Dispose();
             }
-            else
+            finally
             {
-                _auth.Logout();
-                _bus.Publish(new LogoutMessage());
-                _view.StatusText = "Logged out";
+                _isLoggingIn = false;
             }
-            loginPresenter.Dispose();
         }
 
         private void OnLogout(object sender, EventArgs e)
