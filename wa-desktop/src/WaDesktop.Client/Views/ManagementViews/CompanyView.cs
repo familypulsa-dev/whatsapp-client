@@ -31,32 +31,11 @@ namespace WaDesktop.Client.Views.ManagementViews
                     _originalValues.Clear();
                     dataGridView.Rows.Clear();
 
-                    //if (dataGridView.Columns.Count == 3)
-                    //{
-                    //    dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "LimitMarketing", HeaderText = "Limit Marketing" });
-                    //    dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "LimitUtility", HeaderText = "Limit Utilitas" });
-                    //    dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "LimitAuthentication", HeaderText = "Limit Autentikasi" });
-                    //    dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "LimitService", HeaderText = "Limit Servis" });
-
-                    //    dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "UsageMarketing", HeaderText = "Usage Marketing", ReadOnly = true });
-                    //    dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "UsageUtility", HeaderText = "Usage Utilitas", ReadOnly = true });
-                    //    dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "UsageAuthentication", HeaderText = "Usage Autentikasi", ReadOnly = true });
-                    //    dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "UsageService", HeaderText = "Usage Servis", ReadOnly = true });
-
-                    //    dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "CurrentCost", HeaderText = "Est. Tagihan Saat ini", ReadOnly = true });
-                    //    dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "MetaCost", HeaderText = "Tagihan Meta", ReadOnly = true });
-                    //    dataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "MaxEstimatedCost", HeaderText = "Maks Est.Tagihan", ReadOnly = true });
-                    //}
-
                     foreach (var c in value)
                     {
                         int idx = dataGridView.Rows.Add(
                             c.Id, c.Name, c.CreatedAt,
-                            c.LimitMarketing, c.LimitUtility, c.LimitAuthentication, c.LimitService,
-                            $"{c.UsageMarketing}", $"{c.UsageUtility}", $"{c.UsageAuthentication}", $"{c.UsageService}",
-                            c.CurrentCost.ToString("C2", new System.Globalization.CultureInfo("id-ID")),
-                            c.MetaCost.ToString("C2", new System.Globalization.CultureInfo("id-ID")),
-                            c.MaxEstimatedCost?.ToString("C2", new System.Globalization.CultureInfo("id-ID"))
+                            c.MetaCost.ToString("C2", new System.Globalization.CultureInfo("id-ID"))
                         );
                         dataGridView.Rows[idx].DefaultCellStyle.BackColor = Color.White;
                         dataGridView.Rows[idx].Tag = null;
@@ -92,22 +71,11 @@ namespace WaDesktop.Client.Views.ManagementViews
                 if (row.IsNewRow) continue;
                 if (row.Tag != null && (bool)row.Tag)
                 {
-                    int? ParseInt(object val)
-                    {
-                        if (val == null || string.IsNullOrWhiteSpace(val.ToString())) return null;
-                        if (int.TryParse(val.ToString(), out int res)) return res;
-                        return null;
-                    }
-
                     var idCell = row.Cells["IdServer"].Value?.ToString() ?? "";
                     list.Add(new Company
                     {
                         Id = idCell,
-                        Name = row.Cells["dgName"].Value?.ToString() ?? "",
-                        LimitMarketing = ParseInt(row.Cells["LimitMarketing"].Value),
-                        LimitUtility = ParseInt(row.Cells["LimitUtility"].Value),
-                        LimitAuthentication = ParseInt(row.Cells["LimitAuthentication"].Value),
-                        LimitService = ParseInt(row.Cells["LimitService"].Value)
+                        Name = row.Cells["dgName"].Value?.ToString() ?? ""
                     });
                 }
             }
@@ -138,29 +106,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             if (changed)
             {
                 MarkDirty(dataGridView.Rows[e.RowIndex]);
-                RecalculateRow(dataGridView.Rows[e.RowIndex]);
             }
-        }
-
-        private void RecalculateRow(DataGridViewRow row)
-        {
-            try
-            {
-                int? ParseInt(object val)
-                {
-                    if (val == null || string.IsNullOrWhiteSpace(val.ToString())) return null;
-                    if (int.TryParse(val.ToString(), out int result)) return result;
-                    return null;
-                }
-
-                int? limitMkt = ParseInt(row.Cells["LimitMarketing"].Value);
-                int? limitUtl = ParseInt(row.Cells["LimitUtility"].Value);
-                int? limitAuth = ParseInt(row.Cells["LimitAuthentication"].Value);
-
-                decimal? maxEst = ((limitMkt ?? 0) * 586.33m) + ((limitUtl ?? 0) * 356.65m) + ((limitAuth ?? 0) * 356.65m);
-                row.Cells["MaxEstimatedCost"].Value = maxEst?.ToString("C2", new System.Globalization.CultureInfo("id-ID"));
-            }
-            catch { }
         }
 
         private void DataGridView_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)

@@ -18,8 +18,14 @@ namespace WaDesktop.Infrastructure.Services
 
         public Task<Company> UpdateCompanyAsync(string id, string name, int? limitMarketing = null, int? limitUtility = null, int? limitAuth = null, int? limitService = null)
         {
-            var payload = new { name, limit_marketing = limitMarketing, limit_utility = limitUtility, limit_authentication = limitAuth, limit_service = limitService };
-            return PutAsync<object, Company>($"{ApiRoutes.Companies.Base}/{id}", payload);
+            // Limit hanya dikirim jika diisi — update nama saja tidak akan menghapus limit existing.
+            var payload = new Newtonsoft.Json.Linq.JObject { ["name"] = name };
+            if (limitMarketing.HasValue) payload["limit_marketing"] = limitMarketing.Value;
+            if (limitUtility.HasValue) payload["limit_utility"] = limitUtility.Value;
+            if (limitAuth.HasValue) payload["limit_authentication"] = limitAuth.Value;
+            if (limitService.HasValue) payload["limit_service"] = limitService.Value;
+
+            return PutAsync<Newtonsoft.Json.Linq.JObject, Company>($"{ApiRoutes.Companies.Base}/{id}", payload);
         }
 
         public Task DeleteCompanyAsync(string id)

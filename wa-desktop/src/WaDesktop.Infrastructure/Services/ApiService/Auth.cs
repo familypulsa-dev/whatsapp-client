@@ -38,7 +38,13 @@ namespace WaDesktop.Infrastructure.Services
                     
                     if (result == null || string.IsNullOrEmpty(result.AccessToken)) return false;
 
-                    SetSession(result.AccessToken, result.RefreshToken);
+                    // Defensif: kalau respons refresh tidak membawa refresh_token baru
+                    // (backend tidak rotasi), JANGAN nukul RT lama dengan null.
+                    var newRefresh = string.IsNullOrEmpty(result.RefreshToken)
+                        ? _refreshToken
+                        : result.RefreshToken;
+
+                    SetSession(result.AccessToken, newRefresh);
                     TokenRefreshed?.Invoke(this, EventArgs.Empty);
                     return true;
                 }

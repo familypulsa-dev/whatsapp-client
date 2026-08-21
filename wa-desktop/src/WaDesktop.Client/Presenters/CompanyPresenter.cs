@@ -61,7 +61,7 @@ namespace WaDesktop.Client.Presenters
                     if (string.IsNullOrEmpty(c.Id))
                         await Task.Run(() => _api.CreateCompanyAsync(c.Name));
                     else
-                        await Task.Run(() => _api.UpdateCompanyAsync(c.Id, c.Name, c.LimitMarketing, c.LimitUtility, c.LimitAuthentication, c.LimitService));
+                        await Task.Run(() => _api.UpdateCompanyAsync(c.Id, c.Name));
                 }
 
                 await LoadDataAsync();

@@ -26,13 +26,13 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      "/api": "http://localhost:8080",
+      "/api": "https://test.waba.mbi-software.com",
       "/ws": {
-        target: "ws://localhost:8080",
+        target: "wss://test.waba.mbi-software.com",
         ws: true,
       },
     },
-  },
+  },  
    // Your Vite configuration
   define: {
     'process.env': process.env

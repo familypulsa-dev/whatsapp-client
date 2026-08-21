@@ -13,11 +13,12 @@ export const useWS = create<WSState>((set, get) => {
 
   function connect(token: string, company_id: string) {
     if (ws) ws.close()
-    const host = (window as any).__WS_HOST__ || "localhost:8080"
+    // const host = (window as any).__WS_HOST__ || "localhost:8080"
+    const host = (window as any).__WS_HOST__ || "test.waba.mbi-software.com"
     const proto = host.startsWith("localhost") ? "ws:" : "wss:"
     
     // Connect tanpa query parameter
-    ws = new WebSocket(`${proto}//${host}/ws`)
+    ws = new WebSocket(`${proto}//${host}/ws/`)
 
     ws.onopen = () => {
       set({ connected: true })
