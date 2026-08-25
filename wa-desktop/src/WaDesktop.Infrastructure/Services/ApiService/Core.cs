@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -18,33 +16,39 @@ namespace WaDesktop.Infrastructure.Services
     {
         private readonly HttpClient _http;
         private readonly string _baseUrl;
-        private string _accessToken;
-        private string _refreshToken;
-        private readonly SemaphoreSlim _refreshLock = new SemaphoreSlim(1, 1);
+        private readonly IAuthSessionStore _sessionStore;
 
         public event EventHandler SessionExpired;
         public event EventHandler TokenRefreshed;
 
-        public string AccessToken => _accessToken;
-        public string RefreshToken => _refreshToken;
+        public string AccessToken => _sessionStore.AccessToken;
+        public string RefreshToken => _sessionStore.RefreshToken;
 
-        public ApiClient(string baseUrl = "http://localhost:8080")
+        public ApiClient(string baseUrl = "http://localhost:8080", IAuthSessionStore sessionStore = null)
         {
             _baseUrl = baseUrl;
-            _http = new HttpClient();
+            _sessionStore = sessionStore ?? new AuthSessionStore();
+
+            // Auth (Bearer + refresh-retry) ditangani pipeline, bukan lagi manual.
+            var handler = new Data.Remote.Handlers.AuthDelegatingHandler(_sessionStore, baseUrl)
+            {
+                InnerHandler = new HttpClientHandler()
+            };
+            _http = new HttpClient(handler);
+
+            // Facade event: konsumen lama (Program.cs bridge, AuthService) tetap jalan tanpa ubah kode.
+            _sessionStore.SessionExpired += (s, e) => SessionExpired?.Invoke(this, e);
+            _sessionStore.TokenRefreshed += (s, e) => TokenRefreshed?.Invoke(this, e);
         }
 
         public void SetToken(string token)
         {
-            _accessToken = token;
-            _http.DefaultRequestHeaders.Authorization =
-                string.IsNullOrEmpty(token) ? null : new AuthenticationHeaderValue("Bearer", token);
+            _sessionStore.SetSession(token, _sessionStore.RefreshToken);
         }
 
         public void SetSession(string accessToken, string refreshToken)
         {
-            SetToken(accessToken);
-            _refreshToken = refreshToken;
+            _sessionStore.SetSession(accessToken, refreshToken);
         }
 
         // ── Internal HTTP Helpers ──
@@ -119,49 +123,10 @@ namespace WaDesktop.Infrastructure.Services
             return refresh ? SendWithRefreshAsync(sendFunc) : sendFunc();
         }
 
-        private async Task<HttpResponseMessage> SendWithRefreshAsync(Func<Task<HttpResponseMessage>> send)
+        private Task<HttpResponseMessage> SendWithRefreshAsync(Func<Task<HttpResponseMessage>> send)
         {
-            var initialToken = _accessToken;
-            var res = await send();
-            
-            if (res.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-            {
-                bool refreshed = false;
-                await _refreshLock.WaitAsync();
-                try
-                {
-                    // Jika token sudah berubah saat menunggu lock, berarti thread lain sudah refresh
-                    if (initialToken != _accessToken)
-                    {
-                        refreshed = true;
-                    }
-                    else
-                    {
-                        refreshed = await TryRefreshAsync();
-                    }
-                }
-                finally
-                {
-                    _refreshLock.Release();
-                }
-
-                if (refreshed)
-                {
-                    res = await send();
-                    if (res.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                    {
-                        SessionExpired?.Invoke(this, EventArgs.Empty);
-                        throw new HttpRequestException("Session expired");
-                    }
-                }
-                else
-                {
-                    // Pastikan event ditembak kalau refresh gagal!
-                    SessionExpired?.Invoke(this, EventArgs.Empty);
-                    throw new HttpRequestException("Session expired");
-                }
-            }
-            return res;
+            // Refresh + retry saat 401 kini ditangani AuthDelegatingHandler di pipeline.
+            return send();
         }
 
         private async Task EnsureSuccessAsync(HttpResponseMessage response)

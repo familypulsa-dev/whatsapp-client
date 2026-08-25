@@ -17,7 +17,8 @@ namespace WaDesktop.Client.Extensions
         {
             // 1. Core Services (Singleton = Satu instance untuk seluruh aplikasi)
             services.AddSingleton<IEventAggregator, EventAggregator>();
-            services.AddSingleton<IApiClient>(new ApiClient(apiBaseUrl));
+            services.AddSingleton<IAuthSessionStore, AuthSessionStore>();
+            services.AddSingleton<IApiClient>(sp => new ApiClient(apiBaseUrl, sp.GetRequiredService<IAuthSessionStore>()));
             services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<IUpdateService>(updateService);
             services.AddSingleton<AppState>();

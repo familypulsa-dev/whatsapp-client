@@ -60,6 +60,7 @@
     <Compile Include="Interfaces\IAppSettingsView.cs" />
     <Compile Include="Interfaces\IApiClient.cs" />
     <Compile Include="Interfaces\IAuthService.cs" />
+    <Compile Include="Interfaces\IAuthSessionStore.cs" />
     <Compile Include="Interfaces\IEventAggregator.cs" />
     <Compile Include="Entities\PhoneNumberNode.cs" />
     <Compile Include="Entities\Company.cs" />

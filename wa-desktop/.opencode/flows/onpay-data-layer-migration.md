@@ -48,8 +48,14 @@ Infrastructure/Services/AuthSessionStore.cs      ← token state + event Session
 
 - [x] **Fase 0** — branch `refactor/onpay-alignment`, baseline commit
 - [x] **Fase 1** — `WaDesktop.Domain/Common/{Result,Error}.cs` (C# 7.3-safe)
-- [ ] **Fase 2** — AuthDelegatingHandler + AuthSessionStore; Core.cs jadi tipis;
+- [x] **Fase 2** — AuthDelegatingHandler + AuthSessionStore; Core.cs jadi tipis;
       ApiClient facade lama TETAP HIDUP; ShellPresenter re-wire event
+      → Catatan deviasi: event TIDAK di-rewire di ShellPresenter; ApiClient
+      men-forward event dari store sehingga Program.cs/AuthService tak tersentuh.
+      Rewire penuh ditunda ke Fase 5 (lebih aman, nol perubahan konsumen).
+      Guard tambahan: Bearer/refresh hanya untuk host API — token tidak bocor
+      ke host eksternal (avatar Meta CDN), endpoint auth dikecualikan dari retry
+      agar kredensial salah tidak memicu SessionExpired palsu.
 - [ ] **Fase 3** — Pilot fitur Company end-to-end (payload+interface+datasource+repo+presenter)
 - [ ] **Fase 4** — Rollout: Billing → AppSettings → User → Template → Waba → PhoneNumber → Auth
 - [ ] **Fase 5** — Hapus IApiClient + ApiService partials lama; update tests; update AGENTS.md
