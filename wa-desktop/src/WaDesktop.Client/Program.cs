@@ -59,10 +59,11 @@ namespace WaDesktop.Client
                 using (var provider = services.BuildServiceProvider())
                 {
                     var eventAggregator = provider.GetRequiredService<IEventAggregator>();
-                    var apiClient = (ApiClient)provider.GetRequiredService<IApiClient>();
+                    var sessionStore = provider.GetRequiredService<IAuthSessionStore>();
 
-                    apiClient.SessionExpired += (s, e) => eventAggregator.Publish(new SessionExpiredMessage());
-                    apiClient.TokenRefreshed += (s, e) => eventAggregator.Publish(new TokenRefreshedMessage());
+                    // Bridge event sesi dari pipeline HTTP ke EventAggregator.
+                    sessionStore.SessionExpired += (s, e) => eventAggregator.Publish(new SessionExpiredMessage());
+                    sessionStore.TokenRefreshed += (s, e) => eventAggregator.Publish(new TokenRefreshedMessage());
 
                     // --- LOGIN ---
                     var loginView = provider.GetRequiredService<LoginView>();

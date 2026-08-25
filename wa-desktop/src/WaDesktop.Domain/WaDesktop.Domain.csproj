@@ -58,7 +58,6 @@
     <Compile Include="Interfaces\IMessagesView.cs" />
     <Compile Include="Interfaces\IManagementView.cs" />
     <Compile Include="Interfaces\IAppSettingsView.cs" />
-    <Compile Include="Interfaces\IApiClient.cs" />
     <Compile Include="Interfaces\IAuthService.cs" />
     <Compile Include="Interfaces\IAuthSessionStore.cs" />
     <Compile Include="Interfaces\ICompanyRepository.cs" />
@@ -69,6 +68,8 @@
     <Compile Include="Interfaces\IWabaRepository.cs" />
     <Compile Include="Interfaces\IPhoneNumberRepository.cs" />
     <Compile Include="Interfaces\IAuthRepository.cs" />
+    <Compile Include="Entities\SavePhoneResult.cs" />
+    <Compile Include="Entities\AuthResult.cs" />
     <Compile Include="Interfaces\IEventAggregator.cs" />
     <Compile Include="Entities\PhoneNumberNode.cs" />
     <Compile Include="Entities\Company.cs" />

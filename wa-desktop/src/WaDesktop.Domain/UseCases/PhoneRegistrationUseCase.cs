@@ -5,13 +5,17 @@ using WaDesktop.Domain.Interfaces;
 
 namespace WaDesktop.Domain.UseCases
 {
+    /// <summary>
+    /// Orkestrasi registrasi nomor telepon Meta. Melempar Exception dengan pesan
+    /// yang bisa ditampilkan langsung oleh PhoneRegistrationPresenter.
+    /// </summary>
     public class PhoneRegistrationUseCase : IPhoneRegistrationUseCase
     {
-        private readonly IApiClient _api;
+        private readonly IPhoneNumberRepository _phones;
 
-        public PhoneRegistrationUseCase(IApiClient api)
+        public PhoneRegistrationUseCase(IPhoneNumberRepository phones)
         {
-            _api = api;
+            _phones = phones;
         }
 
         public async Task<string> CreatePhoneNumberAsync(string wabaId, string cc, string phoneNumber, string verifiedName)
@@ -26,8 +30,10 @@ namespace WaDesktop.Domain.UseCases
                 VerifiedName = verifiedName.Trim(),
             };
 
-            var resp = await _api.CreatePhoneNumberAsync(wabaId, req);
-            return resp.PhoneNumberId;
+            var result = await _phones.CreatePhoneNumberAsync(wabaId, req);
+            if (result.IsFailure)
+                throw new Exception(result.Error.Message);
+            return result.Value.PhoneNumberId;
         }
 
         public async Task RequestVerificationCodeAsync(string phoneNumberId, string method)
@@ -35,11 +41,13 @@ namespace WaDesktop.Domain.UseCases
             if (string.IsNullOrWhiteSpace(phoneNumberId))
                 throw new ArgumentException("Phone Number ID belum tersedia.");
 
-            await _api.RequestVerificationCodeAsync(phoneNumberId, new RequestCodeRequest
+            var result = await _phones.RequestVerificationCodeAsync(phoneNumberId, new RequestCodeRequest
             {
                 CodeMethod = method,
                 Language = "en_US"
             });
+            if (result.IsFailure)
+                throw new Exception(result.Error.Message);
         }
 
         public async Task VerifyCodeAsync(string phoneNumberId, string code)
@@ -51,7 +59,9 @@ namespace WaDesktop.Domain.UseCases
             if (string.IsNullOrWhiteSpace(code))
                 throw new ArgumentException("Kode verifikasi wajib diisi.");
 
-            await _api.VerifyCodeAsync(phoneNumberId, new VerifyCodeRequest { Code = code });
+            var result = await _phones.VerifyCodeAsync(phoneNumberId, new VerifyCodeRequest { Code = code });
+            if (result.IsFailure)
+                throw new Exception(result.Error.Message);
         }
 
         public async Task RegisterPhoneAsync(string phoneNumberId, string pin, string confirmPin)
@@ -67,7 +77,9 @@ namespace WaDesktop.Domain.UseCases
             if (pin != confirmPin)
                 throw new ArgumentException("PIN dan konfirmasi PIN tidak cocok.");
 
-            await _api.RegisterPhoneAsync(phoneNumberId, new RegisterPhoneRequest { Pin = pin });
+            var result = await _phones.RegisterPhoneAsync(phoneNumberId, new RegisterPhoneRequest { Pin = pin });
+            if (result.IsFailure)
+                throw new Exception(result.Error.Message);
         }
     }
 }

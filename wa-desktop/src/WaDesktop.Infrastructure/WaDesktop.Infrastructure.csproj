@@ -66,14 +66,6 @@
     <Compile Include="Payloads\Templates\TemplatePayload.cs" />
     <Compile Include="Payloads\Wabas\WabaPayload.cs" />
     <Compile Include="Payloads\PhoneNumbers\PhoneNumberPayloads.cs" />
-    <Compile Include="Services\ApiService\Core.cs" />
-    <Compile Include="Services\ApiService\Auth.cs" />
-    <Compile Include="Services\ApiService\Companies.cs" />
-    <Compile Include="Services\ApiService\Users.cs" />
-    <Compile Include="Services\ApiService\PhoneNumbers.cs" />
-    <Compile Include="Services\ApiService\Templates.cs" />
-    <Compile Include="Services\ApiService\Settings.cs" />
-    <Compile Include="Services\ApiService\Waba.cs" />
     <Compile Include="Services\AuthSessionStore.cs" />
     <Compile Include="Services\EmbeddedServer.cs" />
     <Compile Include="Services\AuthService.cs" />

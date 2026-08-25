@@ -22,9 +22,6 @@ namespace WaDesktop.Client.Extensions
             services.AddSingleton<IAuthSessionStore, AuthSessionStore>();
             services.AddSingleton(sp => WaDesktop.Infrastructure.Data.Remote.ApiHttpPipeline.Create(
                 sp.GetRequiredService<IAuthSessionStore>(), apiBaseUrl));
-            services.AddSingleton<IApiClient>(sp => new ApiClient(apiBaseUrl,
-                sp.GetRequiredService<IAuthSessionStore>(),
-                sp.GetRequiredService<HttpClient>()));
             services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<IUpdateService>(updateService);
             services.AddSingleton<AppState>();

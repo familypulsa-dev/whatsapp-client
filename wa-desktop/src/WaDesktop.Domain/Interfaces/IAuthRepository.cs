@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using WaDesktop.Domain.Common;
+using WaDesktop.Domain.Entities;
 
 namespace WaDesktop.Domain.Interfaces
 {

@@ -22,5 +22,11 @@ namespace WaDesktop.Domain.Interfaces
         Task<Result<PhoneNumberDetail>> SyncProfileAsync(string phoneNumberId);
         Task<Result<bool>> SyncFromMetaAsync(string wabaId);
         Task<Result<PhoneNumberDetail>> UploadPictureAsync(string phoneNumberId, string filePath);
+
+        // ── Phone Number Registration Flow ──
+        Task<Result<CreatePhoneNumberResponse>> CreatePhoneNumberAsync(string wabaId, CreatePhoneNumberRequest request);
+        Task<Result> RequestVerificationCodeAsync(string phoneNumberId, RequestCodeRequest request);
+        Task<Result> VerifyCodeAsync(string phoneNumberId, VerifyCodeRequest request);
+        Task<Result> RegisterPhoneAsync(string phoneNumberId, RegisterPhoneRequest request);
     }
 }
