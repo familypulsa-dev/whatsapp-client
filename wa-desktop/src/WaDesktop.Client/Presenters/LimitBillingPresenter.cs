@@ -8,7 +8,7 @@ namespace WaDesktop.Client.Presenters
     public class LimitBillingPresenter : IDisposable
     {
         private readonly ILimitBillingView _view;
-        private readonly IApiClient _api;
+        private readonly ICompanyRepository _companies;
         private readonly Company _company;
         private bool _disposed;
 
@@ -18,10 +18,10 @@ namespace WaDesktop.Client.Presenters
         private const decimal PriceAuthentication = 356.65m;
         private const decimal PriceService = 0m;
 
-        public LimitBillingPresenter(ILimitBillingView view, IApiClient api, Company company)
+        public LimitBillingPresenter(ILimitBillingView view, ICompanyRepository companies, Company company)
         {
             _view = view;
-            _api = api;
+            _companies = companies;
             _company = company;
 
             _view.SaveClicked += OnSaveClicked;
@@ -64,19 +64,21 @@ namespace WaDesktop.Client.Presenters
             _view.IsLoading = true;
             try
             {
-                await Task.Run(() => _api.UpdateCompanyAsync(
-                    _company.Id, 
-                    _company.Name, 
-                    _view.LimitMarketing, 
-                    _view.LimitUtility, 
-                    _view.LimitAuthentication, 
+                var result = await Task.Run(() => _companies.UpdateAsync(
+                    _company.Id,
+                    _company.Name,
+                    _view.LimitMarketing,
+                    _view.LimitUtility,
+                    _view.LimitAuthentication,
                     _view.LimitService));
-                
+
+                if (result.IsFailure)
+                {
+                    _view.ShowError($"Gagal menyimpan pengaturan limit: {result.Error.Message}");
+                    return;
+                }
+
                 _view.CloseDialog(true);
-            }
-            catch (Exception ex)
-            {
-                _view.ShowError($"Gagal menyimpan pengaturan limit: {ex.Message}");
             }
             finally
             {

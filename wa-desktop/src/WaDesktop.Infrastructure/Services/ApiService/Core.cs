@@ -24,17 +24,13 @@ namespace WaDesktop.Infrastructure.Services
         public string AccessToken => _sessionStore.AccessToken;
         public string RefreshToken => _sessionStore.RefreshToken;
 
-        public ApiClient(string baseUrl = "http://localhost:8080", IAuthSessionStore sessionStore = null)
+        public ApiClient(string baseUrl = "http://localhost:8080", IAuthSessionStore sessionStore = null, HttpClient http = null)
         {
             _baseUrl = baseUrl;
             _sessionStore = sessionStore ?? new AuthSessionStore();
 
             // Auth (Bearer + refresh-retry) ditangani pipeline, bukan lagi manual.
-            var handler = new Data.Remote.Handlers.AuthDelegatingHandler(_sessionStore, baseUrl)
-            {
-                InnerHandler = new HttpClientHandler()
-            };
-            _http = new HttpClient(handler);
+            _http = http ?? Data.Remote.ApiHttpPipeline.Create(_sessionStore, baseUrl);
 
             // Facade event: konsumen lama (Program.cs bridge, AuthService) tetap jalan tanpa ubah kode.
             _sessionStore.SessionExpired += (s, e) => SessionExpired?.Invoke(this, e);

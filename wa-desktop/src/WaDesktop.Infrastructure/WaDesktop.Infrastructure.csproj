@@ -40,7 +40,12 @@
     <Compile Include="EventAggregator\WeakAction.cs" />
     <Compile Include="EventAggregator\EventAggregator.cs" />
     <Compile Include="Constants\ApiRoutes.cs" />
+    <Compile Include="Data\Remote\ApiHttpPipeline.cs" />
     <Compile Include="Data\Remote\Handlers\AuthDelegatingHandler.cs" />
+    <Compile Include="Data\Remote\DataSources\BaseDataSource.cs" />
+    <Compile Include="Data\Remote\DataSources\CompanyDataSource.cs" />
+    <Compile Include="Data\Repositories\CompanyRepository.cs" />
+    <Compile Include="Payloads\Companies\CompanyPayload.cs" />
     <Compile Include="Services\ApiService\Core.cs" />
     <Compile Include="Services\ApiService\Auth.cs" />
     <Compile Include="Services\ApiService\Companies.cs" />

@@ -13,6 +13,7 @@ namespace WaDesktop.Client.Presenters
     {
         private readonly ISidebarView _view;
         private readonly IApiClient _api;
+        private readonly ICompanyRepository _companies;
         private readonly IEventAggregator _bus;
         private Company _currentCompany;
         private bool _disposed;
@@ -20,10 +21,11 @@ namespace WaDesktop.Client.Presenters
         private readonly IDisposable _sessionExpiredSub;
         private readonly IDisposable _sessionRestoredSub;
 
-        public SidebarPresenter(ISidebarView view, IApiClient api, IEventAggregator bus)
+        public SidebarPresenter(ISidebarView view, IApiClient api, ICompanyRepository companies, IEventAggregator bus)
         {
             _view = view;
             _api = api;
+            _companies = companies;
             _bus = bus;
 
             _view.PhoneNumberSelected += OnPhoneNumberSelected;
@@ -88,7 +90,7 @@ namespace WaDesktop.Client.Presenters
             if (_currentCompany == null) return;
 
             var dialogView = _view.CreateLimitBillingView();
-            using (var presenter = new LimitBillingPresenter(dialogView, _api, _currentCompany))
+            using (var presenter = new LimitBillingPresenter(dialogView, _companies, _currentCompany))
             {
                 if (_view.ShowDialog(dialogView))
                 {

@@ -56,7 +56,17 @@ Infrastructure/Services/AuthSessionStore.cs      ← token state + event Session
       Guard tambahan: Bearer/refresh hanya untuk host API — token tidak bocor
       ke host eksternal (avatar Meta CDN), endpoint auth dikecualikan dari retry
       agar kredensial salah tidak memicu SessionExpired palsu.
-- [ ] **Fase 3** — Pilot fitur Company end-to-end (payload+interface+datasource+repo+presenter)
+- [x] **Fase 3** — Pilot fitur Company end-to-end (payload+interface+datasource+repo+presenter)
+      → Catatan deviasi: entity `Company` MASIH membawa `[JsonProperty]` karena
+      path legacy (`GetListAsync<Company>` dipakai Users/WabasPresenter) masih
+      membaca langsung entity. Pembersihan atribut dilakukan di Fase 5 setelah
+      semua fitur pindah stack baru.
+      Struktur baru aktif: `ApiHttpPipeline` (HttpClient singleton bersama),
+      `BaseDataSource` (Result + unwrap + map status HTTP→ErrorType),
+      `CompanyPayload`, `CompanyDataSource`, `CompanyRepository`,
+      kontrak `ICompanyRepository`.
+      Konsumen baru: CompanyPresenter (penuh), LimitBillingPresenter +
+      SidebarPresenter (ctor +1 dependensi).
 - [ ] **Fase 4** — Rollout: Billing → AppSettings → User → Template → Waba → PhoneNumber → Auth
 - [ ] **Fase 5** — Hapus IApiClient + ApiService partials lama; update tests; update AGENTS.md
 

@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using WaDesktop.Domain.Interfaces;
 using WaDesktop.Domain.State;
 using WaDesktop.Domain.UseCases;
+using WaDesktop.Infrastructure.Data.Repositories;
 using WaDesktop.Infrastructure.EventAggregator;
 using WaDesktop.Infrastructure.Services;
 using WaDesktop.Client.Factories;
@@ -18,10 +19,19 @@ namespace WaDesktop.Client.Extensions
             // 1. Core Services (Singleton = Satu instance untuk seluruh aplikasi)
             services.AddSingleton<IEventAggregator, EventAggregator>();
             services.AddSingleton<IAuthSessionStore, AuthSessionStore>();
-            services.AddSingleton<IApiClient>(sp => new ApiClient(apiBaseUrl, sp.GetRequiredService<IAuthSessionStore>()));
+            services.AddSingleton(sp => WaDesktop.Infrastructure.Data.Remote.ApiHttpPipeline.Create(
+                sp.GetRequiredService<IAuthSessionStore>(), apiBaseUrl));
+            services.AddSingleton<IApiClient>(sp => new ApiClient(apiBaseUrl,
+                sp.GetRequiredService<IAuthSessionStore>(),
+                sp.GetRequiredService<HttpClient>()));
             services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<IUpdateService>(updateService);
             services.AddSingleton<AppState>();
+
+            // 1.2 Data layer ala onpay (Repository + DataSource per fitur)
+            services.AddTransient<ICompanyRepository, CompanyRepository>();
+            services.AddTransient(sp => new WaDesktop.Infrastructure.Data.Remote.DataSources.CompanyDataSource(
+                sp.GetRequiredService<HttpClient>(), apiBaseUrl));
 
             // 1.5 Module Factory (Singleton = root provider; tiap Create bikin child scope)
             services.AddSingleton<IModuleFactory>(sp => new ModuleFactory(sp, messagesUrl, apiBaseUrl));
