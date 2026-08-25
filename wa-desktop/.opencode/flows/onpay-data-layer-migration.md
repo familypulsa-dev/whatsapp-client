@@ -90,7 +90,7 @@ Infrastructure/Services/AuthSessionStore.cs      ← token state + event Session
 6. [x] Register DI di `ServiceCollectionExtensions`
 7. [x] **Daftarkan semua file .cs baru di .csproj** ← penyebab CS0246 klasik
 8. [x] Update fake test bila presenter tersangkut test (tidak ada yang perlu)
-9. [ ] Build + smoke test tab terkait ← **BELUM dijalankan sejak fase 3**
+9. [x] Build + smoke test tab terkait — build HIJAU pada 16004e7 (fix using UsersPresenter + Error.Validation); smoke test manual menyusul
 
 ## Out of Scope
 
