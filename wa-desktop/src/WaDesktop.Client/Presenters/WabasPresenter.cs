@@ -1,9 +1,9 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WaDesktop.Domain.Interfaces;
 using WaDesktop.Domain.Entities;
+using WaDesktop.Client.Views.ManagementViews;
 using WaDesktop.Client.Views.ManagementViews;
 
 namespace WaDesktop.Client.Presenters
@@ -12,21 +12,18 @@ namespace WaDesktop.Client.Presenters
     {
         private readonly WabaView _view;
         private readonly IWabaRepository _wabas;
-        private readonly ICompanyRepository _companies;
         private bool _disposed;
 
-        public WabasPresenter(WabaView view, IWabaRepository wabas, ICompanyRepository companies)
+        public WabasPresenter(WabaView view, IWabaRepository wabas)
         {
             _view = view;
             _wabas = wabas;
-            _companies = companies;
 
             _view.RefreshClicked += async (s, e) => await LoadDataAsync();
             _view.SearchClicked += async (s, q) => await LoadDataAsync(q);
             _view.AddClicked += OnAdd;
             _view.EditClicked += OnEdit;
             _view.DeleteClicked += OnDelete;
-            _view.SaveClicked += OnSave;
             _view.SyncClicked += OnSync;
         }
 
@@ -37,24 +34,11 @@ namespace WaDesktop.Client.Presenters
             _view.IsLoading = true;
             try
             {
-                var companiesResult = Task.Run(() => _companies.GetAllAsync());
                 var wabasResult = await Task.Run(() => _wabas.GetAllAsync());
                 if (wabasResult.IsFailure)
                     throw new Exception(wabasResult.Error.Message);
 
-                var companiesResultValue = await companiesResult;
-                if (companiesResultValue.IsFailure)
-                    throw new Exception(companiesResultValue.Error.Message);
-
                 var wabas = wabasResult.Value;
-                _view.SetCompanyDataSource(companiesResultValue.Value);
-
-                var companyMap = companiesResultValue.Value.ToDictionary(c => c.Id, c => c.Name);
-                foreach (var w in wabas)
-                {
-                    if (!string.IsNullOrEmpty(w.CompanyId) && companyMap.TryGetValue(w.CompanyId, out var name))
-                        w.CompanyName = name;
-                }
 
                 if (!string.IsNullOrEmpty(search))
                     wabas = wabas.FindAll(w =>
@@ -66,35 +50,6 @@ namespace WaDesktop.Client.Presenters
             catch (Exception ex)
             {
                 MessageBox.Show($"Gagal load WABA: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                _view.IsLoading = false;
-            }
-        }
-
-        private async void OnSave(object sender, EventArgs e)
-        {
-            var wabaId = _view.SelectedWabaId;
-            if (wabaId == null)
-            {
-                MessageBox.Show("Pilih baris dulu.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            _view.IsLoading = true;
-            try
-            {
-                var companyId = _view.SelectedCompanyId;
-                var result = await Task.Run(() => _wabas.UpdateCompanyAsync(wabaId, companyId ?? ""));
-                if (result.IsFailure)
-                    throw new Exception(result.Error.Message);
-                await LoadDataAsync();
-                MessageBox.Show("Company updated.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Save failed: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -156,7 +111,6 @@ namespace WaDesktop.Client.Presenters
                 _view.AddClicked -= null;
                 _view.EditClicked -= null;
                 _view.DeleteClicked -= null;
-                _view.SaveClicked -= null;
                 _view.SyncClicked -= null;
                 _disposed = true;
             }

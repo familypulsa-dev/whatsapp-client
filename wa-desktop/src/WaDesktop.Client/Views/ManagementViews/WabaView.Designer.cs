@@ -21,12 +21,11 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dataGridView = new System.Windows.Forms.DataGridView();
             this.WabaId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Company = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.Company = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.btnSearch = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
-            this.btnSave = new System.Windows.Forms.Button();
             this.btnSync = new System.Windows.Forms.Button();
             this.panelHeader = new System.Windows.Forms.Panel();
             this.panelFooter = new System.Windows.Forms.Panel();
@@ -40,6 +39,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dataGridView.AllowUserToAddRows = false;
             this.dataGridView.AllowUserToDeleteRows = false;
             this.dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView.ReadOnly = true;
             this.dataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.WabaId,
             this.dataGridViewTextBoxColumn2,
@@ -62,10 +62,11 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dataGridViewTextBoxColumn2.HeaderText = "Name";
             this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
             // 
-            // Company
+            // Company (Server) — read-only, assignment dilakukan dari CompanyView
             // 
             this.Company.HeaderText = "Server";
             this.Company.Name = "Company";
+            this.Company.ReadOnly = true;
             // 
             // dataGridViewTextBoxColumn3
             // 
@@ -101,17 +102,6 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.btnDelete.UseVisualStyleBackColor = true;
             this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
-            // btnSave
-            // 
-            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSave.Location = new System.Drawing.Point(796, 3);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(75, 23);
-            this.btnSave.TabIndex = 7;
-            this.btnSave.Text = "Save";
-            this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Click += new System.EventHandler(this.BtnSave_Click);
-            // 
             // btnSync
             // 
             this.btnSync.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -137,7 +127,6 @@ namespace WaDesktop.Client.Views.ManagementViews
             // 
             this.panelFooter.Controls.Add(this.btnSync);
             this.panelFooter.Controls.Add(this.btnDelete);
-            this.panelFooter.Controls.Add(this.btnSave);
             this.panelFooter.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panelFooter.Location = new System.Drawing.Point(0, 525);
             this.panelFooter.Name = "panelFooter";
@@ -163,7 +152,7 @@ namespace WaDesktop.Client.Views.ManagementViews
 
         private System.Windows.Forms.DataGridViewTextBoxColumn WabaId;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
-        private System.Windows.Forms.DataGridViewComboBoxColumn Company;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Company;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private System.Windows.Forms.Button btnSync;
         private System.Windows.Forms.Panel panelHeader;
