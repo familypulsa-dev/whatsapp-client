@@ -37,6 +37,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Error.cs" />
+    <Compile Include="Common\Result.cs" />
     <Compile Include="Interfaces\IPhoneRegistrationView.cs" />
     <Compile Include="Interfaces\IPhoneRegistrationUseCase.cs" />
     <Compile Include="UseCases\PhoneRegistrationUseCase.cs" />
