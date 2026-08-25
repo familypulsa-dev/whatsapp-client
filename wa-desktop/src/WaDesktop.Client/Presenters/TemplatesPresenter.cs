@@ -13,7 +13,8 @@ namespace WaDesktop.Client.Presenters
     public class TemplatesPresenter : IDisposable, IPresenterBase
     {
         private readonly IManagementView<Template> _view;
-        private readonly IApiClient _api;
+        private readonly IApiClient _api; // masih dipakai untuk GetWabasAsync — pindah ke IWabaRepository di Fase 4e
+        private readonly ITemplateRepository _templates;
         private List<Template> _data;
         private readonly IEventAggregator _bus;
         private readonly IAuthService _auth;
@@ -27,13 +28,14 @@ namespace WaDesktop.Client.Presenters
         private bool _isLoadingData;
         private readonly List<string> _pendingDeletions = new List<string>();
 
-        public TemplatesPresenter(IManagementView<Template> view, IApiClient api, IEventAggregator bus,
-            IAuthService auth, string messagesUrl, string apiBaseUrl)
+        public TemplatesPresenter(IManagementView<Template> view, ITemplateRepository templates, IEventAggregator bus,
+            IAuthService auth, IApiClient api, string messagesUrl, string apiBaseUrl)
         {
             _view = view;
-            _api = api;
+            _templates = templates;
             _bus = bus;
             _auth = auth;
+            _api = api;
             _messagesUrl = messagesUrl;
             _apiBaseUrl = apiBaseUrl;
 
@@ -83,9 +85,11 @@ namespace WaDesktop.Client.Presenters
                     return;
                 }
 
-                var data = await Task.Run(() => _api.GetTemplatesAsync(search, _currentWabaFilter));
-                _data = data;
-                _view.DataSource = data;
+                var dataResult = await Task.Run(() => _templates.GetAllAsync(search, _currentWabaFilter));
+                if (dataResult.IsFailure)
+                    throw new Exception(dataResult.Error.Message);
+                _data = dataResult.Value;
+                _view.DataSource = dataResult.Value;
             }
             catch (Exception ex)
             {
@@ -122,7 +126,9 @@ namespace WaDesktop.Client.Presenters
                 _view.IsLoading = true;
                 try
                 {
-                    await Task.Run(() => _api.SyncTemplatesAsync(wabaId));
+                    var sync = await Task.Run(() => _templates.SyncAsync(wabaId));
+                    if (sync.IsFailure)
+                        throw new Exception(sync.Error.Message);
                     await LoadDataAsync();
                     MessageBox.Show("Sinkronisasi selesai.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -201,7 +207,9 @@ namespace WaDesktop.Client.Presenters
                 {
                     try
                     {
-                        await _api.DeleteTemplateAsync(id);
+                        var del = await _templates.DeleteAsync(id);
+                        if (del.IsFailure)
+                            failed++;
                     }
                     catch
                     {

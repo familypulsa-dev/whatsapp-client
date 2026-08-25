@@ -34,6 +34,7 @@ namespace WaDesktop.Client.Extensions
             services.AddTransient<IBillingRepository, BillingRepository>();
             services.AddTransient<IAppSettingsRepository, AppSettingsRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<ITemplateRepository, TemplateRepository>();
             services.AddTransient(sp => new WaDesktop.Infrastructure.Data.Remote.DataSources.CompanyDataSource(
                 sp.GetRequiredService<HttpClient>(), apiBaseUrl));
             services.AddTransient(sp => new WaDesktop.Infrastructure.Data.Remote.DataSources.BillingDataSource(
@@ -41,6 +42,8 @@ namespace WaDesktop.Client.Extensions
             services.AddTransient(sp => new WaDesktop.Infrastructure.Data.Remote.DataSources.AppSettingsDataSource(
                 sp.GetRequiredService<HttpClient>(), apiBaseUrl));
             services.AddTransient(sp => new WaDesktop.Infrastructure.Data.Remote.DataSources.UserDataSource(
+                sp.GetRequiredService<HttpClient>(), apiBaseUrl));
+            services.AddTransient(sp => new WaDesktop.Infrastructure.Data.Remote.DataSources.TemplateDataSource(
                 sp.GetRequiredService<HttpClient>(), apiBaseUrl));
 
             // 1.5 Module Factory (Singleton = root provider; tiap Create bikin child scope)
