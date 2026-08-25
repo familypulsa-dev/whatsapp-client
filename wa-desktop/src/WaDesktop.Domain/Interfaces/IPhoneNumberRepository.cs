@@ -28,5 +28,9 @@ namespace WaDesktop.Domain.Interfaces
         Task<Result> RequestVerificationCodeAsync(string phoneNumberId, RequestCodeRequest request);
         Task<Result> VerifyCodeAsync(string phoneNumberId, VerifyCodeRequest request);
         Task<Result> RegisterPhoneAsync(string phoneNumberId, RegisterPhoneRequest request);
+
+        // ── Webhook Configuration ──
+        Task<Result<WebhookConfig>> GetWebhookAsync(string phoneNumberId);
+        Task<Result> SetWebhookAsync(string phoneNumberId, string webhookUrl);
     }
 }

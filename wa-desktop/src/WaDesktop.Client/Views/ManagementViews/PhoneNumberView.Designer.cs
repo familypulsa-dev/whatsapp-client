@@ -8,6 +8,8 @@ namespace WaDesktop.Client.Views.ManagementViews
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.Button btnAdd;
         private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.ContextMenuStrip ctxMenu;
+        private System.Windows.Forms.ToolStripMenuItem ctxMenuWebhook;
 
         protected override void Dispose(bool disposing)
         {
@@ -18,6 +20,7 @@ namespace WaDesktop.Client.Views.ManagementViews
 
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.dataGridView = new System.Windows.Forms.DataGridView();
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.btnSearch = new System.Windows.Forms.Button();
@@ -28,6 +31,8 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.cmbWabaSync = new System.Windows.Forms.ComboBox();
             this.panelHeader = new System.Windows.Forms.Panel();
             this.panelFooter = new System.Windows.Forms.Panel();
+            this.ctxMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ctxMenuWebhook = new System.Windows.Forms.ToolStripMenuItem();
             this.dgvPhoneNumberId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -39,6 +44,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             this.panelHeader.SuspendLayout();
             this.panelFooter.SuspendLayout();
+            this.ctxMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // dataGridView
@@ -63,6 +69,8 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dataGridView.Size = new System.Drawing.Size(884, 523);
             this.dataGridView.TabIndex = 0;
             this.dataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellDoubleClick);
+            this.dataGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView_CellMouseClick);
+            this.dataGridView.ContextMenuStrip = this.ctxMenu;
             // 
             // txtSearch
             // 
@@ -159,6 +167,20 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.panelFooter.Size = new System.Drawing.Size(884, 30);
             this.panelFooter.TabIndex = 10;
             // 
+            // ctxMenu
+            // 
+            this.ctxMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ctxMenuWebhook});
+            this.ctxMenu.Name = "ctxMenu";
+            this.ctxMenu.Size = new System.Drawing.Size(120, 26);
+            // 
+            // ctxMenuWebhook
+            // 
+            this.ctxMenuWebhook.Name = "ctxMenuWebhook";
+            this.ctxMenuWebhook.Size = new System.Drawing.Size(119, 22);
+            this.ctxMenuWebhook.Text = "Webhook";
+            this.ctxMenuWebhook.Click += new System.EventHandler(this.ctxMenuWebhook_Click);
+            // 
             // dgvPhoneNumberId
             // 
             this.dgvPhoneNumberId.DataPropertyName = "phone_number_id";
@@ -224,6 +246,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.panelHeader.ResumeLayout(false);
             this.panelHeader.PerformLayout();
             this.panelFooter.ResumeLayout(false);
+            this.ctxMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

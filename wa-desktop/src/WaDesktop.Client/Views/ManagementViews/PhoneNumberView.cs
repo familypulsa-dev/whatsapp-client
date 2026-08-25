@@ -40,6 +40,7 @@ namespace WaDesktop.Client.Views.ManagementViews
         public event EventHandler SyncClicked;
         public event EventHandler<string> WabaFilterChanged;
         public event EventHandler<string> RegisterClicked;
+        public event EventHandler<string> WebhookClicked;
 
         // Dummy SaveClicked handler (tidak terpakai, tapi wajib ada jika IManagementView punya SaveClicked)
         private void btnSave_Click(object sender, EventArgs e) => SaveClicked?.Invoke(this, EventArgs.Empty);
@@ -121,5 +122,26 @@ namespace WaDesktop.Client.Views.ManagementViews
         }
 
         private static string FormatStatus(string s) => string.IsNullOrEmpty(s) ? "-" : s;
+
+        private void dataGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right && e.RowIndex >= 0)
+            {
+                dataGridView.ClearSelection();
+                dataGridView.Rows[e.RowIndex].Selected = true;
+                dataGridView.CurrentCell = dataGridView.Rows[e.RowIndex].Cells[0];
+                ctxMenu.Show(dataGridView, e.Location);
+            }
+        }
+
+        private void ctxMenuWebhook_Click(object sender, EventArgs e)
+        {
+            if (dataGridView.SelectedRows.Count > 0)
+            {
+                var phoneId = dataGridView.SelectedRows[0].Cells[0].Value?.ToString();
+                if (!string.IsNullOrEmpty(phoneId))
+                    WebhookClicked?.Invoke(this, phoneId);
+            }
+        }
     }
 }

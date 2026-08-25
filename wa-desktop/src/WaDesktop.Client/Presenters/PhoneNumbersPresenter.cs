@@ -44,6 +44,7 @@ namespace WaDesktop.Client.Presenters
                 _realView.SyncClicked += OnSync;
                 _realView.WabaFilterChanged += OnWabaFilterChanged;
                 _realView.RegisterClicked += OnRegister;
+                _realView.WebhookClicked += OnWebhook;
             }
         }
 
@@ -226,6 +227,50 @@ namespace WaDesktop.Client.Presenters
             }
         }
 
+        private async void OnWebhook(object sender, string phoneNumberId)
+        {
+            var form = _view as System.Windows.Forms.Control;
+            var parent = form?.FindForm();
+
+            try
+            {
+                // GET current webhook
+                _view.IsLoading = true;
+                var getResult = await Task.Run(() => _phones.GetWebhookAsync(phoneNumberId));
+                if (getResult.IsFailure)
+                {
+                    MessageBox.Show($"Gagal mengambil data webhook: {getResult.Error.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                var wh = getResult.Value;
+                var currentUrl = wh?.Application ?? "(belum diset)";
+
+                var input = new WebhookInputDialog();
+                input.DialogTitle = "Webhook Configuration";
+                input.PhoneNumberId = phoneNumberId;
+                input.CurrentWebhookUrl = currentUrl;
+                input.WebhookUrl = wh?.Application ?? "";
+
+                if (input.ShowDialog(parent) == DialogResult.OK)
+                {
+                    var setResult = await Task.Run(() => _phones.SetWebhookAsync(phoneNumberId, input.WebhookUrl));
+                    if (setResult.IsSuccess)
+                        MessageBox.Show("Webhook berhasil disimpan.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    else
+                        MessageBox.Show($"Gagal menyimpan webhook: {setResult.Error.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                _view.IsLoading = false;
+            }
+        }
+
         public void Dispose()
         {
             if (!_disposed)
@@ -241,6 +286,7 @@ namespace WaDesktop.Client.Presenters
                     _realView.SyncClicked -= OnSync;
                     _realView.WabaFilterChanged -= OnWabaFilterChanged;
                     _realView.RegisterClicked -= OnRegister;
+                    _realView.WebhookClicked -= OnWebhook;
                 }
 
                 _disposed = true;

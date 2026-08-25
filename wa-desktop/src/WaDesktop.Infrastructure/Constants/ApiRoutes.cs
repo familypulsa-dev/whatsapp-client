@@ -21,6 +21,7 @@ namespace WaDesktop.Infrastructure.Constants
         public static class PhoneNumbers
         {
             public const string Base = "/api/v1/phone-numbers";
+            public const string Webhook = "/api/v1/phone-numbers/{0}/webhook";
         }
         
         public static class Templates
