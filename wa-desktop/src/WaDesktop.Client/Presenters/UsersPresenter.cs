@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WaDesktop.Domain.Common;
 using WaDesktop.Domain.Interfaces;
 using WaDesktop.Domain.Entities;
 using WaDesktop.Client.Views.ManagementViews;
