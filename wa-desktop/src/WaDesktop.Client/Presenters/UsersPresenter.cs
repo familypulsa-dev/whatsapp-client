@@ -11,14 +11,16 @@ namespace WaDesktop.Client.Presenters
     public class UsersPresenter : IDisposable, IPresenterBase
     {
         private readonly UsersView _view;
-        private readonly IApiClient _api;
+        private readonly IUserRepository _users;
+        private readonly ICompanyRepository _companies;
         private bool _disposed;
         private const string DefaultPassword = "WaClientDefault123?";
 
-        public UsersPresenter(UsersView view, IApiClient api)
+        public UsersPresenter(UsersView view, IUserRepository users, ICompanyRepository companies)
         {
             _view = view;
-            _api = api;
+            _users = users;
+            _companies = companies;
 
             _view.RefreshClicked += async (s, e) => await LoadDataAsync();
             _view.SearchClicked += async (s, q) => await LoadDataAsync(q);
@@ -33,14 +35,20 @@ namespace WaDesktop.Client.Presenters
             _view.IsLoading = true;
             try
             {
-                var companies = await Task.Run(() => _api.GetCompaniesAsync());
-                _view.SetCompanies(companies);
+                var companiesResult = await Task.Run(() => _companies.GetAllAsync());
+                if (companiesResult.IsFailure)
+                    throw new Exception(companiesResult.Error.Message);
+                _view.SetCompanies(companiesResult.Value);
 
-                var data = await Task.Run(() => _api.GetUsersAsync());
+                var result = await Task.Run(() => _users.GetAllAsync());
+                if (result.IsFailure)
+                    throw new Exception(result.Error.Message);
+
+                var data = result.Value;
                 if (!string.IsNullOrEmpty(search))
                 {
-                    data = data.Where(u => 
-                        (u.DisplayName?.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0) || 
+                    data = data.Where(u =>
+                        (u.DisplayName?.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0) ||
                         (u.Username?.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
                     ).ToList();
                 }
@@ -62,27 +70,36 @@ namespace WaDesktop.Client.Presenters
             try
             {
                 foreach (string id in _view.GetDeletedIds())
-                    await Task.Run(() => _api.DeactivateUserAsync(id));
+                {
+                    var del = await Task.Run(() => _users.DeactivateAsync(id));
+                    if (del.IsFailure)
+                        throw new Exception(del.Error.Message);
+                }
 
                 foreach (User u in _view.GetModifiedRows())
                 {
+                    Result<bool> result;
                     if (string.IsNullOrEmpty(u.Id))
                     {
                         // User Baru: Jika DgvPassword kosong, gunakan DefaultPassword
                         string pw = string.IsNullOrEmpty(u.NewPassword) ? DefaultPassword : u.NewPassword;
-                        await Task.Run(() => _api.CreateUserAsync(u.Username, pw, u.DisplayName, u.Role, u.CompanyId));
+                        var created = await Task.Run(() => _users.CreateAsync(u.Username, pw, u.DisplayName, u.Role, u.CompanyId));
+                        result = created.IsSuccess ? Result<bool>.Success(true) : Result<bool>.Failure(created.Error);
                     }
                     else
                     {
                         // User Lama: Update data biasa
-                        await Task.Run(() => _api.UpdateUserAsync(u.Id, u.DisplayName, u.Role, u.CompanyId, u.IsActive));
-                        
+                        result = await Task.Run(() => _users.UpdateAsync(u.Id, u.DisplayName, u.Role, u.CompanyId, u.IsActive));
+
                         // Eksekusi ganti password jika ada inputan di DgvPassword
-                        if (!string.IsNullOrEmpty(u.NewPassword))
+                        if (result.IsSuccess && !string.IsNullOrEmpty(u.NewPassword))
                         {
-                            await Task.Run(() => _api.ResetPasswordAsync(u.Id, u.NewPassword));
+                            result = await Task.Run(() => _users.ResetPasswordAsync(u.Id, u.NewPassword));
                         }
                     }
+
+                    if (result.IsFailure)
+                        throw new Exception(result.Error.Message);
                 }
 
                 await LoadDataAsync();
@@ -107,7 +124,10 @@ namespace WaDesktop.Client.Presenters
             _view.IsLoading = true;
             try
             {
-                await Task.Run(() => _api.ResetPasswordAsync(userId, DefaultPassword));
+                var result = await Task.Run(() => _users.ResetPasswordAsync(userId, DefaultPassword));
+                if (result.IsFailure)
+                    throw new Exception(result.Error.Message);
+
                 MessageBox.Show($"Password berhasil direset menjadi {DefaultPassword}",
                     "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }

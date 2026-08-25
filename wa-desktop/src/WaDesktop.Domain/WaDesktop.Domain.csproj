@@ -64,6 +64,7 @@
     <Compile Include="Interfaces\ICompanyRepository.cs" />
     <Compile Include="Interfaces\IBillingRepository.cs" />
     <Compile Include="Interfaces\IAppSettingsRepository.cs" />
+    <Compile Include="Interfaces\IUserRepository.cs" />
     <Compile Include="Interfaces\IEventAggregator.cs" />
     <Compile Include="Entities\PhoneNumberNode.cs" />
     <Compile Include="Entities\Company.cs" />

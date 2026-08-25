@@ -33,11 +33,14 @@ namespace WaDesktop.Client.Extensions
             services.AddTransient<ICompanyRepository, CompanyRepository>();
             services.AddTransient<IBillingRepository, BillingRepository>();
             services.AddTransient<IAppSettingsRepository, AppSettingsRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient(sp => new WaDesktop.Infrastructure.Data.Remote.DataSources.CompanyDataSource(
                 sp.GetRequiredService<HttpClient>(), apiBaseUrl));
             services.AddTransient(sp => new WaDesktop.Infrastructure.Data.Remote.DataSources.BillingDataSource(
                 sp.GetRequiredService<HttpClient>(), apiBaseUrl));
             services.AddTransient(sp => new WaDesktop.Infrastructure.Data.Remote.DataSources.AppSettingsDataSource(
+                sp.GetRequiredService<HttpClient>(), apiBaseUrl));
+            services.AddTransient(sp => new WaDesktop.Infrastructure.Data.Remote.DataSources.UserDataSource(
                 sp.GetRequiredService<HttpClient>(), apiBaseUrl));
 
             // 1.5 Module Factory (Singleton = root provider; tiap Create bikin child scope)
