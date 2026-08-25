@@ -17,16 +17,18 @@ namespace WaDesktop.Client.Presenters
     {
         private readonly IManagementView<PhoneNumberDetail> _view;
         private readonly IApiClient _api;
+        private readonly IWabaRepository _wabas;
         private readonly IEventAggregator _bus;
         private readonly IServiceProvider _serviceProvider;
         private List<PhoneNumberDetail> _data;
         private bool _disposed;
         private PhoneNumberView _realView;
 
-        public PhoneNumbersPresenter(IManagementView<PhoneNumberDetail> view, IApiClient api, IEventAggregator bus, IServiceProvider serviceProvider)
+        public PhoneNumbersPresenter(IManagementView<PhoneNumberDetail> view, IApiClient api, IWabaRepository wabas, IEventAggregator bus, IServiceProvider serviceProvider)
         {
             _view = view;
             _api = api;
+            _wabas = wabas;
             _bus = bus;
             _serviceProvider = serviceProvider;
 
@@ -75,7 +77,10 @@ namespace WaDesktop.Client.Presenters
                 // 1. Load WABA terlebih dahulu jika belum pernah diload
                 if (!_wabasLoaded && _realView != null)
                 {
-                    var wabas = await Task.Run(() => _api.GetWabasAsync());
+                    var wabasResult = await Task.Run(() => _wabas.GetAllAsync());
+                    if (wabasResult.IsFailure)
+                        throw new Exception(wabasResult.Error.Message);
+                    var wabas = wabasResult.Value;
                     _realView.SetWabaSyncDataSource(wabas);
                     _wabasLoaded = true;
 

@@ -13,8 +13,8 @@ namespace WaDesktop.Client.Presenters
     public class TemplatesPresenter : IDisposable, IPresenterBase
     {
         private readonly IManagementView<Template> _view;
-        private readonly IApiClient _api; // masih dipakai untuk GetWabasAsync — pindah ke IWabaRepository di Fase 4e
         private readonly ITemplateRepository _templates;
+        private readonly IWabaRepository _wabas;
         private List<Template> _data;
         private readonly IEventAggregator _bus;
         private readonly IAuthService _auth;
@@ -28,14 +28,14 @@ namespace WaDesktop.Client.Presenters
         private bool _isLoadingData;
         private readonly List<string> _pendingDeletions = new List<string>();
 
-        public TemplatesPresenter(IManagementView<Template> view, ITemplateRepository templates, IEventAggregator bus,
-            IAuthService auth, IApiClient api, string messagesUrl, string apiBaseUrl)
+        public TemplatesPresenter(IManagementView<Template> view, ITemplateRepository templates, IWabaRepository wabas,
+            IEventAggregator bus, IAuthService auth, string messagesUrl, string apiBaseUrl)
         {
             _view = view;
             _templates = templates;
+            _wabas = wabas;
             _bus = bus;
             _auth = auth;
-            _api = api;
             _messagesUrl = messagesUrl;
             _apiBaseUrl = apiBaseUrl;
 
@@ -68,7 +68,10 @@ namespace WaDesktop.Client.Presenters
             {
                 if (!_wabasLoaded && _realView != null)
                 {
-                    var wabas = await Task.Run(() => _api.GetWabasAsync());
+                    var wabasResult = await Task.Run(() => _wabas.GetAllAsync());
+                    if (wabasResult.IsFailure)
+                        throw new Exception(wabasResult.Error.Message);
+                    var wabas = wabasResult.Value;
                     _realView.SetWabaSyncDataSource(wabas);
                     _wabasLoaded = true;
 

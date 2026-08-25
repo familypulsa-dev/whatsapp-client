@@ -11,13 +11,15 @@ namespace WaDesktop.Client.Presenters
     public class WabasPresenter : IDisposable, IPresenterBase
     {
         private readonly WabaView _view;
-        private readonly IApiClient _api;
+        private readonly IWabaRepository _wabas;
+        private readonly ICompanyRepository _companies;
         private bool _disposed;
 
-        public WabasPresenter(WabaView view, IApiClient api)
+        public WabasPresenter(WabaView view, IWabaRepository wabas, ICompanyRepository companies)
         {
             _view = view;
-            _api = api;
+            _wabas = wabas;
+            _companies = companies;
 
             _view.RefreshClicked += async (s, e) => await LoadDataAsync();
             _view.SearchClicked += async (s, q) => await LoadDataAsync(q);
@@ -35,13 +37,19 @@ namespace WaDesktop.Client.Presenters
             _view.IsLoading = true;
             try
             {
-                var companiesTask = Task.Run(() => _api.GetCompaniesAsync());
-                var wabas = await Task.Run(() => _api.GetWabasAsync());
+                var companiesResult = Task.Run(() => _companies.GetAllAsync());
+                var wabasResult = await Task.Run(() => _wabas.GetAllAsync());
+                if (wabasResult.IsFailure)
+                    throw new Exception(wabasResult.Error.Message);
 
-                var companies = await companiesTask;
-                _view.SetCompanyDataSource(companies);
+                var companiesResultValue = await companiesResult;
+                if (companiesResultValue.IsFailure)
+                    throw new Exception(companiesResultValue.Error.Message);
 
-                var companyMap = companies.ToDictionary(c => c.Id, c => c.Name);
+                var wabas = wabasResult.Value;
+                _view.SetCompanyDataSource(companiesResultValue.Value);
+
+                var companyMap = companiesResultValue.Value.ToDictionary(c => c.Id, c => c.Name);
                 foreach (var w in wabas)
                 {
                     if (!string.IsNullOrEmpty(w.CompanyId) && companyMap.TryGetValue(w.CompanyId, out var name))
@@ -78,7 +86,9 @@ namespace WaDesktop.Client.Presenters
             try
             {
                 var companyId = _view.SelectedCompanyId;
-                await Task.Run(() => _api.UpdateWabaAsync(wabaId, companyId ?? ""));
+                var result = await Task.Run(() => _wabas.UpdateCompanyAsync(wabaId, companyId ?? ""));
+                if (result.IsFailure)
+                    throw new Exception(result.Error.Message);
                 await LoadDataAsync();
                 MessageBox.Show("Company updated.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -107,7 +117,9 @@ namespace WaDesktop.Client.Presenters
                 {
                     try
                     {
-                        await _api.SyncWabasFromMetaAsync();
+                        var sync = await _wabas.SyncFromMetaAsync();
+                        if (sync.IsFailure)
+                            throw new Exception(sync.Error.Message);
                         await LoadDataAsync();
                         MessageBox.Show("Sinkronisasi selesai.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
