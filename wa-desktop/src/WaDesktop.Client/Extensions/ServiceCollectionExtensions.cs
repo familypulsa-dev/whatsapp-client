@@ -1,3 +1,4 @@
+using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using WaDesktop.Domain.Interfaces;
 using WaDesktop.Domain.State;
