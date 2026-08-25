@@ -16,7 +16,7 @@ namespace WaDesktop.Client.Presenters
     public class PhoneNumbersPresenter : IDisposable, IPresenterBase
     {
         private readonly IManagementView<PhoneNumberDetail> _view;
-        private readonly IApiClient _api;
+        private readonly IPhoneNumberRepository _phones;
         private readonly IWabaRepository _wabas;
         private readonly IEventAggregator _bus;
         private readonly IServiceProvider _serviceProvider;
@@ -24,10 +24,10 @@ namespace WaDesktop.Client.Presenters
         private bool _disposed;
         private PhoneNumberView _realView;
 
-        public PhoneNumbersPresenter(IManagementView<PhoneNumberDetail> view, IApiClient api, IWabaRepository wabas, IEventAggregator bus, IServiceProvider serviceProvider)
+        public PhoneNumbersPresenter(IManagementView<PhoneNumberDetail> view, IPhoneNumberRepository phones, IWabaRepository wabas, IEventAggregator bus, IServiceProvider serviceProvider)
         {
             _view = view;
-            _api = api;
+            _phones = phones;
             _wabas = wabas;
             _bus = bus;
             _serviceProvider = serviceProvider;
@@ -100,7 +100,10 @@ namespace WaDesktop.Client.Presenters
                 }
 
                 // 3. Setelah WABA terjamin ada, baru panggil API list
-                var data = await Task.Run(() => _api.GetPhoneNumberListAsync(_currentWabaFilter));
+                var dataResult = await Task.Run(() => _phones.GetAllAsync(_currentWabaFilter));
+                if (dataResult.IsFailure)
+                    throw new Exception(dataResult.Error.Message);
+                var data = dataResult.Value;
 
                 if (!string.IsNullOrEmpty(search))
                     data = data.FindAll(p =>
@@ -163,7 +166,9 @@ namespace WaDesktop.Client.Presenters
                 {
                     try
                     {
-                        await _api.SyncPhoneNumbersFromMetaAsync(wabaId);
+                        var sync = await _phones.SyncFromMetaAsync(wabaId);
+                        if (sync.IsFailure)
+                            throw new Exception(sync.Error.Message);
                         await LoadDataAsync();
                         MessageBox.Show("Sinkronisasi selesai.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }

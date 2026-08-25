@@ -67,6 +67,7 @@
     <Compile Include="Interfaces\IUserRepository.cs" />
     <Compile Include="Interfaces\ITemplateRepository.cs" />
     <Compile Include="Interfaces\IWabaRepository.cs" />
+    <Compile Include="Interfaces\IPhoneNumberRepository.cs" />
     <Compile Include="Interfaces\IEventAggregator.cs" />
     <Compile Include="Entities\PhoneNumberNode.cs" />
     <Compile Include="Entities\Company.cs" />

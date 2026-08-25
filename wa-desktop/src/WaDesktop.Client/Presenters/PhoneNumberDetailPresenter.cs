@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WaDesktop.Domain.Common;
 using WaDesktop.Domain.Interfaces;
 
 namespace WaDesktop.Client.Presenters
@@ -8,14 +9,14 @@ namespace WaDesktop.Client.Presenters
     public class PhoneNumberDetailPresenter : IDisposable
     {
         private readonly IPhoneNumberDetailView _view;
-        private readonly IApiClient _api;
+        private readonly IPhoneNumberRepository _phones;
         private readonly string _phoneNumberId;
         private bool _disposed;
 
-        public PhoneNumberDetailPresenter(IPhoneNumberDetailView view, IApiClient api, string phoneNumberId)
+        public PhoneNumberDetailPresenter(IPhoneNumberDetailView view, IPhoneNumberRepository phones, string phoneNumberId)
         {
             _view = view;
-            _api = api;
+            _phones = phones;
             _phoneNumberId = phoneNumberId;
 
             _view.SaveClicked += OnSave;
@@ -26,19 +27,25 @@ namespace WaDesktop.Client.Presenters
 
         public async void LoadData() => await LoadDataAsync();
 
+        private async Task LoadPictureAsync(string profilePictureUrl)
+        {
+            if (string.IsNullOrEmpty(profilePictureUrl)) return;
+            var picture = await Task.Run(() => _phones.GetProfilePictureAsync(profilePictureUrl));
+            if (picture.IsSuccess)
+                _view.LoadProfilePicture(picture.Value);
+        }
+
         private async Task LoadDataAsync()
         {
             _view.IsSaving = true;
             try
             {
-                var detail = await Task.Run(() => _api.GetPhoneDetailAsync(_phoneNumberId));
-                _view.LoadDetail(detail);
+                var result = await Task.Run(() => _phones.GetDetailAsync(_phoneNumberId));
+                if (result.IsFailure)
+                    throw new Exception(result.Error.Message);
+                _view.LoadDetail(result.Value);
 
-                if (!string.IsNullOrEmpty(detail.ProfilePictureUrl))
-                {
-                    var pictureData = await Task.Run(() => _api.GetPhoneProfilePictureAsync(detail.ProfilePictureUrl));
-                    _view.LoadProfilePicture(pictureData);
-                }
+                await LoadPictureAsync(result.Value.ProfilePictureUrl);
             }
             catch (Exception ex)
             {
@@ -60,7 +67,7 @@ namespace WaDesktop.Client.Presenters
                 if (!string.IsNullOrEmpty(_view.Website2)) websites.Add(_view.Website2);
 
                 var result = await Task.Run(() =>
-                    _api.SavePhoneDetailAsync(
+                    _phones.SaveDetailAsync(
                         _phoneNumberId,
                         _view.DisplayName,
                         _view.Description,
@@ -69,16 +76,15 @@ namespace WaDesktop.Client.Presenters
                         _view.Address,
                         _view.Vertical,
                         websites));
-                _view.LoadDetail(result.Detail);
+                if (result.IsFailure)
+                    throw new Exception(result.Error.Message);
 
-                foreach (var w in result.Warnings)
+                _view.LoadDetail(result.Value.Detail);
+
+                foreach (var w in result.Value.Warnings ?? new List<string>())
                     _view.ShowWarning(w);
 
-                if (!string.IsNullOrEmpty(result.Detail.ProfilePictureUrl))
-                {
-                    var pictureData = await Task.Run(() => _api.GetPhoneProfilePictureAsync(result.Detail.ProfilePictureUrl));
-                    _view.LoadProfilePicture(pictureData);
-                }
+                await LoadPictureAsync(result.Value.Detail?.ProfilePictureUrl);
                 _view.ShowSuccess("Phone number updated.");
             }
             catch (Exception ex)
@@ -96,14 +102,12 @@ namespace WaDesktop.Client.Presenters
             _view.IsSaving = true;
             try
             {
-                var result = await Task.Run(() => _api.SyncPhoneProfileAsync(_phoneNumberId));
-                _view.LoadDetail(result);
+                var result = await Task.Run(() => _phones.SyncProfileAsync(_phoneNumberId));
+                if (result.IsFailure)
+                    throw new Exception(result.Error.Message);
+                _view.LoadDetail(result.Value);
 
-                if (!string.IsNullOrEmpty(result.ProfilePictureUrl))
-                {
-                    var pictureData = await Task.Run(() => _api.GetPhoneProfilePictureAsync(result.ProfilePictureUrl));
-                    _view.LoadProfilePicture(pictureData);
-                }
+                await LoadPictureAsync(result.Value.ProfilePictureUrl);
                 _view.ShowSuccess("Profile synced from Meta.");
             }
             catch (Exception ex)
@@ -128,14 +132,12 @@ namespace WaDesktop.Client.Presenters
             _view.IsSaving = true;
             try
             {
-                var result = await Task.Run(() => _api.UploadPhonePictureAsync(_phoneNumberId, filePath));
-                _view.LoadDetail(result);
+                var result = await Task.Run(() => _phones.UploadPictureAsync(_phoneNumberId, filePath));
+                if (result.IsFailure)
+                    throw new Exception(result.Error.Message);
+                _view.LoadDetail(result.Value);
 
-                if (!string.IsNullOrEmpty(result.ProfilePictureUrl))
-                {
-                    var pictureData = await Task.Run(() => _api.GetPhoneProfilePictureAsync(result.ProfilePictureUrl));
-                    _view.LoadProfilePicture(pictureData);
-                }
+                await LoadPictureAsync(result.Value.ProfilePictureUrl);
                 _view.ShowSuccess("Profile picture updated.");
             }
             catch (Exception ex)
