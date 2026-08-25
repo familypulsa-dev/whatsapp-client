@@ -27,6 +27,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.panelFooter = new System.Windows.Forms.Panel();
             this.IdServer = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.WaWaba = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MetaCost = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
@@ -40,6 +41,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.IdServer,
             this.dgName,
+            this.WaWaba,
             this.dataGridViewTextBoxColumn3,
             this.MetaCost});
             this.dataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -51,6 +53,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dataGridView.TabIndex = 0;
             this.dataGridView.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.DataGridView_CellBeginEdit);
             this.dataGridView.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView_CellEndEdit);
+            this.dataGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.DataGridView_DataError);
             this.dataGridView.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.DataGridView_UserDeletingRow);
             // 
             // txtSearch
@@ -127,6 +130,13 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dgName.HeaderText = "Name";
             this.dgName.Name = "dgName";
             // 
+            // WaWaba
+            // 
+            this.WaWaba.HeaderText = "WA WABA";
+            this.WaWaba.Name = "WaWaba";
+            this.WaWaba.DisplayMember = "Name";
+            this.WaWaba.ValueMember = "WabaId";
+            // 
             // dataGridViewTextBoxColumn3
             // 
             this.dataGridViewTextBoxColumn3.HeaderText = "Created At";
@@ -157,6 +167,7 @@ namespace WaDesktop.Client.Views.ManagementViews
         private System.Windows.Forms.Panel panelFooter;
         private System.Windows.Forms.DataGridViewTextBoxColumn IdServer;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgName;
+        private System.Windows.Forms.DataGridViewComboBoxColumn WaWaba;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private System.Windows.Forms.DataGridViewTextBoxColumn MetaCost;
     }

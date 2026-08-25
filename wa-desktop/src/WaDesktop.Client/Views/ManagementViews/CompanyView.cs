@@ -34,7 +34,9 @@ namespace WaDesktop.Client.Views.ManagementViews
                     foreach (var c in value)
                     {
                         int idx = dataGridView.Rows.Add(
-                            c.Id, c.Name, c.CreatedAt,
+                            c.Id, c.Name,
+                            string.IsNullOrEmpty(c.WabaId) ? "" : c.WabaId,
+                            c.CreatedAt,
                             c.MetaCost.ToString("C2", new System.Globalization.CultureInfo("id-ID"))
                         );
                         dataGridView.Rows[idx].DefaultCellStyle.BackColor = Color.White;
@@ -42,6 +44,25 @@ namespace WaDesktop.Client.Views.ManagementViews
                     }
                 });
             }
+        }
+
+        /// <summary>
+        /// Isi dropdown WA WABA. Item pertama dummy "(tanpa WABA)" bernilai ""
+        /// agar user bisa memilih null; "" dikonversi ke null saat save.
+        /// </summary>
+        public void SetWabaDataSource(IList<Waba> wabas)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                var col = dataGridView.Columns["WaWaba"] as DataGridViewComboBoxColumn;
+                if (col == null) return;
+
+                var items = new List<Waba> { new Waba { WabaId = "", Name = "(tanpa WABA)" } };
+                if (wabas != null) items.AddRange(wabas);
+                col.DataSource = items;
+                col.DisplayMember = "Name";
+                col.ValueMember = "WabaId";
+            });
         }
 
         public int SelectedIndex => dataGridView.SelectedRows.Count > 0 ? dataGridView.SelectedRows[0].Index : -1;
@@ -72,10 +93,12 @@ namespace WaDesktop.Client.Views.ManagementViews
                 if (row.Tag != null && (bool)row.Tag)
                 {
                     var idCell = row.Cells["IdServer"].Value?.ToString() ?? "";
+                    var wabaCell = row.Cells["WaWaba"].Value?.ToString();
                     list.Add(new Company
                     {
                         Id = idCell,
-                        Name = row.Cells["dgName"].Value?.ToString() ?? ""
+                        Name = row.Cells["dgName"].Value?.ToString() ?? "",
+                        WabaId = string.IsNullOrEmpty(wabaCell) ? null : wabaCell
                     });
                 }
             }
@@ -107,6 +130,15 @@ namespace WaDesktop.Client.Views.ManagementViews
             {
                 MarkDirty(dataGridView.Rows[e.RowIndex]);
             }
+        }
+
+        private void DataGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            // Nilai waba yang sudah tidak ada di daftar tidak boleh memunculkan dialog error.
+            if (dataGridView.Columns[e.ColumnIndex] is DataGridViewComboBoxColumn)
+                e.ThrowException = false;
+            else
+                e.ThrowException = true;
         }
 
         private void DataGridView_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)

@@ -33,7 +33,6 @@ namespace WaDesktop.Client.Views
             this.lbUtilityCount = new System.Windows.Forms.Label();
             this.lbMarketingCount = new System.Windows.Forms.Label();
             this.tbMarketingCount = new System.Windows.Forms.TextBox();
-            this.btnSettingLimit = new System.Windows.Forms.Button();
             this.imageList_0 = new System.Windows.Forms.ImageList(this.components);
             this.treeView = new System.Windows.Forms.TreeView();
             this.panel1.SuspendLayout();
@@ -83,7 +82,6 @@ namespace WaDesktop.Client.Views
             this.tableLayoutPanel1.Controls.Add(this.lbUtilityCount, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.lbMarketingCount, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.tbMarketingCount, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.btnSettingLimit, 1, 7);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 489);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -240,15 +238,6 @@ namespace WaDesktop.Client.Views
             this.tbMarketingCount.Size = new System.Drawing.Size(137, 20);
             this.tbMarketingCount.TabIndex = 1;
             // 
-            // btnSettingLimit
-            // 
-            this.btnSettingLimit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSettingLimit.Location = new System.Drawing.Point(188, 146);
-            this.btnSettingLimit.Name = "btnSettingLimit";
-            this.btnSettingLimit.Size = new System.Drawing.Size(86, 22);
-            this.btnSettingLimit.TabIndex = 15;
-            this.btnSettingLimit.Text = "Setting Limit";
-            this.btnSettingLimit.UseVisualStyleBackColor = true;
                         // 
             // treeView
             // 
@@ -314,7 +303,6 @@ namespace WaDesktop.Client.Views
         private System.Windows.Forms.Label lbServiceCount;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label lbEstMaxBill;
-        private System.Windows.Forms.Button btnSettingLimit;
         private System.Windows.Forms.ImageList imageList_0;
         private System.Windows.Forms.TreeView treeView;
     }

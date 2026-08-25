@@ -33,7 +33,6 @@ namespace WaDesktop.Client.Presenters
 
             _view.PhoneNumberSelected += OnPhoneNumberSelected;
             _view.RefreshRequested += OnRefreshRequested;
-            _view.SettingLimitClicked += OnSettingLimitClicked;
 
             _webhookStatusTimer = new System.Timers.Timer(15000); // 15 detik
             _webhookStatusTimer.Elapsed += async (s, e) => await CheckWebhookStatusAsync();
@@ -101,20 +100,6 @@ namespace WaDesktop.Client.Presenters
             }
         }
 
-        private async void OnSettingLimitClicked(object sender, EventArgs e)
-        {
-            if (_currentCompany == null) return;
-
-            var dialogView = _view.CreateLimitBillingView();
-            using (var presenter = new LimitBillingPresenter(dialogView, _companies, _currentCompany))
-            {
-                if (_view.ShowDialog(dialogView))
-                {
-                    await LoadDataAsync();
-                }
-            }
-        }
-
         private async void OnRefreshRequested(object sender, EventArgs e)
         {
             await LoadDataAsync();
@@ -148,7 +133,6 @@ namespace WaDesktop.Client.Presenters
 
                 _view.PhoneNumberSelected -= OnPhoneNumberSelected;
                 _view.RefreshRequested -= OnRefreshRequested;
-                _view.SettingLimitClicked -= OnSettingLimitClicked;
                 _disposed = true;
             }
         }

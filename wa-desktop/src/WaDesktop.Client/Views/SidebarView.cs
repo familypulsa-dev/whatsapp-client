@@ -21,8 +21,6 @@ namespace WaDesktop.Client.Views
             _refreshTimer = new Timer(components);
             _refreshTimer.Interval = 60000; // 60 detik
             _refreshTimer.Tick += (s, e) => RefreshRequested?.Invoke(this, EventArgs.Empty);
-
-            btnSettingLimit.Click += (s, e) => SettingLimitClicked?.Invoke(this, EventArgs.Empty);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -43,7 +41,6 @@ namespace WaDesktop.Client.Views
 
         public event EventHandler<PhoneNumberSelectedEventArgs> PhoneNumberSelected;
         public event EventHandler RefreshRequested;
-        public event EventHandler SettingLimitClicked;
 
         public void LoadPhoneNumbers(IList<PhoneNumberNode> nodes)
         {
@@ -98,25 +95,6 @@ namespace WaDesktop.Client.Views
                 node.ImageKey = isRunning ? "Play1Normal_.png" : "Stop1Disabled_.png";
                 node.SelectedImageKey = node.ImageKey;
             });
-        }
-
-        public ILimitBillingView CreateLimitBillingView()
-        {
-            return new LimitBillingView();
-        }
-
-        public bool ShowDialog(ILimitBillingView view)
-        {
-            if (this.InvokeRequired)
-            {
-                return (bool)this.Invoke(new Func<bool>(() => ShowDialog(view)));
-            }
-
-            if (view is Form form)
-            {
-                return form.ShowDialog(this) == DialogResult.OK;
-            }
-            return false;
         }
 
         private static TreeNode BuildTreeNode(PhoneNumberNode node)

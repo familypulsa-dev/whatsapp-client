@@ -7,6 +7,7 @@ namespace WaDesktop.Infrastructure.Payloads.Companies
     {
         [JsonProperty("id")] public string Id { get; set; }
         [JsonProperty("name")] public string Name { get; set; }
+        [JsonProperty("waba_id")] public string WabaId { get; set; }
 
         [JsonProperty("limit_marketing")] public int? LimitMarketing { get; set; }
         [JsonProperty("limit_utility")] public int? LimitUtility { get; set; }

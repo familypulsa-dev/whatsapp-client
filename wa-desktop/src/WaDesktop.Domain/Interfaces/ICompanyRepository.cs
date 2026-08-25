@@ -6,16 +6,16 @@ using WaDesktop.Domain.Entities;
 namespace WaDesktop.Domain.Interfaces
 {
     /// <summary>
-    /// CRUD company. Limit bersifat opsional: hanya dikirim ke backend
-    /// bila diisi (update nama saja tidak akan menyentuh limit existing).
+    /// CRUD company. Fitur limit sudah dihapus dari backend — update hanya
+    /// membawa name + waba_id. Assign WABA: backend otomatis me-unassign
+    /// waba yang sama dari company lain (UnassignByCompany).
+    /// wabaId null = lepas relasi.
     /// </summary>
     public interface ICompanyRepository
     {
         Task<Result<List<Company>>> GetAllAsync();
-        Task<Result<Company>> CreateAsync(string name);
-        Task<Result<Company>> UpdateAsync(string id, string name,
-            int? limitMarketing = null, int? limitUtility = null,
-            int? limitAuth = null, int? limitService = null);
+        Task<Result<Company>> CreateAsync(string name, string wabaId = null);
+        Task<Result<Company>> UpdateAsync(string id, string name, string wabaId);
         Task<Result<bool>> DeleteAsync(string id);
     }
 }

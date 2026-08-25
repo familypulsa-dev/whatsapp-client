@@ -11,15 +11,11 @@ namespace WaDesktop.Domain.Interfaces
         void UpdateUsageSummary(Company company);
         void UpdateWebhookStatus(bool isRunning, string message);
 
-        ILimitBillingView CreateLimitBillingView();
-        bool ShowDialog(ILimitBillingView view);
-
         /// <summary>Event: node di tree diklik. Kirim wa_id + phone_number_id.</summary>
         event EventHandler<PhoneNumberSelectedEventArgs> PhoneNumberSelected;
 
         /// <summary>Event: user pilih "Refresh" dari context menu root node.</summary>
         event EventHandler RefreshRequested;
-        event EventHandler SettingLimitClicked;
 
         /// <summary>Tampilkan loading indicator.</summary>
         bool IsLoading { set; }

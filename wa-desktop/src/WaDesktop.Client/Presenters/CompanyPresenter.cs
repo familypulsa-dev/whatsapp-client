@@ -13,12 +13,14 @@ namespace WaDesktop.Client.Presenters
     {
         private readonly CompanyView _view;
         private readonly ICompanyRepository _companies;
+        private readonly IWabaRepository _wabas;
         private bool _disposed;
 
-        public CompanyPresenter(CompanyView view, ICompanyRepository companies)
+        public CompanyPresenter(CompanyView view, ICompanyRepository companies, IWabaRepository wabas)
         {
             _view = view;
             _companies = companies;
+            _wabas = wabas;
 
             _view.RefreshClicked += async (s, e) => await LoadDataAsync();
             _view.SearchClicked += async (s, q) => await LoadDataAsync(q);
@@ -32,12 +34,19 @@ namespace WaDesktop.Client.Presenters
             _view.IsLoading = true;
             try
             {
+                // Wabas untuk dropdown WA WABA (fetch paralel dengan companies).
+                var wabasTask = Task.Run(() => _wabas.GetAllAsync());
                 var result = await Task.Run(() => _companies.GetAllAsync());
                 if (result.IsFailure)
                 {
                     MessageBox.Show("Gagal load companies: " + result.Error.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
+
+                var wabasResult = await wabasTask;
+                if (wabasResult.IsFailure)
+                    throw new Exception(wabasResult.Error.Message);
+                _view.SetWabaDataSource(wabasResult.Value);
 
                 var data = result.Value;
                 if (!string.IsNullOrEmpty(search))
@@ -63,14 +72,14 @@ namespace WaDesktop.Client.Presenters
                         throw new Exception(del.Error.Message);
                 }
 
-                // Create new / update existing
+                // Create new / update existing — keduanya membawa waba_id (null = lepas).
                 foreach (Company c in _view.GetModifiedRows())
                 {
                     Result<Company> result;
                     if (string.IsNullOrEmpty(c.Id))
-                        result = await Task.Run(() => _companies.CreateAsync(c.Name));
+                        result = await Task.Run(() => _companies.CreateAsync(c.Name, c.WabaId));
                     else
-                        result = await Task.Run(() => _companies.UpdateAsync(c.Id, c.Name));
+                        result = await Task.Run(() => _companies.UpdateAsync(c.Id, c.Name, c.WabaId));
 
                     if (result.IsFailure)
                         throw new Exception(result.Error.Message);
