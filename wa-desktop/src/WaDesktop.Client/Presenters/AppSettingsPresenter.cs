@@ -34,11 +34,7 @@ namespace WaDesktop.Client.Presenters
                     throw new Exception(result.Error.Message);
 
                 var settings = result.Value;
-                _view.WabaToken = settings.WabaToken;
-                _view.AppId = settings.AppId;
-                _view.AppSecret = settings.AppSecret;
-                _view.BusinessId = settings.BusinessId;
-                _view.VerifyToken = settings.VerifyToken;
+                // Hanya 3 field yang ditampilkan di view
                 _view.WebhookBaseUrl = settings.WebhookUrl;
                 _view.MessageCleanupEnabled = settings.MessageCleanupEnabled;
                 _view.MessageRetentionDays = settings.MessageRetentionDays;
@@ -58,17 +54,17 @@ namespace WaDesktop.Client.Presenters
             _view.IsSaving = true;
             try
             {
-                var settings = new AppSetting
-                {
-                    WabaToken = _view.WabaToken,
-                    AppId = _view.AppId,
-                    AppSecret = _view.AppSecret,
-                    BusinessId = _view.BusinessId,
-                    VerifyToken = _view.VerifyToken,
-                    WebhookUrl = _view.WebhookBaseUrl,
-                    MessageCleanupEnabled = _view.MessageCleanupEnabled,
-                    MessageRetentionDays = _view.MessageRetentionDays
-                };
+                // PUT = full replace, jadi fetch dulu supaya 5 field credential tidak ke-reset.
+                var current = await Task.Run(() => _settings.GetAsync());
+                if (current.IsFailure)
+                    throw new Exception(current.Error.Message);
+
+                var settings = current.Value;
+                // Overlay 3 field editable dari view
+                settings.WebhookUrl = _view.WebhookBaseUrl;
+                settings.MessageCleanupEnabled = _view.MessageCleanupEnabled;
+                settings.MessageRetentionDays = _view.MessageRetentionDays;
+
                 var warnings = await Task.Run(() => _settings.SaveAsync(settings));
                 if (warnings.IsFailure)
                     throw new Exception(warnings.Error.Message);

@@ -12,36 +12,6 @@ namespace WaDesktop.Client.Views.ManagementViews
             InitializeComponent();
         }
 
-        public string WabaToken
-        {
-            get => txtWabaToken.Text;
-            set => this.InvokeIfRequired(() => txtWabaToken.Text = value);
-        }
-
-        public string AppId
-        {
-            get => txtAppId.Text;
-            set => this.InvokeIfRequired(() => txtAppId.Text = value);
-        }
-
-        public string AppSecret
-        {
-            get => txtAppSecret.Text;
-            set => this.InvokeIfRequired(() => txtAppSecret.Text = value);
-        }
-
-        public string BusinessId
-        {
-            get => txtBusinessId.Text;
-            set => this.InvokeIfRequired(() => txtBusinessId.Text = value);
-        }
-
-        public string VerifyToken
-        {
-            get => txtVerifyToken.Text;
-            set => this.InvokeIfRequired(() => txtVerifyToken.Text = value);
-        }
-
         public string WebhookBaseUrl
         {
             get => txtWebhookBaseUrl.Text;

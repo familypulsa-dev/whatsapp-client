@@ -18,23 +18,23 @@ namespace WaDesktop.Client.Views
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SidebarView));
             this.labelHeader = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.lbEstMaxBill = new System.Windows.Forms.Label();
-            this.tbMaxCost = new System.Windows.Forms.TextBox();
-            this.lbMetaBill = new System.Windows.Forms.Label();
-            this.tbBillMeta = new System.Windows.Forms.TextBox();
-            this.lbEstCurrentBil = new System.Windows.Forms.Label();
-            this.tbServiceCount = new System.Windows.Forms.TextBox();
-            this.lbServiceCount = new System.Windows.Forms.Label();
-            this.lbAuthenticationCount = new System.Windows.Forms.Label();
-            this.tbAuthenticationCount = new System.Windows.Forms.TextBox();
-            this.tbUtilityCount = new System.Windows.Forms.TextBox();
-            this.lbUtilityCount = new System.Windows.Forms.Label();
-            this.lbMarketingCount = new System.Windows.Forms.Label();
-            this.tbMarketingCount = new System.Windows.Forms.TextBox();
-            this.imageList_0 = new System.Windows.Forms.ImageList(this.components);
             this.treeView = new System.Windows.Forms.TreeView();
+            this.imageList_0 = new System.Windows.Forms.ImageList(this.components);
+            this.tbMarketingCount = new System.Windows.Forms.TextBox();
+            this.lbMarketingCount = new System.Windows.Forms.Label();
+            this.lbUtilityCount = new System.Windows.Forms.Label();
+            this.tbUtilityCount = new System.Windows.Forms.TextBox();
+            this.tbAuthenticationCount = new System.Windows.Forms.TextBox();
+            this.lbAuthenticationCount = new System.Windows.Forms.Label();
+            this.lbServiceCount = new System.Windows.Forms.Label();
+            this.tbServiceCount = new System.Windows.Forms.TextBox();
+            this.lbEstCurrentBil = new System.Windows.Forms.Label();
+            this.tbBillMeta = new System.Windows.Forms.TextBox();
+            this.lbMetaBill = new System.Windows.Forms.Label();
+            this.tbMaxCost = new System.Windows.Forms.TextBox();
+            this.lbEstMaxBill = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -61,6 +61,178 @@ namespace WaDesktop.Client.Views
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(280, 663);
             this.panel1.TabIndex = 2;
+            // 
+            // treeView
+            // 
+            this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView.ImageIndex = 0;
+            this.treeView.ImageList = this.imageList_0;
+            this.treeView.Location = new System.Drawing.Point(0, 0);
+            this.treeView.Name = "treeView";
+            this.treeView.SelectedImageIndex = 0;
+            this.treeView.Size = new System.Drawing.Size(280, 489);
+            this.treeView.TabIndex = 2;
+            this.treeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.TreeView_NodeMouseClick);
+            this.treeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.TreeView_NodeMouseDoubleClick);
+            // 
+            // imageList_0
+            // 
+            this.imageList_0.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList_0.ImageStream")));
+            this.imageList_0.TransparentColor = System.Drawing.Color.Fuchsia;
+            this.imageList_0.Images.SetKeyName(0, "Stop1Disabled_.png");
+            this.imageList_0.Images.SetKeyName(1, "Play.png");
+            this.imageList_0.Images.SetKeyName(2, "StepForwardNormalYellow_.png");
+            this.imageList_0.Images.SetKeyName(3, "Play1Normal_.png");
+            this.imageList_0.Images.SetKeyName(4, "connectedbusy.png");
+            this.imageList_0.Images.SetKeyName(5, "modems_.png");
+            this.imageList_0.Images.SetKeyName(6, "ym.png");
+            this.imageList_0.Images.SetKeyName(7, "class.png");
+            this.imageList_0.Images.SetKeyName(8, "center.png");
+            this.imageList_0.Images.SetKeyName(9, "sender.png");
+            this.imageList_0.Images.SetKeyName(10, "backgroundworker.png");
+            this.imageList_0.Images.SetKeyName(11, "messagequeue.png");
+            this.imageList_0.Images.SetKeyName(12, "yahoo.gif");
+            // 
+            // tbMarketingCount
+            // 
+            this.tbMarketingCount.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbMarketingCount.Location = new System.Drawing.Point(140, 3);
+            this.tbMarketingCount.Margin = new System.Windows.Forms.Padding(0);
+            this.tbMarketingCount.Name = "tbMarketingCount";
+            this.tbMarketingCount.ReadOnly = true;
+            this.tbMarketingCount.Size = new System.Drawing.Size(137, 20);
+            this.tbMarketingCount.TabIndex = 1;
+            // 
+            // lbMarketingCount
+            // 
+            this.lbMarketingCount.AutoSize = true;
+            this.lbMarketingCount.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbMarketingCount.Location = new System.Drawing.Point(6, 3);
+            this.lbMarketingCount.Name = "lbMarketingCount";
+            this.lbMarketingCount.Size = new System.Drawing.Size(131, 20);
+            this.lbMarketingCount.TabIndex = 0;
+            this.lbMarketingCount.Text = "Pesan Marketing";
+            // 
+            // lbUtilityCount
+            // 
+            this.lbUtilityCount.AutoSize = true;
+            this.lbUtilityCount.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbUtilityCount.Location = new System.Drawing.Point(6, 23);
+            this.lbUtilityCount.Name = "lbUtilityCount";
+            this.lbUtilityCount.Size = new System.Drawing.Size(131, 20);
+            this.lbUtilityCount.TabIndex = 2;
+            this.lbUtilityCount.Text = "Pesan Utilitas";
+            // 
+            // tbUtilityCount
+            // 
+            this.tbUtilityCount.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbUtilityCount.Location = new System.Drawing.Point(140, 23);
+            this.tbUtilityCount.Margin = new System.Windows.Forms.Padding(0);
+            this.tbUtilityCount.Name = "tbUtilityCount";
+            this.tbUtilityCount.ReadOnly = true;
+            this.tbUtilityCount.Size = new System.Drawing.Size(137, 20);
+            this.tbUtilityCount.TabIndex = 3;
+            // 
+            // tbAuthenticationCount
+            // 
+            this.tbAuthenticationCount.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbAuthenticationCount.Location = new System.Drawing.Point(140, 43);
+            this.tbAuthenticationCount.Margin = new System.Windows.Forms.Padding(0);
+            this.tbAuthenticationCount.Name = "tbAuthenticationCount";
+            this.tbAuthenticationCount.ReadOnly = true;
+            this.tbAuthenticationCount.Size = new System.Drawing.Size(137, 20);
+            this.tbAuthenticationCount.TabIndex = 5;
+            // 
+            // lbAuthenticationCount
+            // 
+            this.lbAuthenticationCount.AutoSize = true;
+            this.lbAuthenticationCount.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbAuthenticationCount.Location = new System.Drawing.Point(6, 43);
+            this.lbAuthenticationCount.Name = "lbAuthenticationCount";
+            this.lbAuthenticationCount.Size = new System.Drawing.Size(131, 20);
+            this.lbAuthenticationCount.TabIndex = 6;
+            this.lbAuthenticationCount.Text = "Pesan Autentikasi";
+            // 
+            // lbServiceCount
+            // 
+            this.lbServiceCount.AutoSize = true;
+            this.lbServiceCount.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbServiceCount.Location = new System.Drawing.Point(6, 63);
+            this.lbServiceCount.Name = "lbServiceCount";
+            this.lbServiceCount.Size = new System.Drawing.Size(131, 20);
+            this.lbServiceCount.TabIndex = 7;
+            this.lbServiceCount.Text = "Pesan Service";
+            // 
+            // tbServiceCount
+            // 
+            this.tbServiceCount.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbServiceCount.Location = new System.Drawing.Point(140, 63);
+            this.tbServiceCount.Margin = new System.Windows.Forms.Padding(0);
+            this.tbServiceCount.Name = "tbServiceCount";
+            this.tbServiceCount.ReadOnly = true;
+            this.tbServiceCount.Size = new System.Drawing.Size(137, 20);
+            this.tbServiceCount.TabIndex = 8;
+            // 
+            // lbEstCurrentBil
+            // 
+            this.lbEstCurrentBil.AutoSize = true;
+            this.lbEstCurrentBil.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbEstCurrentBil.Location = new System.Drawing.Point(6, 83);
+            this.lbEstCurrentBil.Name = "lbEstCurrentBil";
+            this.lbEstCurrentBil.Size = new System.Drawing.Size(131, 20);
+            this.lbEstCurrentBil.TabIndex = 9;
+            this.lbEstCurrentBil.Text = "Est. Tagihan";
+            // 
+            // tbBillMeta
+            // 
+            this.tbBillMeta.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbBillMeta.Location = new System.Drawing.Point(140, 83);
+            this.tbBillMeta.Margin = new System.Windows.Forms.Padding(0);
+            this.tbBillMeta.Name = "tbBillMeta";
+            this.tbBillMeta.ReadOnly = true;
+            this.tbBillMeta.Size = new System.Drawing.Size(137, 20);
+            this.tbBillMeta.TabIndex = 10;
+            // 
+            // lbMetaBill
+            // 
+            this.lbMetaBill.AutoSize = true;
+            this.lbMetaBill.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbMetaBill.Location = new System.Drawing.Point(6, 103);
+            this.lbMetaBill.Name = "lbMetaBill";
+            this.lbMetaBill.Size = new System.Drawing.Size(131, 20);
+            this.lbMetaBill.TabIndex = 11;
+            this.lbMetaBill.Text = "Tagihan Meta";
+            // 
+            // tbMaxCost
+            // 
+            this.tbMaxCost.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbMaxCost.Location = new System.Drawing.Point(140, 103);
+            this.tbMaxCost.Margin = new System.Windows.Forms.Padding(0);
+            this.tbMaxCost.Name = "tbMaxCost";
+            this.tbMaxCost.ReadOnly = true;
+            this.tbMaxCost.Size = new System.Drawing.Size(137, 20);
+            this.tbMaxCost.TabIndex = 12;
+            // 
+            // lbEstMaxBill
+            // 
+            this.lbEstMaxBill.AutoSize = true;
+            this.lbEstMaxBill.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbEstMaxBill.Location = new System.Drawing.Point(6, 123);
+            this.lbEstMaxBill.Name = "lbEstMaxBill";
+            this.lbEstMaxBill.Size = new System.Drawing.Size(131, 20);
+            this.lbEstMaxBill.TabIndex = 13;
+            this.lbEstMaxBill.Text = "Est. Maks Tagihan";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBox1.Location = new System.Drawing.Point(140, 123);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(0);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.Size = new System.Drawing.Size(137, 20);
+            this.textBox1.TabIndex = 14;
             // 
             // tableLayoutPanel1
             // 
@@ -97,179 +269,7 @@ namespace WaDesktop.Client.Views
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(280, 174);
             this.tableLayoutPanel1.TabIndex = 1;
-            // 
-            // textBox1
-            // 
-            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox1.Location = new System.Drawing.Point(140, 123);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(0);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(137, 20);
-            this.textBox1.TabIndex = 14;
-            // 
-            // lbEstMaxBill
-            // 
-            this.lbEstMaxBill.AutoSize = true;
-            this.lbEstMaxBill.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbEstMaxBill.Location = new System.Drawing.Point(6, 123);
-            this.lbEstMaxBill.Name = "lbEstMaxBill";
-            this.lbEstMaxBill.Size = new System.Drawing.Size(131, 20);
-            this.lbEstMaxBill.TabIndex = 13;
-            this.lbEstMaxBill.Text = "Est. Maks Tagihan";
-            // 
-            // tbMaxCost
-            // 
-            this.tbMaxCost.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tbMaxCost.Location = new System.Drawing.Point(140, 103);
-            this.tbMaxCost.Margin = new System.Windows.Forms.Padding(0);
-            this.tbMaxCost.Name = "tbMaxCost";
-            this.tbMaxCost.ReadOnly = true;
-            this.tbMaxCost.Size = new System.Drawing.Size(137, 20);
-            this.tbMaxCost.TabIndex = 12;
-            // 
-            // lbMetaBill
-            // 
-            this.lbMetaBill.AutoSize = true;
-            this.lbMetaBill.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbMetaBill.Location = new System.Drawing.Point(6, 103);
-            this.lbMetaBill.Name = "lbMetaBill";
-            this.lbMetaBill.Size = new System.Drawing.Size(131, 20);
-            this.lbMetaBill.TabIndex = 11;
-            this.lbMetaBill.Text = "Tagihan Meta";
-            // 
-            // tbBillMeta
-            // 
-            this.tbBillMeta.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tbBillMeta.Location = new System.Drawing.Point(140, 83);
-            this.tbBillMeta.Margin = new System.Windows.Forms.Padding(0);
-            this.tbBillMeta.Name = "tbBillMeta";
-            this.tbBillMeta.ReadOnly = true;
-            this.tbBillMeta.Size = new System.Drawing.Size(137, 20);
-            this.tbBillMeta.TabIndex = 10;
-            // 
-            // lbEstCurrentBil
-            // 
-            this.lbEstCurrentBil.AutoSize = true;
-            this.lbEstCurrentBil.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbEstCurrentBil.Location = new System.Drawing.Point(6, 83);
-            this.lbEstCurrentBil.Name = "lbEstCurrentBil";
-            this.lbEstCurrentBil.Size = new System.Drawing.Size(131, 20);
-            this.lbEstCurrentBil.TabIndex = 9;
-            this.lbEstCurrentBil.Text = "Est. Tagihan";
-            // 
-            // tbServiceCount
-            // 
-            this.tbServiceCount.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tbServiceCount.Location = new System.Drawing.Point(140, 63);
-            this.tbServiceCount.Margin = new System.Windows.Forms.Padding(0);
-            this.tbServiceCount.Name = "tbServiceCount";
-            this.tbServiceCount.ReadOnly = true;
-            this.tbServiceCount.Size = new System.Drawing.Size(137, 20);
-            this.tbServiceCount.TabIndex = 8;
-            // 
-            // lbServiceCount
-            // 
-            this.lbServiceCount.AutoSize = true;
-            this.lbServiceCount.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbServiceCount.Location = new System.Drawing.Point(6, 63);
-            this.lbServiceCount.Name = "lbServiceCount";
-            this.lbServiceCount.Size = new System.Drawing.Size(131, 20);
-            this.lbServiceCount.TabIndex = 7;
-            this.lbServiceCount.Text = "Pesan Service";
-            // 
-            // lbAuthenticationCount
-            // 
-            this.lbAuthenticationCount.AutoSize = true;
-            this.lbAuthenticationCount.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbAuthenticationCount.Location = new System.Drawing.Point(6, 43);
-            this.lbAuthenticationCount.Name = "lbAuthenticationCount";
-            this.lbAuthenticationCount.Size = new System.Drawing.Size(131, 20);
-            this.lbAuthenticationCount.TabIndex = 6;
-            this.lbAuthenticationCount.Text = "Pesan Autentikasi";
-            // 
-            // tbAuthenticationCount
-            // 
-            this.tbAuthenticationCount.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tbAuthenticationCount.Location = new System.Drawing.Point(140, 43);
-            this.tbAuthenticationCount.Margin = new System.Windows.Forms.Padding(0);
-            this.tbAuthenticationCount.Name = "tbAuthenticationCount";
-            this.tbAuthenticationCount.ReadOnly = true;
-            this.tbAuthenticationCount.Size = new System.Drawing.Size(137, 20);
-            this.tbAuthenticationCount.TabIndex = 5;
-            // 
-            // tbUtilityCount
-            // 
-            this.tbUtilityCount.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tbUtilityCount.Location = new System.Drawing.Point(140, 23);
-            this.tbUtilityCount.Margin = new System.Windows.Forms.Padding(0);
-            this.tbUtilityCount.Name = "tbUtilityCount";
-            this.tbUtilityCount.ReadOnly = true;
-            this.tbUtilityCount.Size = new System.Drawing.Size(137, 20);
-            this.tbUtilityCount.TabIndex = 3;
-            // 
-            // lbUtilityCount
-            // 
-            this.lbUtilityCount.AutoSize = true;
-            this.lbUtilityCount.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbUtilityCount.Location = new System.Drawing.Point(6, 23);
-            this.lbUtilityCount.Name = "lbUtilityCount";
-            this.lbUtilityCount.Size = new System.Drawing.Size(131, 20);
-            this.lbUtilityCount.TabIndex = 2;
-            this.lbUtilityCount.Text = "Pesan Utilitas";
-            // 
-            // lbMarketingCount
-            // 
-            this.lbMarketingCount.AutoSize = true;
-            this.lbMarketingCount.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbMarketingCount.Location = new System.Drawing.Point(6, 3);
-            this.lbMarketingCount.Name = "lbMarketingCount";
-            this.lbMarketingCount.Size = new System.Drawing.Size(131, 20);
-            this.lbMarketingCount.TabIndex = 0;
-            this.lbMarketingCount.Text = "Pesan Marketing";
-            // 
-            // tbMarketingCount
-            // 
-            this.tbMarketingCount.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tbMarketingCount.Location = new System.Drawing.Point(140, 3);
-            this.tbMarketingCount.Margin = new System.Windows.Forms.Padding(0);
-            this.tbMarketingCount.Name = "tbMarketingCount";
-            this.tbMarketingCount.ReadOnly = true;
-            this.tbMarketingCount.Size = new System.Drawing.Size(137, 20);
-            this.tbMarketingCount.TabIndex = 1;
-            // 
-                        // 
-            // treeView
-            // 
-            this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView.ImageIndex = 0;
-            this.treeView.ImageList = this.imageList_0;
-            this.treeView.Location = new System.Drawing.Point(0, 0);
-            this.treeView.Name = "treeView";
-            this.treeView.SelectedImageIndex = 0;
-            this.treeView.Size = new System.Drawing.Size(280, 489);
-            this.treeView.TabIndex = 2;
-            this.treeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.TreeView_NodeMouseClick);
-            this.treeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.TreeView_NodeMouseDoubleClick);
-            // 
-            // imageList_0
-            // 
-            this.imageList_0.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList_0.ImageStream")));
-            this.imageList_0.TransparentColor = System.Drawing.Color.Fuchsia;
-            this.imageList_0.Images.SetKeyName(0, "Stop1Disabled_.png");
-            this.imageList_0.Images.SetKeyName(1, "Play.png");
-            this.imageList_0.Images.SetKeyName(2, "StepForwardNormalYellow_.png");
-            this.imageList_0.Images.SetKeyName(3, "Play1Normal_.png");
-            this.imageList_0.Images.SetKeyName(4, "connectedbusy.png");
-            this.imageList_0.Images.SetKeyName(5, "modems_.png");
-            this.imageList_0.Images.SetKeyName(6, "ym.png");
-            this.imageList_0.Images.SetKeyName(7, "class.png");
-            this.imageList_0.Images.SetKeyName(8, "center.png");
-            this.imageList_0.Images.SetKeyName(9, "sender.png");
-            this.imageList_0.Images.SetKeyName(10, "backgroundworker.png");
-            this.imageList_0.Images.SetKeyName(11, "messagequeue.png");
-            this.imageList_0.Images.SetKeyName(12, "yahoo.gif");
+            this.tableLayoutPanel1.Visible = false;
             // 
             // SidebarView
             // 
@@ -288,22 +288,22 @@ namespace WaDesktop.Client.Views
         }
 
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.ImageList imageList_0;
+        private System.Windows.Forms.TreeView treeView;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label lbEstMaxBill;
+        private System.Windows.Forms.TextBox tbMaxCost;
+        private System.Windows.Forms.Label lbMetaBill;
+        private System.Windows.Forms.TextBox tbBillMeta;
+        private System.Windows.Forms.Label lbEstCurrentBil;
+        private System.Windows.Forms.TextBox tbServiceCount;
+        private System.Windows.Forms.Label lbServiceCount;
+        private System.Windows.Forms.Label lbAuthenticationCount;
         private System.Windows.Forms.TextBox tbAuthenticationCount;
         private System.Windows.Forms.TextBox tbUtilityCount;
         private System.Windows.Forms.Label lbUtilityCount;
         private System.Windows.Forms.Label lbMarketingCount;
-        private System.Windows.Forms.TextBox tbMaxCost;
-        private System.Windows.Forms.Label lbMetaBill;
-        private System.Windows.Forms.TextBox tbBillMeta;
-        private System.Windows.Forms.TextBox tbServiceCount;
-        private System.Windows.Forms.Label lbAuthenticationCount;
         private System.Windows.Forms.TextBox tbMarketingCount;
-        private System.Windows.Forms.Label lbEstCurrentBil;
-        private System.Windows.Forms.Label lbServiceCount;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Label lbEstMaxBill;
-        private System.Windows.Forms.ImageList imageList_0;
-        private System.Windows.Forms.TreeView treeView;
     }
 }
