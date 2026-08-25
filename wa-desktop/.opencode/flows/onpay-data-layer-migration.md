@@ -67,20 +67,30 @@ Infrastructure/Services/AuthSessionStore.cs      ← token state + event Session
       kontrak `ICompanyRepository`.
       Konsumen baru: CompanyPresenter (penuh), LimitBillingPresenter +
       SidebarPresenter (ctor +1 dependensi).
-- [ ] **Fase 4** — Rollout: Billing → AppSettings → User → Template → Waba → PhoneNumber → Auth
-- [ ] **Fase 5** — Hapus IApiClient + ApiService partials lama; update tests; update AGENTS.md
+- [x] **Fase 4** — Rollout: Billing → AppSettings → User → Template → Waba → PhoneNumber → Auth
+  Commit: 9792a29 (4a Billing), 6e08892 (4b AppSettings), 0e8af7f (4c User),
+  edd74ca (4d Template), 08b5d00 (4e Waba), 845c599 (4f PhoneNumber),
+  ad2ff13 (4g Auth + buang IApiClient tak terpakai dari SidebarPresenter).
+  Catatan 4f/4g: `BaseDataSource` ditambah `GetBytesAsync` (404→Success(null)
+  untuk gambar profil Meta CDN) dan `SendContentAsync` (multipart upload).
+- [x] **Fase 5** — Hapus IApiClient + ApiService partials lama; update tests; update AGENTS.md
+  Commit: 654bac7. Registration flow pindah ke `IPhoneNumberRepository`
+  (UseCase pertahankan semantik throw). `SavePhoneResult`/`AuthResult`
+  dipromosikan ke `Domain/Entities`. Bridge Program.cs kini subscribe
+  `IAuthSessionStore.SessionExpired/TokenRefreshed` langsung. Tests tidak
+  tersentuh (hanya fake IAuthService, tidak ada fake IApiClient).
 
 ## Checklist WAJIB Per Fitur (tiap commit)
 
-1. [ ] Payload DTO snake_case di `Infrastructure/Payloads/{Feature}/`
-2. [ ] Entity dibersihkan dari `[JsonProperty]` (mapping pindah ke Repository)
-3. [ ] Interface repo di `Domain/Interfaces/`
-4. [ ] DataSource + Repository di `Infrastructure/Data/`
-5. [ ] Presenter ganti dependensi + tangani `result.IsSuccess`
-6. [ ] Register DI di `ServiceCollectionExtensions`
-7. [ ] **Daftarkan semua file .cs baru di .csproj** ← penyebab CS0246 klasik
-8. [ ] Update fake test bila presenter tersangkut test
-9. [ ] Build + smoke test tab terkait
+1. [x] Payload DTO snake_case di `Infrastructure/Payloads/{Feature}/`
+2. [ ] Entity dibersihkan dari `[JsonProperty]` (mapping pindah ke Repository) — **satu-satunya sisa**: sebagian besar entity kini hanya diisi lewat mapping manual Repository, tapi `AuthResult` masih jadi tipe payload langsung di `AuthDataSource`; strip atribut = kerjaan kosmetik menyusul
+3. [x] Interface repo di `Domain/Interfaces/`
+4. [x] DataSource + Repository di `Infrastructure/Data/`
+5. [x] Presenter ganti dependensi + tangani `result.IsSuccess`
+6. [x] Register DI di `ServiceCollectionExtensions`
+7. [x] **Daftarkan semua file .cs baru di .csproj** ← penyebab CS0246 klasik
+8. [x] Update fake test bila presenter tersangkut test (tidak ada yang perlu)
+9. [ ] Build + smoke test tab terkait ← **BELUM dijalankan sejak fase 3**
 
 ## Out of Scope
 

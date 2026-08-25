@@ -13,7 +13,11 @@ WaDesktop.sln
     │   ├── UseCases/                  # Business logic
     │   └── State/                     # AppStateContainer
     ├── WaDesktop.Infrastructure/
-    │   ├── Services/                  # ApiClient, AuthService, SettingsService
+    │   ├── Services/                  # AuthService, AuthSessionStore
+    │   ├── Data/
+    │   │   ├── Remote/                # ApiHttpPipeline, BaseDataSource, AuthDelegatingHandler
+    │   │   └── Repositories/          # Per-feature repository (Result<T,E> contract)
+    │   ├── Payloads/                  # snake_case DTO per feature (onpay-style)
     │   ├── EventAggregator/           # Pub/Sub message bus
     │   └── ServiceLocator.cs          # DI container
     └── WaDesktop.Client/              # WinForms .NET 4.7.2
@@ -37,6 +41,7 @@ WaDesktop.sln
 - Unidirectional data flow: UseCase → StateContainer → EventAggregator → Presenter
 - WebView2: Evergreen mode (uses installed Edge Chromium)
 - Background tasks via Task.Run, UI marshal via InvokeIfRequired
+- Data layer (onpay-style): Presenter → IRepository → DataSource (Result<T,Error>) → ApiHttpPipeline; JWT refresh via AuthDelegatingHandler + IAuthSessionStore (single-flight)
 - Backend API: HttpClient + JWT Bearer, auto-refresh on 401
 
 ## Menu Structure
