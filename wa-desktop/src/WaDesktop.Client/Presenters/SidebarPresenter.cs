@@ -12,7 +12,6 @@ namespace WaDesktop.Client.Presenters
     public class SidebarPresenter : IDisposable
     {
         private readonly ISidebarView _view;
-        private readonly IApiClient _api;
         private readonly ICompanyRepository _companies;
         private readonly IBillingRepository _billing;
         private readonly IAppSettingsRepository _settings;
@@ -23,11 +22,10 @@ namespace WaDesktop.Client.Presenters
         private readonly IDisposable _sessionExpiredSub;
         private readonly IDisposable _sessionRestoredSub;
 
-        public SidebarPresenter(ISidebarView view, IApiClient api, ICompanyRepository companies,
+        public SidebarPresenter(ISidebarView view, ICompanyRepository companies,
             IBillingRepository billing, IAppSettingsRepository settings, IEventAggregator bus)
         {
             _view = view;
-            _api = api;
             _companies = companies;
             _billing = billing;
             _settings = settings;
@@ -76,7 +74,7 @@ namespace WaDesktop.Client.Presenters
             _view.IsLoading = true;
             try
             {
-                //var phones = await Task.Run(() => _api.GetPhoneNumbersAsync());
+                //var phones = await Task.Run(() => _companies.GetPhoneNumbersAsync());
                 //_view.LoadPhoneNumbers(BuildTree(phones));
 
                 var result = await Task.Run(() => _billing.GetAnalyticsAsync());

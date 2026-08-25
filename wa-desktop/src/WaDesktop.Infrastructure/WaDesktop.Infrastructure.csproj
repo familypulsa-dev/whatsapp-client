@@ -50,6 +50,8 @@
     <Compile Include="Data\Remote\DataSources\TemplateDataSource.cs" />
     <Compile Include="Data\Remote\DataSources\WabaDataSource.cs" />
     <Compile Include="Data\Remote\DataSources\PhoneNumberDataSource.cs" />
+    <Compile Include="Data\Remote\DataSources\AuthDataSource.cs" />
+    <Compile Include="Data\Repositories\AuthRepository.cs" />
     <Compile Include="Data\Repositories\CompanyRepository.cs" />
     <Compile Include="Data\Repositories\BillingRepository.cs" />
     <Compile Include="Data\Repositories\AppSettingsRepository.cs" />

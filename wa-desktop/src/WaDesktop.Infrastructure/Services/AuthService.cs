@@ -7,19 +7,21 @@ namespace WaDesktop.Infrastructure.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly IApiClient _api;
+        private readonly IAuthRepository _authRepository;
+        private readonly IAuthSessionStore _sessionStore;
         private readonly AppState _state;
 
-        public AuthService(IApiClient api, AppState state)
+        public AuthService(IAuthRepository authRepository, IAuthSessionStore sessionStore, AppState state)
         {
-            _api = api;
-            _state = state; 
+            _authRepository = authRepository;
+            _sessionStore = sessionStore;
+            _state = state;
 
-            // Sync AppState when ApiClient refreshes token internally
-            _api.TokenRefreshed += (s, e) =>
+            // Sync AppState saat handler refresh token di pipeline HTTP.
+            _sessionStore.TokenRefreshed += (s, e) =>
             {
-                _state.AccessToken = _api.AccessToken;
-                _state.RefreshToken = _api.RefreshToken;
+                _state.AccessToken = _sessionStore.AccessToken;
+                _state.RefreshToken = _sessionStore.RefreshToken;
             };
         }
 
@@ -32,36 +34,27 @@ namespace WaDesktop.Infrastructure.Services
 
         public async Task<bool> LoginAsync(string username, string password)
         {
-            try
-            {
-                var result = await _api.LoginAsync(username, password);
-                _state.SetSession(result.AccessToken, result.RefreshToken, result.User.Role, result.User.DisplayName);
-                _state.CompanyName = result.CompanyName;
-                return true;
-            }
-            catch
-            {
+            var result = await Task.Run(() => _authRepository.LoginAsync(username, password));
+            if (result.IsFailure)
                 return false;
-            }
+
+            var auth = result.Value;
+            _sessionStore.SetSession(auth.AccessToken, auth.RefreshToken);
+            _state.SetSession(auth.AccessToken, auth.RefreshToken, auth.User.Role, auth.User.DisplayName);
+            _state.CompanyName = auth.CompanyName;
+            return true;
         }
 
-        public async Task<bool> RefreshTokenAsync()
+        public Task<bool> RefreshTokenAsync()
         {
-            try
-            {
-                // Handled internally by ApiClient.SendWithRefreshAsync → TryRefreshAsync
-                return false;
-            }
-            catch
-            {
-                return false;
-            }
+            // Ditangani AuthDelegatingHandler (single-flight + retry-once).
+            return Task.FromResult(false);
         }
 
         public void Logout()
         {
             _state.ClearSession();
-            _api.SetToken(null);
+            _sessionStore.ClearAccessToken();
         }
     }
 }
