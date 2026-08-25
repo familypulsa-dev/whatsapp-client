@@ -31,7 +31,10 @@ namespace WaDesktop.Client.Extensions
 
             // 1.2 Data layer ala onpay (Repository + DataSource per fitur)
             services.AddTransient<ICompanyRepository, CompanyRepository>();
+            services.AddTransient<IBillingRepository, BillingRepository>();
             services.AddTransient(sp => new WaDesktop.Infrastructure.Data.Remote.DataSources.CompanyDataSource(
+                sp.GetRequiredService<HttpClient>(), apiBaseUrl));
+            services.AddTransient(sp => new WaDesktop.Infrastructure.Data.Remote.DataSources.BillingDataSource(
                 sp.GetRequiredService<HttpClient>(), apiBaseUrl));
 
             // 1.5 Module Factory (Singleton = root provider; tiap Create bikin child scope)

@@ -62,6 +62,7 @@
     <Compile Include="Interfaces\IAuthService.cs" />
     <Compile Include="Interfaces\IAuthSessionStore.cs" />
     <Compile Include="Interfaces\ICompanyRepository.cs" />
+    <Compile Include="Interfaces\IBillingRepository.cs" />
     <Compile Include="Interfaces\IEventAggregator.cs" />
     <Compile Include="Entities\PhoneNumberNode.cs" />
     <Compile Include="Entities\Company.cs" />

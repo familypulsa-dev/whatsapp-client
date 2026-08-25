@@ -9,14 +9,16 @@ namespace WaDesktop.Client.Presenters
     public class TagihanPresenter : IDisposable, IPresenterBase
     {
         private readonly TagihanView _view;
-        private readonly IApiClient _api;
+        private readonly IApiClient _api; // masih dipakai untuk GetWabasAsync — pindah ke IWabaRepository di Fase 4e
+        private readonly IBillingRepository _billing;
         private bool _disposed;
         private bool _wabasLoaded;
 
-        public TagihanPresenter(TagihanView view, IApiClient api)
+        public TagihanPresenter(TagihanView view, IApiClient api, IBillingRepository billing)
         {
             _view = view;
             _api = api;
+            _billing = billing;
             _view.FilterClicked += OnFilterClicked;
             _view.WabaFilterChanged += OnWabaFilterChanged;
         }
@@ -44,9 +46,11 @@ namespace WaDesktop.Client.Presenters
                 var end = _view.FilterEnd;
                 var wabaId = _view.SelectedWabaId;
 
-                var data = await Task.Run(() =>
-                    _api.GetBillingSummaryAsync(start, end, wabaId));
-                _view.DataSource = data;
+                var result = await Task.Run(() =>
+                    _billing.GetUsageSummaryAsync(start, end, wabaId));
+                if (result.IsFailure)
+                    throw new Exception(result.Error.Message);
+                _view.DataSource = result.Value;
             }
             catch (Exception ex)
             {

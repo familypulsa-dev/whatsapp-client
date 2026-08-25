@@ -14,6 +14,7 @@ namespace WaDesktop.Client.Presenters
         private readonly ISidebarView _view;
         private readonly IApiClient _api;
         private readonly ICompanyRepository _companies;
+        private readonly IBillingRepository _billing;
         private readonly IEventAggregator _bus;
         private Company _currentCompany;
         private bool _disposed;
@@ -21,11 +22,12 @@ namespace WaDesktop.Client.Presenters
         private readonly IDisposable _sessionExpiredSub;
         private readonly IDisposable _sessionRestoredSub;
 
-        public SidebarPresenter(ISidebarView view, IApiClient api, ICompanyRepository companies, IEventAggregator bus)
+        public SidebarPresenter(ISidebarView view, IApiClient api, ICompanyRepository companies, IBillingRepository billing, IEventAggregator bus)
         {
             _view = view;
             _api = api;
             _companies = companies;
+            _billing = billing;
             _bus = bus;
 
             _view.PhoneNumberSelected += OnPhoneNumberSelected;
@@ -69,8 +71,16 @@ namespace WaDesktop.Client.Presenters
                 //var phones = await Task.Run(() => _api.GetPhoneNumbersAsync());
                 //_view.LoadPhoneNumbers(BuildTree(phones));
 
-                _currentCompany = await Task.Run(() => _api.GetBillingAnalyticsAsync());
-                _view.UpdateUsageSummary(_currentCompany);
+                var result = await Task.Run(() => _billing.GetAnalyticsAsync());
+                if (result.IsSuccess)
+                {
+                    _currentCompany = result.Value;
+                    _view.UpdateUsageSummary(_currentCompany);
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to load sidebar data: {result.Error.Message}");
+                }
 
                 // Initial webhook status check
                 await CheckWebhookStatusAsync();
