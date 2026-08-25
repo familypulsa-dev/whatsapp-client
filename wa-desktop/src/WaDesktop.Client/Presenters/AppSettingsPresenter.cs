@@ -9,13 +9,13 @@ namespace WaDesktop.Client.Presenters
     public class AppSettingsPresenter : IDisposable, IPresenterBase
     {
         private readonly IAppSettingsView _view;
-        private readonly IApiClient _api;
+        private readonly IAppSettingsRepository _settings;
         private bool _disposed;
 
-        public AppSettingsPresenter(IAppSettingsView view, IApiClient api)
+        public AppSettingsPresenter(IAppSettingsView view, IAppSettingsRepository settings)
         {
             _view = view;
-            _api = api;
+            _settings = settings;
 
             _view.SaveClicked += async (s, e) => await SaveAsync();
             _view.RefreshClicked += async (s, e) => await LoadDataAsync();
@@ -29,7 +29,11 @@ namespace WaDesktop.Client.Presenters
             _view.IsSaving = true;
             try
             {
-                var settings = await Task.Run(() => _api.GetAppSettingsAsync());
+                var result = await Task.Run(() => _settings.GetAsync());
+                if (result.IsFailure)
+                    throw new Exception(result.Error.Message);
+
+                var settings = result.Value;
                 _view.WabaToken = settings.WabaToken;
                 _view.AppId = settings.AppId;
                 _view.AppSecret = settings.AppSecret;
@@ -65,10 +69,13 @@ namespace WaDesktop.Client.Presenters
                     MessageCleanupEnabled = _view.MessageCleanupEnabled,
                     MessageRetentionDays = _view.MessageRetentionDays
                 };
-                var warnings = await Task.Run(() => _api.SaveAppSettingsAsync(settings));
-                if (warnings != null && warnings.Any())
+                var warnings = await Task.Run(() => _settings.SaveAsync(settings));
+                if (warnings.IsFailure)
+                    throw new Exception(warnings.Error.Message);
+
+                if (warnings.Value != null && warnings.Value.Any())
                 {
-                    if (!silent) _view.ShowWarning(string.Join("\n", warnings));
+                    if (!silent) _view.ShowWarning(string.Join("\n", warnings.Value));
                 }
                 else
                 {
@@ -108,7 +115,9 @@ namespace WaDesktop.Client.Presenters
             try
             {
                 var fullUrl = baseUrl + "/api/v1/webhook";
-                await Task.Run(() => _api.SetupWebhookAsync(fullUrl));
+                var setup = await Task.Run(() => _settings.SetupWebhookAsync(fullUrl));
+                if (setup.IsFailure)
+                    throw new Exception(setup.Error.Message);
                 _view.ShowSuccess("Pengaturan tersimpan permanen dan Webhook berhasil di-setup ke Meta!");
             }
             catch (Exception ex)

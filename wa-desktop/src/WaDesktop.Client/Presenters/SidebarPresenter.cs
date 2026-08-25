@@ -15,6 +15,7 @@ namespace WaDesktop.Client.Presenters
         private readonly IApiClient _api;
         private readonly ICompanyRepository _companies;
         private readonly IBillingRepository _billing;
+        private readonly IAppSettingsRepository _settings;
         private readonly IEventAggregator _bus;
         private Company _currentCompany;
         private bool _disposed;
@@ -22,12 +23,14 @@ namespace WaDesktop.Client.Presenters
         private readonly IDisposable _sessionExpiredSub;
         private readonly IDisposable _sessionRestoredSub;
 
-        public SidebarPresenter(ISidebarView view, IApiClient api, ICompanyRepository companies, IBillingRepository billing, IEventAggregator bus)
+        public SidebarPresenter(ISidebarView view, IApiClient api, ICompanyRepository companies,
+            IBillingRepository billing, IAppSettingsRepository settings, IEventAggregator bus)
         {
             _view = view;
             _api = api;
             _companies = companies;
             _billing = billing;
+            _settings = settings;
             _bus = bus;
 
             _view.PhoneNumberSelected += OnPhoneNumberSelected;
@@ -54,8 +57,13 @@ namespace WaDesktop.Client.Presenters
         {
             try
             {
-                var status = await Task.Run(() => _api.GetWebhookStatusAsync());
-                _view.UpdateWebhookStatus(status.IsRunning, status.Message);
+                var result = await Task.Run(() => _settings.GetWebhookStatusAsync());
+                if (result.IsFailure)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to load webhook status: {result.Error.Message}");
+                    return;
+                }
+                _view.UpdateWebhookStatus(result.Value.IsRunning, result.Value.Message);
             }
             catch (Exception ex)
             {
