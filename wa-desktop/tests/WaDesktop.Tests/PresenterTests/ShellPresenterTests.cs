@@ -86,7 +86,7 @@ namespace WaDesktop.Tests.PresenterTests
             var auth = new FakeAuthService();
             var bus = new EventAggregator();
             var state = new AppState();
-            state.SetSession("t", "rt", "admin", "Test");
+            state.SetSession("t", "rt", "admin", "Test", "family", "asdfjasjf");
 
             var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
             var provider = services.BuildServiceProvider();
@@ -104,7 +104,7 @@ namespace WaDesktop.Tests.PresenterTests
             var auth = new FakeAuthService();
             var bus = new EventAggregator();
             var state = new AppState();
-            state.SetSession("t", "rt", "admin", "Test");
+            state.SetSession("t", "rt", "admin", "Test", "family", "asdfjasjf");
 
             var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
             var provider = services.BuildServiceProvider();

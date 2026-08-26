@@ -40,8 +40,7 @@ namespace WaDesktop.Infrastructure.Services
 
             var auth = result.Value;
             _sessionStore.SetSession(auth.AccessToken, auth.RefreshToken);
-            _state.SetSession(auth.AccessToken, auth.RefreshToken, auth.User.Role, auth.User.DisplayName);
-            _state.CompanyName = auth.CompanyName;
+            _state.SetSession(auth.AccessToken, auth.RefreshToken, auth.User.Role, auth.User.DisplayName, auth.CompanyName, auth.User.CompanyId);
             return true;
         }
 

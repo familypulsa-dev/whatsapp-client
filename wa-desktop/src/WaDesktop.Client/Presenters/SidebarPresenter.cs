@@ -79,8 +79,7 @@ namespace WaDesktop.Client.Presenters
                 var result = await Task.Run(() => _billing.GetAnalyticsAsync());
                 if (result.IsSuccess)
                 {
-                    _currentCompany = result.Value;
-                    _view.UpdateUsageSummary(_currentCompany);
+                    _view.UpdateUsageSummary(result.Value);
                 }
                 else
                 {

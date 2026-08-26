@@ -1,11 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WaDesktop.Domain.Common;
-using WaDesktop.Domain.Interfaces;
-using WaDesktop.Domain.Entities;
 using WaDesktop.Client.Views.ManagementViews;
+using WaDesktop.Domain.Common;
+using WaDesktop.Domain.Entities;
+using WaDesktop.Domain.Interfaces;
+using WaDesktop.Domain.State;
 
 namespace WaDesktop.Client.Presenters
 {
@@ -16,8 +18,9 @@ namespace WaDesktop.Client.Presenters
         private readonly ICompanyRepository _companies;
         private bool _disposed;
         private const string DefaultPassword = "WaClientDefault123?";
+        private readonly AppState _state;
 
-        public UsersPresenter(UsersView view, IUserRepository users, ICompanyRepository companies)
+        public UsersPresenter(UsersView view, IUserRepository users, ICompanyRepository companies, AppState state)
         {
             _view = view;
             _users = users;
@@ -27,6 +30,7 @@ namespace WaDesktop.Client.Presenters
             _view.SearchClicked += async (s, q) => await LoadDataAsync(q);
             _view.SaveClicked += OnSaveClicked;
             _view.ResetPasswordClicked += OnResetPassword;
+            _state = state;
         }
 
         public async void LoadData(string search = null) => await LoadDataAsync(search);
@@ -39,6 +43,13 @@ namespace WaDesktop.Client.Presenters
                 var companiesResult = await Task.Run(() => _companies.GetAllAsync());
                 if (companiesResult.IsFailure)
                     throw new Exception(companiesResult.Error.Message);
+                if (!_state.IsSuperAdmin)
+                {
+                    // Filter companies based on the user's company ID
+                    companiesResult = Result<List<Company>>.Success(
+                        companiesResult.Value.Where(c => c.Id == _state.CompanyId).ToList()
+                    );
+                }
                 _view.SetCompanies(companiesResult.Value);
 
                 var result = await Task.Run(() => _users.GetAllAsync());

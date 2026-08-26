@@ -8,7 +8,7 @@ namespace WaDesktop.Domain.Interfaces
     {
         /// <summary>Set data tree dari WA Phone Numbers.</summary>
         void LoadPhoneNumbers(IList<PhoneNumberNode> nodes);
-        void UpdateUsageSummary(Company company);
+        void UpdateUsageSummary(WaWabaUsageSummary summary);
         void UpdateWebhookStatus(bool isRunning, string message);
 
         /// <summary>Event: node di tree diklik. Kirim wa_id + phone_number_id.</summary>

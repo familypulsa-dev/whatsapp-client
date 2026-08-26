@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using WaDesktop.Domain.Interfaces;
 using WaDesktop.Domain.Entities;
 using WaDesktop.Client.Extensions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace WaDesktop.Client.Views
 {
@@ -49,23 +50,19 @@ namespace WaDesktop.Client.Views
             });
         }
 
-        public void UpdateUsageSummary(Company company)
+        public void UpdateUsageSummary(WaWabaUsageSummary summary)
         {
             this.InvokeIfRequired(() =>
             {
-                if (company == null) return;
-
-                string FormatLimit(int? limit) => limit.HasValue ? limit.Value.ToString() : "~";
-
-                tbMarketingCount.Text = $"{company.UsageMarketing} / {FormatLimit(company.LimitMarketing)}";
-                tbUtilityCount.Text = $"{company.UsageUtility} / {FormatLimit(company.LimitUtility)}";
-                tbAuthenticationCount.Text = $"{company.UsageAuthentication} / {FormatLimit(company.LimitAuthentication)}";
-                tbServiceCount.Text = $"{company.UsageService} / {FormatLimit(company.LimitService)}";
-
+                if (summary == null) return;
                 var idId = new System.Globalization.CultureInfo("id-ID");
-                tbBillMeta.Text = company.CurrentCost.ToString("C2", idId);
-                tbMaxCost.Text = company.MetaCost.ToString("C2", idId);
-                textBox1.Text = company.MaxEstimatedCost.HasValue ? company.MaxEstimatedCost.Value.ToString("C2", idId) : "~";
+
+                tbMarketingCount.Text = summary.MarketingCost.ToString("C2", idId);
+                tbUtilityCount.Text = summary.UtilityCost.ToString("C2", idId);
+                tbAuthenticationCount.Text = summary.AuthCost.ToString("C2", idId);
+                tbServiceCount.Text = summary.ServiceCost.ToString("C2", idId);
+
+                tbBillMeta.Text = summary.TotalCost.ToString("C2", idId);
             });
         }
 

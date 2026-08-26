@@ -12,13 +12,16 @@ namespace WaDesktop.Domain.State
         public string CompanyName { get; set; }
         public bool IsLoggedIn => !string.IsNullOrEmpty(AccessToken);
         public bool IsSuperAdmin => Role == "super_admin";
+        public string CompanyId { get; set; }
 
-        public void SetSession(string accessToken, string refreshToken, string role, string displayName)
+        public void SetSession(string accessToken, string refreshToken, string role, string displayName, string companyName, string companyId)
         {
             AccessToken = accessToken;
             RefreshToken = refreshToken;
             Role = role;
             DisplayName = displayName;
+            CompanyName = companyName;
+            CompanyId = companyId;
         }
 
         public void ClearSession()
@@ -28,6 +31,7 @@ namespace WaDesktop.Domain.State
             Role = null;
             DisplayName = null;
             CompanyName = null;
+            CompanyId= null;
         }
     }
 }
