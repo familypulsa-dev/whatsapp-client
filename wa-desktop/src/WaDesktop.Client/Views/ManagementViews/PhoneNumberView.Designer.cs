@@ -22,18 +22,17 @@ namespace WaDesktop.Client.Views.ManagementViews
         {
             this.components = new System.ComponentModel.Container();
             this.dataGridView = new System.Windows.Forms.DataGridView();
+            this.ctxMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ctxMenuWebhook = new System.Windows.Forms.ToolStripMenuItem();
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.btnSearch = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnSync = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
-            this.btnRegister = new System.Windows.Forms.Button();
             this.cmbWabaSync = new System.Windows.Forms.ComboBox();
             this.panelHeader = new System.Windows.Forms.Panel();
             this.panelFooter = new System.Windows.Forms.Panel();
-            this.ctxMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ctxMenuWebhook = new System.Windows.Forms.ToolStripMenuItem();
             this.dgvPhoneNumberId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -42,10 +41,11 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dgvNameStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgvCodeStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgvMetaStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colRegister = new System.Windows.Forms.DataGridViewButtonColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
+            this.ctxMenu.SuspendLayout();
             this.panelHeader.SuspendLayout();
             this.panelFooter.SuspendLayout();
-            this.ctxMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // dataGridView
@@ -61,7 +61,9 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dataGridViewTextBoxColumn4,
             this.dgvNameStatus,
             this.dgvCodeStatus,
-            this.dgvMetaStatus});
+            this.dgvMetaStatus,
+            this.colRegister});
+            this.dataGridView.ContextMenuStrip = this.ctxMenu;
             this.dataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView.Location = new System.Drawing.Point(0, 33);
             this.dataGridView.Name = "dataGridView";
@@ -69,9 +71,24 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView.Size = new System.Drawing.Size(884, 523);
             this.dataGridView.TabIndex = 0;
+            this.dataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellContentClick);
             this.dataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellDoubleClick);
+            this.dataGridView.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView_CellFormatting);
             this.dataGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView_CellMouseClick);
-            this.dataGridView.ContextMenuStrip = this.ctxMenu;
+            // 
+            // ctxMenu
+            // 
+            this.ctxMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ctxMenuWebhook});
+            this.ctxMenu.Name = "ctxMenu";
+            this.ctxMenu.Size = new System.Drawing.Size(126, 26);
+            // 
+            // ctxMenuWebhook
+            // 
+            this.ctxMenuWebhook.Name = "ctxMenuWebhook";
+            this.ctxMenuWebhook.Size = new System.Drawing.Size(125, 22);
+            this.ctxMenuWebhook.Text = "Webhook";
+            this.ctxMenuWebhook.Click += new System.EventHandler(this.ctxMenuWebhook_Click);
             // 
             // txtSearch
             // 
@@ -101,17 +118,6 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.btnAdd.Text = "Tambah";
             this.btnAdd.UseVisualStyleBackColor = true;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
-            // 
-            // btnRegister
-            // 
-            this.btnRegister.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRegister.Location = new System.Drawing.Point(644, 4);
-            this.btnRegister.Name = "btnRegister";
-            this.btnRegister.Size = new System.Drawing.Size(75, 23);
-            this.btnRegister.TabIndex = 8;
-            this.btnRegister.Text = "Register";
-            this.btnRegister.UseVisualStyleBackColor = true;
-            this.btnRegister.Click += new System.EventHandler(this.btnRegister_Click);
             // 
             // btnDelete
             // 
@@ -171,7 +177,6 @@ namespace WaDesktop.Client.Views.ManagementViews
             // 
             this.panelFooter.Controls.Add(this.btnRefresh);
             this.panelFooter.Controls.Add(this.btnDelete);
-            this.panelFooter.Controls.Add(this.btnRegister);
             this.panelFooter.Controls.Add(this.btnAdd);
             this.panelFooter.Controls.Add(this.btnSync);
             this.panelFooter.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -179,20 +184,6 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.panelFooter.Name = "panelFooter";
             this.panelFooter.Size = new System.Drawing.Size(884, 30);
             this.panelFooter.TabIndex = 10;
-            // 
-            // ctxMenu
-            // 
-            this.ctxMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ctxMenuWebhook});
-            this.ctxMenu.Name = "ctxMenu";
-            this.ctxMenu.Size = new System.Drawing.Size(120, 26);
-            // 
-            // ctxMenuWebhook
-            // 
-            this.ctxMenuWebhook.Name = "ctxMenuWebhook";
-            this.ctxMenuWebhook.Size = new System.Drawing.Size(119, 22);
-            this.ctxMenuWebhook.Text = "Webhook";
-            this.ctxMenuWebhook.Click += new System.EventHandler(this.ctxMenuWebhook_Click);
             // 
             // dgvPhoneNumberId
             // 
@@ -246,6 +237,15 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dgvMetaStatus.ReadOnly = true;
             this.dgvMetaStatus.Width = 80;
             // 
+            // colRegister
+            // 
+            this.colRegister.HeaderText = "";
+            this.colRegister.Name = "colRegister";
+            this.colRegister.ReadOnly = true;
+            this.colRegister.Text = "Register";
+            this.colRegister.UseColumnTextForButtonValue = true;
+            this.colRegister.Width = 80;
+            // 
             // PhoneNumberView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -256,16 +256,15 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.Name = "PhoneNumberView";
             this.Size = new System.Drawing.Size(884, 556);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).EndInit();
+            this.ctxMenu.ResumeLayout(false);
             this.panelHeader.ResumeLayout(false);
             this.panelHeader.PerformLayout();
             this.panelFooter.ResumeLayout(false);
-            this.ctxMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
         private System.Windows.Forms.Button btnSync;
         private System.Windows.Forms.Button btnRefresh;
-        private System.Windows.Forms.Button btnRegister;
         private System.Windows.Forms.ComboBox cmbWabaSync;
         private System.Windows.Forms.Panel panelHeader;
         private System.Windows.Forms.Panel panelFooter;
@@ -277,5 +276,6 @@ namespace WaDesktop.Client.Views.ManagementViews
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvNameStatus;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvCodeStatus;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvMetaStatus;
+        private System.Windows.Forms.DataGridViewButtonColumn colRegister;
     }
 }

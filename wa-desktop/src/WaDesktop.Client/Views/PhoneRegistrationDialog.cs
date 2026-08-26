@@ -27,6 +27,7 @@ namespace WaDesktop.Client.Views
         public string VerificationCode => txtCode.Text;
         public string Pin => txtPin.Text;
         public string ConfirmPin => txtConfirmPin.Text;
+        public bool IsVerified { get; set; }
 
         public event EventHandler ProcessStepClicked;
         public event EventHandler BackStepClicked;

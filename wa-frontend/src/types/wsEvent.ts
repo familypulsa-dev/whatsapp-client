@@ -5,12 +5,24 @@ export enum EventType {
     UPDATE_STATUS = "status_update",
     CONVERSATION_UPDATE = "conversation_update",
     PHONE_NUMBER_UPDATE = "phone_number_update",
-    USER_TYPING = "user_typing"
+    USER_TYPING = "user_typing",
+    MESSAGE_SEND_TEXT = "message_send_text",
+    AUTH_REFRESH = "auth_refresh",
+    AUTH_COMPANY = "auth_company"
 }
 
-export interface WebsocketEvent{
-    event: EventType;
-    payload: PayloadNewMessage | StatusUpdatePayload | PayloadUserTyping | PayloadConversationUpdate | PayloadPhoneNumberUpdate[];
+export interface WsErrorDetail {
+    code: number;
+    message: string;
+}
+
+export interface WebsocketEvent {
+    id?: string;
+    event: EventType | string;
+    error?: WsErrorDetail | string;
+    payload?: PayloadNewMessage | StatusUpdatePayload | PayloadUserTyping | PayloadConversationUpdate | PayloadPhoneNumberUpdate[] | any;
+    access_token?: string;
+    refresh_token?: string;
 }
 
 export interface PayloadUserTyping{

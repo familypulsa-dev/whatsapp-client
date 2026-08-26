@@ -96,17 +96,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
                     >
                         <Smile className="w-5 h-5 text-slate-500" />
                     </Button>
-                    {allowSendTemplate && !replyingTo && (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="rounded-xl h-10 w-10 hover:bg-slate-100 transition-colors"
-                            onClick={() => setIsTemplateDialogOpen(true)}
-                            title="Template WhatsApp"
-                        >
-                            <LayoutGrid className="w-5 h-5 text-[#00a884]" />
-                        </Button>
-                    )}
                 </div>
 
                 <div className="flex-1 relative">

@@ -6,6 +6,7 @@ import { User } from '@/types';
 import { Guid } from 'guid-ts';
 import { ButtonComponent, TemplateComponent, WaTemplate } from '@/components/TemplatePickerDialog';
 import { normalizeTo62 } from '@/lib/chatUtils';
+import { useWS } from '../../stores/ws';
 
 interface UseChatActionsProps {
     user: User;
@@ -32,6 +33,8 @@ export const useChatActions = ({
 }: UseChatActionsProps) => {
 
     user.name = user.name;
+
+    const { sendEvent } = useWS();
 
     const lastTypingSentRef = useRef<Record<string | number, number>>({});
 
@@ -98,32 +101,26 @@ export const useChatActions = ({
                 text : replyingTo.content?.body?.text
             }
         }
-        const context_id = replyingTo?.id;
-
-        
+        const context_id = replyingTo?.wamid;
 
         clearInput();
 
-        const payload : SendTextRequest = {
+        const payload = {
             id,
             to: currentConv.wa_id,
             body: text,
+            phone_number: currentConv.display_phone_number,
             phone_number_id: currentConv.phone_number_id,
-            context_message_id : context_id
-        }
+            context_message_id: context_id
+        };
 
-        sendMessage(payload)
-            .then((res : ApiResponse<SendTextResponse>) => {
-                if (res.error || !res.data) {
-                   setMessages(prev => prev.map(m => m.id === id ? { ...m, status: 'failed', id : id, error_message: res.error?.message } : m));
-                }else{
-                    // newBubble.id = res.data.id;
-                    // setMessages(prev => [...prev, newBubble]);
-                }
-            }).catch((err: Error) => {
-                const errMsg = err.message;
-                setMessages(prev => prev.map(m => m.id === id ? { ...m, status: 'failed', id : id, error_message: errMsg } : m));
-            });
+        try {
+            sendEvent("message_send_text", payload);
+            // setMessages(prev => [...prev, newBubble]); // Uncomment if optimistic UI is handled here
+        } catch (err: any) {
+            const errMsg = err.message || 'Gagal mengirim pesan via WS';
+            setMessages(prev => prev.map(m => m.id === id ? { ...m, status: 'failed', error_message: errMsg } : m));
+        }
     };
 
      const replaceParams = (text: string, paramsArr: string[], offset: number = 0) => {
@@ -362,7 +359,7 @@ export const useChatActions = ({
                 body: caption,
                 phone_number_id: currentConv.phone_number_id,
                 type: type,
-                context_message_id: context_id,
+                context_message_id: replyingTo?.wamid,
                 file: file
             } 
 

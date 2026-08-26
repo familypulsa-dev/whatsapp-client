@@ -54,27 +54,29 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 
             <Separator className="w-10 bg-slate-200" />
 
-            {phoneNumbers.map(phoneNumber => (
-                <div key={phoneNumber.phone_number_id} className="relative group">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className={`w-12 h-12 rounded-xl transition-all duration-200 ${activeAppId === phoneNumber.phone_number_id ? 'bg-[#00a884] text-white rounded-lg' : 'bg-white text-slate-600 hover:bg-[#00a884] hover:text-white'}`}
-                        onClick={() => setActiveAppId(phoneNumber.phone_number_id)}
-                        title={phoneNumber.display_name}
-                    >
-                        <span className="text-sm font-bold">{getInitials(phoneNumber.display_name)}</span>
-                    </Button>
-                    {phoneNumber.unread_count > 0 && (
-                        <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full px-1.5 h-5 flex items-center justify-center font-bold border-2 border-[#f0f2f5] shadow-sm">
-                            {phoneNumber.unread_count > 99 ? '99+' : phoneNumber.unread_count}
-                        </div>
-                    )}
-                    {activeAppId === phoneNumber.phone_number_id && (
-                        <div className="absolute left-[-15px] top-1/2 -translate-y-1/2 w-1 h-8 bg-[#00a884] rounded-r-full" />
-                    )}
-                </div>
-            ))}
+            <div className="flex flex-col items-center gap-4 w-full flex-1 overflow-y-auto overflow-x-hidden py-1 px-1 custom-scrollbar">
+                {phoneNumbers.map(phoneNumber => (
+                    <div key={phoneNumber.phone_number_id} className="relative group">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className={`w-12 h-12 flex-shrink-0 rounded-xl transition-all duration-200 ${activeAppId === phoneNumber.phone_number_id ? 'bg-[#00a884] text-white rounded-lg' : 'bg-white text-slate-600 hover:bg-[#00a884] hover:text-white'}`}
+                            onClick={() => setActiveAppId(phoneNumber.phone_number_id)}
+                            title={phoneNumber.display_name}
+                        >
+                            <span className="text-sm font-bold">{getInitials(phoneNumber.display_name)}</span>
+                        </Button>
+                        {phoneNumber.unread_count > 0 && (
+                            <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full px-1.5 h-5 flex items-center justify-center font-bold border-2 border-[#f0f2f5] shadow-sm z-10">
+                                {phoneNumber.unread_count > 99 ? '99+' : phoneNumber.unread_count}
+                            </div>
+                        )}
+                        {activeAppId === phoneNumber.phone_number_id && (
+                            <div className="absolute left-[-15px] top-1/2 -translate-y-1/2 w-1 h-8 bg-[#00a884] rounded-r-full" />
+                        )}
+                    </div>
+                ))}
+            </div>
 
             <div className="mt-auto flex flex-col items-center gap-4 mb-4">
                 <Button

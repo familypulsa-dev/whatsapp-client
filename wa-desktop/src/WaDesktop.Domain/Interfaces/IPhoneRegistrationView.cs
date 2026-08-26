@@ -14,6 +14,7 @@ namespace WaDesktop.Domain.Interfaces
         string VerificationCode { get; }
         string Pin { get; }
         string ConfirmPin { get; }
+        bool IsVerified { get; set; }
 
         event EventHandler ProcessStepClicked;
         event EventHandler BackStepClicked;

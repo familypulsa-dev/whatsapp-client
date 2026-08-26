@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
-using WaDesktop.Domain.Interfaces;
-using WaDesktop.Domain.Entities;
 using WaDesktop.Client.Extensions;
+using WaDesktop.Domain.Entities;
+using WaDesktop.Domain.Interfaces;
 
 namespace WaDesktop.Client.Views.ManagementViews
 {
@@ -22,8 +23,11 @@ namespace WaDesktop.Client.Views.ManagementViews
                 {
                     dataGridView.Rows.Clear();
                     foreach (var p in value)
-                        dataGridView.Rows.Add(p.PhoneNumberId, p.DisplayPhone, p.DisplayName, p.QualityRating, p.CreatedAt,
+                    {
+                        int idx = dataGridView.Rows.Add(p.PhoneNumberId, p.DisplayPhone, p.DisplayName, p.QualityRating, p.CreatedAt,
                             FormatStatus(p.NameStatus), FormatStatus(p.CodeVerificationStatus), FormatStatus(p.MetaStatus));
+                        dataGridView.Rows[idx].Tag = p;
+                    }
                 });
             }
         }
@@ -91,17 +95,15 @@ namespace WaDesktop.Client.Views.ManagementViews
 
         private void btnSync_Click(object sender, EventArgs e) => SyncClicked?.Invoke(this, EventArgs.Empty);
 
-        private void btnRegister_Click(object sender, EventArgs e)
+        private void dataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (dataGridView.SelectedRows.Count > 0)
+            if (e.RowIndex < 0) return;
+            if (dataGridView.Columns[e.ColumnIndex].Name == colRegister.Name)
             {
-                var phoneId = dataGridView.SelectedRows[0].Cells[0].Value?.ToString();
+                var row = dataGridView.Rows[e.RowIndex];
+                var phoneId = row.Cells[0].Value?.ToString();
                 if (!string.IsNullOrEmpty(phoneId))
                     RegisterClicked?.Invoke(this, phoneId);
-            }
-            else
-            {
-                MessageBox.Show("Pilih nomor telepon yang ingin dilanjutkan registrasinya.", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -152,6 +154,60 @@ namespace WaDesktop.Client.Views.ManagementViews
                 if (!string.IsNullOrEmpty(phoneId))
                     WebhookClicked?.Invoke(this, phoneId);
             }
+        }
+
+        private void dataGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            // 1. Cek kolom button Anda
+            if (e.RowIndex >= 0 && dataGridView.Columns[e.ColumnIndex].Name == colRegister.Name)
+            {
+                // 2. Ambil cell asli dan cast "as DataGridViewButtonCell"
+                var buttonCell = dataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell;
+
+                if (buttonCell != null)
+                {
+                    // 3. Cek kondisi data dari kolom lain
+                    string status = dataGridView.Rows[e.RowIndex].Cells[colRegister.Name].Value?.ToString();
+
+                    object data = dataGridView.Rows[e.RowIndex].Tag;
+
+                    status = ParseStatus(data);
+
+                    if (status == "")
+                    {
+                        e.Value = ""; // Ubah label teks langsung via event argumen
+                        buttonCell.FlatStyle = FlatStyle.Flat; 
+                        e.CellStyle.SelectionForeColor = Color.White;
+                    }
+                    else
+                    {
+                        e.Value = status; // Teks saat aktif
+                        buttonCell.FlatStyle = FlatStyle.Standard; // Gaya tombol normal
+                        e.CellStyle.ForeColor = Color.Black;
+                    }
+                }
+            }
+        }
+
+        private string ParseStatus(object tag)
+        {
+            if (tag is PhoneNumberDetail phone)
+            {
+                if(phone.MetaStatus == "CONNECTED")
+                {
+                    return "";
+                }
+                else if(phone.MetaStatus != "CONNECTED" && phone.CodeVerificationStatus == "VERIFIED")
+                {
+                    return "Input PIN";
+                }else if(phone.MetaStatus != "CONNECTED")
+                {
+                    return "Register";
+                }
+                
+            }
+
+            return "-";
         }
     }
 }

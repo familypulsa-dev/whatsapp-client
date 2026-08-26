@@ -23,7 +23,12 @@ namespace WaDesktop.Client.Presenters
 
         public void Initialize()
         {
-            if (!string.IsNullOrEmpty(_view.PhoneNumberId))
+            if (_view.IsVerified)
+            {
+                _view.ShowStep(4);
+                _currentStep = 4;
+            }
+            else if (!string.IsNullOrEmpty(_view.PhoneNumberId))
             {
                 _view.ShowStep(2);
                 _currentStep = 2;

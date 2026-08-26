@@ -143,23 +143,6 @@ const ConversationSidebar: React.FC<ConversationSidebarProps> = ({
 
     return (
         <div className="w-[350px] flex-shrink-0 flex flex-col bg-white border-r overflow-hidden">
-            <div className="h-[60px] bg-[#f0f2f5] flex items-center justify-between px-4 sticky top-0 z-20">
-                <span className="text-lg font-bold text-[#111b21]">Chats</span>
-                <div className="flex gap-1 text-[#54656f]">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="rounded-full hover:bg-slate-200"
-                        onClick={() => setIsNewChatDialogOpen(true)}
-                        title="New Chat"
-                    >
-                        <MessageSquarePlus className="h-5 w-5" />
-                    </Button>
-                    {/* <Button variant="ghost" size="icon" className="rounded-full">
-                        <MoreVertical className="h-5 w-5" />
-                    </Button> */}
-                </div>
-            </div>
 
             <div className="p-2 bg-white">
                 <div className="relative">

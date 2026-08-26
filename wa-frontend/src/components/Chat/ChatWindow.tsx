@@ -413,13 +413,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                                     Batas waktu Respons telah habis. Gunakan template pesan untuk memulai kembali percakapan ini.
                                 </p>
                             </div>
-                            <div className="flex gap-2 w-full">
-                                <Button variant="ghost" size="sm" className="flex-1 rounded-xl text-xs h-9" onClick={() => setShowTemplateQuickAction(false)}>Tutup</Button>
-                                <Button size="sm" className="flex-1 bg-[#00a884]/80 hover:bg-[#00a884] shadow-lg shadow-indigo-100 rounded-xl text-xs h-9 gap-2" onClick={() => setIsTemplateDialogOpen(true)}>
-                                    <LayoutGrid className="w-3.5 h-3.5" />
-                                    Pilih Template
-                                </Button>
-                            </div>
                         </div>
                     </div>
                 )}

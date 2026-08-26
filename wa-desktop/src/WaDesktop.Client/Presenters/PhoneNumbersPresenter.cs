@@ -210,9 +210,24 @@ namespace WaDesktop.Client.Presenters
                 return;
             }
 
+            var detail = _data?.FirstOrDefault(p => p.PhoneNumberId == phoneId);
+            if (detail != null && detail.PinEnabled)
+            {
+                MessageBox.Show("Nomor ini sudah terdaftar (PIN aktif).", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            if (detail != null && detail.MetaStatus == "CONNECTED")
+            {
+                MessageBox.Show("Nomor ini sudah terhubung (connected).", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             var dialog = new PhoneRegistrationDialog();
             dialog.WabaId = wabaId;
             dialog.PhoneNumberId = phoneId ?? "";
+
+            if (detail != null)
+                dialog.IsVerified = detail.CodeVerificationStatus == "VERIFIED";
 
             var useCase = _serviceProvider.GetRequiredService<IPhoneRegistrationUseCase>();
             using (var presenter = new PhoneRegistrationPresenter(dialog, useCase))
