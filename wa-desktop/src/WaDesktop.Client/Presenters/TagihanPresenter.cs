@@ -20,6 +20,7 @@ namespace WaDesktop.Client.Presenters
             _wabas = wabas;
             _billing = billing;
             _view.FilterClicked += OnFilterClicked;
+            _view.RefreshClicked += OnRefreshClicked;
             _view.WabaFilterChanged += OnWabaFilterChanged;
         }
 
@@ -69,6 +70,12 @@ namespace WaDesktop.Client.Presenters
             await LoadDataAsync();
         }
 
+        private async void OnRefreshClicked(object sender, EventArgs e)
+        {
+            _wabasLoaded = false;
+            await LoadDataAsync();
+        }
+
         private async void OnWabaFilterChanged(object sender, string wabaId)
         {
             await LoadDataAsync();
@@ -79,6 +86,7 @@ namespace WaDesktop.Client.Presenters
             if (!_disposed)
             {
                 _view.FilterClicked -= OnFilterClicked;
+                _view.RefreshClicked -= OnRefreshClicked;
                 _view.WabaFilterChanged -= OnWabaFilterChanged;
                 _disposed = true;
             }

@@ -7,6 +7,7 @@ namespace WaDesktop.Client.Views.ManagementViews
         private System.Windows.Forms.DateTimePicker dtpStart;
         private System.Windows.Forms.DateTimePicker dtpEnd;
         private System.Windows.Forms.Button btnFilter;
+        private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.Panel panelFilter;
 
         private System.Windows.Forms.ComboBox cmbWaba;
@@ -43,6 +44,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dtpStart = new System.Windows.Forms.DateTimePicker();
             this.dtpEnd = new System.Windows.Forms.DateTimePicker();
             this.btnFilter = new System.Windows.Forms.Button();
+            this.btnRefresh = new System.Windows.Forms.Button();
             this.panelFilter = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             this.panelFilter.SuspendLayout();
@@ -172,8 +174,20 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.btnFilter.UseVisualStyleBackColor = true;
             this.btnFilter.Click += new System.EventHandler(this.btnFilter_Click);
             // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRefresh.Location = new System.Drawing.Point(917, 9);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
+            this.btnRefresh.TabIndex = 4;
+            this.btnRefresh.Text = "F5 - Refresh";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
             // panelFilter
             // 
+            this.panelFilter.Controls.Add(this.btnRefresh);
             this.panelFilter.Controls.Add(this.cmbWaba);
             this.panelFilter.Controls.Add(this.dtpStart);
             this.panelFilter.Controls.Add(this.dtpEnd);

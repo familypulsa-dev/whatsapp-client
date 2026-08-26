@@ -121,6 +121,16 @@ namespace WaDesktop.Client.Views.ManagementViews
                 EditClicked?.Invoke(this, phoneId);
         }
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.F5)
+            {
+                RefreshClicked?.Invoke(this, EventArgs.Empty);
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
         private static string FormatStatus(string s) => string.IsNullOrEmpty(s) ? "-" : s;
 
         private void dataGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)

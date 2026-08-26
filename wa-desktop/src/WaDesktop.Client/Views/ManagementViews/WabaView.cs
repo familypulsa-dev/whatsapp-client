@@ -75,6 +75,16 @@ namespace WaDesktop.Client.Views.ManagementViews
         private void btnDelete_Click(object sender, EventArgs e) => DeleteClicked?.Invoke(this, EventArgs.Empty);
         private void btnSync_Click(object sender, EventArgs e) => SyncClicked?.Invoke(this, EventArgs.Empty);
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.F5)
+            {
+                RefreshClicked?.Invoke(this, EventArgs.Empty);
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
         private void txtSearch_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == (char)Keys.Enter) SearchClicked?.Invoke(this, txtSearch.Text);

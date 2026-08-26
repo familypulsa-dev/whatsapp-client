@@ -90,7 +90,11 @@
       <DependentUpon>PhoneNumberView.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\ManagementViews\WebhookInputDialog.cs">
+      <DependentUpon>WebhookInputDialog.cs</DependentUpon>
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\ManagementViews\WebhookInputDialog.Designer.cs">
+      <DependentUpon>WebhookInputDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\ManagementViews\TagihanView.cs">
       <SubType>UserControl</SubType>

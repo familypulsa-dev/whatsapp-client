@@ -47,7 +47,7 @@ namespace WaDesktop.Infrastructure.Constants
         
         public static class Analytics
         {
-            public const string Billing = "/api/v1/analytics/billing";
+            public const string Billing = "/api/v1/waba/billing";
         }
         
         public static class Webhook

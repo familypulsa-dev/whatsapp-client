@@ -106,6 +106,16 @@ namespace WaDesktop.Client.Views.ManagementViews
             WabaFilterChanged?.Invoke(this, cmbWabaSync?.SelectedValue?.ToString());
         }
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.F5)
+            {
+                RefreshClicked?.Invoke(this, EventArgs.Empty);
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
         private void btnSync_Click(object sender, EventArgs e) => SyncClicked?.Invoke(this, EventArgs.Empty);
         private void btnSearch_Click(object sender, EventArgs e) => SearchClicked?.Invoke(this, txtSearch.Text);
         private void btnRefresh_Click(object sender, EventArgs e) => RefreshClicked?.Invoke(this, EventArgs.Empty);

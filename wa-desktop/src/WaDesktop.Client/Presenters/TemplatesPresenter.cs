@@ -39,7 +39,7 @@ namespace WaDesktop.Client.Presenters
             _messagesUrl = messagesUrl;
             _apiBaseUrl = apiBaseUrl;
 
-            _view.RefreshClicked += async (s, e) => await LoadDataAsync();
+            _view.RefreshClicked += async (s, e) => { _wabasLoaded = false; await LoadDataAsync(); };
             _view.SearchClicked += async (s, q) => await LoadDataAsync(q);
             _view.AddClicked += OnAdd;
             _view.EditClicked += OnEdit;
@@ -75,7 +75,7 @@ namespace WaDesktop.Client.Presenters
                     _realView.SetWabaSyncDataSource(wabas);
                     _wabasLoaded = true;
 
-                    if (string.IsNullOrEmpty(_currentWabaFilter) && wabas != null && wabas.Count > 0)
+                    if (wabas != null && wabas.Count > 0)
                     {
                         _currentWabaFilter = wabas[0].WabaId;
                     }

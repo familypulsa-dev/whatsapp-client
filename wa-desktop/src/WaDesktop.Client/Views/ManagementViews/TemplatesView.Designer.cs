@@ -6,9 +6,8 @@ namespace WaDesktop.Client.Views.ManagementViews
         private System.Windows.Forms.DataGridView dataGridView;
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.Button btnSearch;
-        private System.Windows.Forms.Button btnAdd;
-        private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnSync;
+        private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.ComboBox cmbWabaSync;
         private System.Windows.Forms.Panel panelToolbar;
 
@@ -29,13 +28,14 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.colPreview = new System.Windows.Forms.DataGridViewButtonColumn();
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.btnSearch = new System.Windows.Forms.Button();
-            this.btnAdd = new System.Windows.Forms.Button();
-            this.btnDelete = new System.Windows.Forms.Button();
             this.btnSync = new System.Windows.Forms.Button();
+            this.btnRefresh = new System.Windows.Forms.Button();
             this.cmbWabaSync = new System.Windows.Forms.ComboBox();
             this.panelToolbar = new System.Windows.Forms.Panel();
             this.panelFooter = new System.Windows.Forms.Panel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.btnDelete = new System.Windows.Forms.Button();
+            this.btnAdd = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             this.panelToolbar.SuspendLayout();
             this.panelFooter.SuspendLayout();
@@ -120,26 +120,6 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.btnSearch.Text = "Search";
             this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
             // 
-            // btnAdd
-            // 
-            this.btnAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAdd.Location = new System.Drawing.Point(841, 3);
-            this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(75, 23);
-            this.btnAdd.TabIndex = 2;
-            this.btnAdd.Text = "Tambah";
-            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
-            // 
-            // btnDelete
-            // 
-            this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDelete.Location = new System.Drawing.Point(922, 3);
-            this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(75, 23);
-            this.btnDelete.TabIndex = 0;
-            this.btnDelete.Text = "Simpan";
-            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
-            // 
             // btnSync
             // 
             this.btnSync.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -149,6 +129,17 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.btnSync.TabIndex = 4;
             this.btnSync.Text = "Sinkron";
             this.btnSync.Click += new System.EventHandler(this.btnSync_Click);
+            // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRefresh.Location = new System.Drawing.Point(679, 3);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
+            this.btnRefresh.TabIndex = 7;
+            this.btnRefresh.Text = "F5 - Refresh";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
             // cmbWabaSync
             // 
@@ -174,6 +165,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             // 
             // panelFooter
             // 
+            this.panelFooter.Controls.Add(this.btnRefresh);
             this.panelFooter.Controls.Add(this.btnSync);
             this.panelFooter.Controls.Add(this.btnDelete);
             this.panelFooter.Controls.Add(this.btnAdd);
@@ -195,6 +187,28 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.splitContainer1.Size = new System.Drawing.Size(1000, 405);
             this.splitContainer1.SplitterDistance = 687;
             this.splitContainer1.TabIndex = 3;
+            // 
+            // btnDelete
+            // 
+            this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnDelete.Location = new System.Drawing.Point(922, 3);
+            this.btnDelete.Name = "btnDelete";
+            this.btnDelete.Size = new System.Drawing.Size(75, 23);
+            this.btnDelete.TabIndex = 0;
+            this.btnDelete.Text = "Simpan";
+            this.btnDelete.Visible = false;
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+            // 
+            // btnAdd
+            // 
+            this.btnAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAdd.Location = new System.Drawing.Point(841, 3);
+            this.btnAdd.Name = "btnAdd";
+            this.btnAdd.Size = new System.Drawing.Size(75, 23);
+            this.btnAdd.TabIndex = 2;
+            this.btnAdd.Text = "Tambah";
+            this.btnAdd.Visible = false;
+            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             // 
             // TemplatesView
             // 
@@ -224,5 +238,7 @@ namespace WaDesktop.Client.Views.ManagementViews
         private System.Windows.Forms.Panel panelFooter;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.DataGridViewButtonColumn colPreview;
+        private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.Button btnAdd;
     }
 }

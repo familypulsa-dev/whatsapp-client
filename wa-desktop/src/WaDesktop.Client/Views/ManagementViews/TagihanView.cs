@@ -59,7 +59,6 @@ namespace WaDesktop.Client.Views.ManagementViews
 
                 var list = new List<Waba>
                 {
-                    new Waba { WabaId = "", Name = "-- Semua WABA --" }
                 };
                 list.AddRange(wabas);
 
@@ -76,11 +75,27 @@ namespace WaDesktop.Client.Views.ManagementViews
         public bool IsLoading { set => this.InvokeIfRequired(() => { Cursor = value ? Cursors.WaitCursor : Cursors.Default; }); }
 
         public event EventHandler FilterClicked;
+        public event EventHandler RefreshClicked;
         public event EventHandler<string> WabaFilterChanged;
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.F5)
+            {
+                RefreshClicked?.Invoke(this, EventArgs.Empty);
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
 
         private void btnFilter_Click(object sender, EventArgs e)
         {
             FilterClicked?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            RefreshClicked?.Invoke(this, EventArgs.Empty);
         }
 
         private void cmbWaba_SelectedIndexChanged(object sender, EventArgs e)

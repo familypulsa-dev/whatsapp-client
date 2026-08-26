@@ -32,7 +32,7 @@ namespace WaDesktop.Client.Presenters
             _bus = bus;
             _serviceProvider = serviceProvider;
 
-            _view.RefreshClicked += async (s, e) => await LoadDataAsync();
+            _view.RefreshClicked += async (s, e) => { _wabasLoaded = false; await LoadDataAsync(); };
             _view.SearchClicked += async (s, q) => await LoadDataAsync(q);
             _view.AddClicked += OnAdd;
             _view.EditClicked += OnEdit;
@@ -86,7 +86,7 @@ namespace WaDesktop.Client.Presenters
                     _wabasLoaded = true;
 
                     // Fallback: pastikan _currentWabaFilter terisi WabaId pertama
-                    if (string.IsNullOrEmpty(_currentWabaFilter) && wabas != null && wabas.Count > 0)
+                    if ( wabas != null && wabas.Count > 0)
                     {
                         _currentWabaFilter = wabas[0].WabaId;
                     }
@@ -244,13 +244,29 @@ namespace WaDesktop.Client.Presenters
                 }
 
                 var wh = getResult.Value;
-                var currentUrl = wh?.Application ?? "(belum diset)";
+
+                var currentUrl = "";
+                // step down
+                if (wh.PhoneNumber != null)
+                {
+                    currentUrl = wh.PhoneNumber;
+                }else if(wh.WhatsAppBusinessAccount != null)
+                {
+                    currentUrl = wh.WhatsAppBusinessAccount;
+                }else if (wh.Application != null)
+                {
+                    currentUrl = wh.Application;
+                }
+                else
+                {
+                    currentUrl = "(belum diset)";
+                }
 
                 var input = new WebhookInputDialog();
                 input.DialogTitle = "Webhook Configuration";
                 input.PhoneNumberId = phoneNumberId;
                 input.CurrentWebhookUrl = currentUrl;
-                input.WebhookUrl = wh?.Application ?? "";
+                input.WebhookUrl = currentUrl;
 
                 if (input.ShowDialog(parent) == DialogResult.OK)
                 {

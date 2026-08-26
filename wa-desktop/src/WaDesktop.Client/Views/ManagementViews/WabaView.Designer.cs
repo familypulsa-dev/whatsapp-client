@@ -8,6 +8,7 @@ namespace WaDesktop.Client.Views.ManagementViews
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.Button btnRefresh;
 
         protected override void Dispose(bool disposing)
         {
@@ -27,6 +28,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.btnSearch = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnSync = new System.Windows.Forms.Button();
+            this.btnRefresh = new System.Windows.Forms.Button();
             this.panelHeader = new System.Windows.Forms.Panel();
             this.panelFooter = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
@@ -113,6 +115,17 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.btnSync.UseVisualStyleBackColor = true;
             this.btnSync.Click += new System.EventHandler(this.btnSync_Click);
             // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRefresh.Location = new System.Drawing.Point(796, 3);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(84, 23);
+            this.btnRefresh.TabIndex = 9;
+            this.btnRefresh.Text = "F5 - Refresh";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
             // panelHeader
             // 
             this.panelHeader.Controls.Add(this.txtSearch);
@@ -125,6 +138,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             // 
             // panelFooter
             // 
+            this.panelFooter.Controls.Add(this.btnRefresh);
             this.panelFooter.Controls.Add(this.btnSync);
             this.panelFooter.Controls.Add(this.btnDelete);
             this.panelFooter.Dock = System.Windows.Forms.DockStyle.Bottom;
