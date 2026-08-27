@@ -110,7 +110,14 @@ export const useMessages = ({
 
             setMessages(prev => {
                 const existing = prev.find(m => m.id === chatMsg.id);
-
+                // compare request_id is same 
+                if (!existing && (chatMsg.request_id != null && prev.find(m => m.request_id === chatMsg.request_id))){
+                    // replace id by request_id
+                    return prev.map(m => m.request_id === chatMsg.request_id ? {
+                        ...m, ...chatMsg,
+                    } : m);
+                }
+                
                 if (existing) {
                     console.log(`is existing`, existing, chatMsg);
                     return prev.map(m => m.id === chatMsg.id ? {

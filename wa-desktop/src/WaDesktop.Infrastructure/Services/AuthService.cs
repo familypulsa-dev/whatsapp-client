@@ -32,16 +32,16 @@ namespace WaDesktop.Infrastructure.Services
         public bool IsLoggedIn => _state.IsLoggedIn;
         public bool IsSuperAdmin => _state.IsSuperAdmin;
 
-        public async Task<bool> LoginAsync(string username, string password)
+        public async Task<(bool, string)> LoginAsync(string username, string password)
         {
             var result = await Task.Run(() => _authRepository.LoginAsync(username, password));
             if (result.IsFailure)
-                return false;
+                if (result.Error != null) { return (false, result.Error.Message); }else { return (false, "Login failed"); }
 
             var auth = result.Value;
             _sessionStore.SetSession(auth.AccessToken, auth.RefreshToken);
             _state.SetSession(auth.AccessToken, auth.RefreshToken, auth.User.Role, auth.User.DisplayName, auth.CompanyName, auth.User.CompanyId);
-            return true;
+            return (true, null);
         }
 
         public Task<bool> RefreshTokenAsync()

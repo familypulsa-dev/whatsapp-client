@@ -127,6 +127,7 @@ export interface Contact{
         raw_message? : string;
         content? : MessageContent;
         context? : ContextMsg;
+        request_id? : string;
     }
 
 export interface ContentMsg {

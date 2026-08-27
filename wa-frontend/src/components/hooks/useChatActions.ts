@@ -67,7 +67,7 @@ export const useChatActions = ({
 
         let currentConv = activeConversation;
 
-         const id = Guid.newGuid().toString();
+        const id = Guid.newGuid().toString();
         const newBubble : Bubble = {
             id : id,
             wa_id: currentConv.wa_id,
@@ -85,8 +85,11 @@ export const useChatActions = ({
                 body: {
                     text: text,
                 }
-            }
+            },
+            request_id: id,
         }
+
+        setMessages(prev => [...prev, newBubble]);
 
         if(replyingTo) {
             newBubble.context = {
@@ -116,7 +119,6 @@ export const useChatActions = ({
 
         try {
             sendEvent("message_send_text", payload);
-            // setMessages(prev => [...prev, newBubble]); // Uncomment if optimistic UI is handled here
         } catch (err: any) {
             const errMsg = err.message || 'Gagal mengirim pesan via WS';
             setMessages(prev => prev.map(m => m.id === id ? { ...m, status: 'failed', error_message: errMsg } : m));

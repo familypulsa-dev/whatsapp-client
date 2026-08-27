@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 const EmojiPicker = React.lazy(() => import('emoji-picker-react'));
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { X, Edit2, Send, Smile } from "lucide-react";
+import { X, Edit2, Send, Smile, Reply } from "lucide-react";
 
 import type { Conversation, Bubble } from '../types/chat';
 
@@ -474,32 +474,52 @@ const ChatLayout: React.FC<ChatLayoutProps> = ({ user, enableLogin }) => {
                             </div>
                         )}
                     </div>
-                    <div className="p-4 bg-white border-t flex items-end justify-center gap-4">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="rounded-xl h-10 w-10 hover:bg-slate-100 transition-colors mb-1"
-                            onClick={() => {
-                                setEmojiTarget('media');
-                                setShowEmojiPicker(!showEmojiPicker);
-                            }}
-                            title="Emoji"
-                        >
-                            <Smile className="w-5 h-5 text-slate-500" />
-                        </Button>
-                        <div className="flex-1 max-w-2xl relative">
-                            <textarea
-                                ref={mediaCaptionRef}
-                                rows={1}
-                                placeholder="Add a caption..."
-                                className="w-full bg-[#f0f2f5] rounded-2xl px-4 py-3 text-sm resize-none max-h-[128px] transition-all scrollbar-thin outline-none focus:bg-white ring-1 ring-transparent focus:ring-[#00a884]/30"
-                                value={inputText}
-                                onChange={(e) => setInputText(e.target.value)}
-                            />
+                    <div className="p-4 bg-white border-t flex flex-col items-center gap-2">
+                        {replyingTo && activeConversation && (
+                            <div className="w-full max-w-2xl flex items-center justify-between p-2 pl-3 bg-slate-50/80 rounded-xl border border-slate-100 border-l-4 border-l-indigo-500 animate-in slide-in-from-bottom-2 duration-200">
+                                <div className="flex items-center gap-3 overflow-hidden">
+                                    <Reply className="w-4 h-4 text-indigo-500 shrink-0" />
+                                    <div className="flex flex-col min-w-0 text-left">
+                                        <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">
+                                            Balas ke {replyingTo.direction.toUpperCase() === 'INBOUND' ? activeConversation.custom_name : replyingTo.agent_name}
+                                        </span>
+                                        <p className="text-xs text-slate-500 truncate">
+                                            {replyingTo?.content?.body?.text || (replyingTo.message_type === 'image' ? '📷 Foto' : 'Media')}
+                                        </p>
+                                    </div>
+                                </div>
+                                <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full hover:bg-slate-200 transition-colors" onClick={() => setReplyingTo(null)}>
+                                    <X className="w-3 h-3 text-slate-400" />
+                                </Button>
+                            </div>
+                        )}
+                        <div className="flex w-full justify-center items-end gap-4">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="rounded-xl h-10 w-10 hover:bg-slate-100 transition-colors mb-1"
+                                onClick={() => {
+                                    setEmojiTarget('media');
+                                    setShowEmojiPicker(!showEmojiPicker);
+                                }}
+                                title="Emoji"
+                            >
+                                <Smile className="w-5 h-5 text-slate-500" />
+                            </Button>
+                            <div className="flex-1 max-w-2xl relative">
+                                <textarea
+                                    ref={mediaCaptionRef}
+                                    rows={1}
+                                    placeholder="Add a caption..."
+                                    className="w-full bg-[#f0f2f5] rounded-2xl px-4 py-3 text-sm resize-none max-h-[128px] transition-all scrollbar-thin outline-none focus:bg-white ring-1 ring-transparent focus:ring-[#00a884]/30"
+                                    value={inputText}
+                                    onChange={(e) => setInputText(e.target.value)}
+                                />
+                            </div>
+                            <Button size="icon" className="bg-[#00a884] hover:bg-[#06cf9c] text-white rounded-full h-12 w-12 shadow-lg shrink-0 flex items-center justify-center font-bold mb-0.5" onClick={handleSendMedia}>
+                                <Send className="w-5 h-5 translate-x-0.5" style={{ marginLeft: "-.4em" }} />
+                            </Button>
                         </div>
-                        <Button size="icon" className="bg-[#00a884] hover:bg-[#06cf9c] text-white rounded-full h-12 w-12 shadow-lg shrink-0 flex items-center justify-center font-bold mb-0.5" onClick={handleSendMedia}>
-                            <Send className="w-5 h-5 translate-x-0.5" style={{ marginLeft: "-.4em" }} />
-                        </Button>
                     </div>
                 </div>
             )}

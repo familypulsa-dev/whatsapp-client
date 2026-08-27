@@ -16,6 +16,9 @@ const ImageViewer: React.FC<ImageViewerProps> = ({ message, onClose }) => {
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const containerRef = useRef<HTMLDivElement>(null);
 
+    const isPdf = message?.message_type === 'document' && (message?.content?.body?.url?.includes('pdf') || message?.content?.body?.url?.toLowerCase().endsWith('.pdf'));
+    const isImage = !isPdf && !!message;
+
     // Reset view when image changes
     useEffect(() => {
         if (message) {
@@ -64,6 +67,16 @@ const ImageViewer: React.FC<ImageViewerProps> = ({ message, onClose }) => {
         setIsDragging(false);
     };
 
+    const handleDoubleClick = () => {
+        if (!isImage) return;
+        if (scale > 1) {
+            handleReset(); // Zoom out ke ukuran normal
+        } else {
+            setScale(2.5); // Zoom in 250%
+            setPosition({ x: 0, y: 0 });
+        }
+    };
+
     const handleCopy = () => {
         if (!message?.content?.body?.url) return;
         if ((window as any).chrome?.webview) {
@@ -96,13 +109,13 @@ const ImageViewer: React.FC<ImageViewerProps> = ({ message, onClose }) => {
             <div className="flex items-center justify-between p-4 bg-gradient-to-b from-black/50 to-transparent absolute top-0 inset-x-0 z-10 transition-opacity hover:opacity-100 opacity-70">
                 <div className="flex items-center gap-3">
                     <div className="text-white/90">
-                        <p className="text-sm font-bold">{message.sender_name || (message.message_type === 'document' ? 'Document Preview' : 'Image Preview')}</p>
+                        <p className="text-sm font-bold">{message.sender_name || (isPdf ? 'Document Preview' : 'Image Preview')}</p>
                         <p className="text-[10px] opacity-60">{new Date(message.message_timestamp ? message.message_timestamp  : message.created_at).toLocaleString()}</p>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-2">
-                    {message.message_type === 'image' && (
+                    {isImage && (
                         <Button
                             variant="ghost"
                             size="icon"
@@ -139,16 +152,19 @@ const ImageViewer: React.FC<ImageViewerProps> = ({ message, onClose }) => {
                 ref={containerRef}
                 className={cn(
                     "flex-1 relative overflow-hidden flex items-center justify-center select-none",
-                    (message.message_type === 'image' && scale > 1) ? "cursor-grab active:cursor-grabbing" : "cursor-default"
+                    isImage 
+                        ? (scale > 1 ? "cursor-grab active:cursor-grabbing" : "cursor-zoom-in") 
+                        : "cursor-default"
                 )}
                 onMouseDown={handleMouseDown}
+                onDoubleClick={handleDoubleClick}
                 onWheel={(e) => {
-                    if (message.message_type !== 'image') return;
+                    if (!isImage) return;
                     const delta = e.deltaY > 0 ? -0.1 : 0.1;
                     handleZoom(delta);
                 }}
             >
-                {message.message_type === 'document' && (message.content?.body.url?.includes('pdf') || message?.content?.body?.url?.toLowerCase().endsWith('.pdf')) ? (
+                {isPdf ? (
                     <div className="w-full h-full pt-16 pb-4 px-4 flex items-center justify-center">
                         <iframe
                             // src={`${message.content?.body.url}#toolbar=0`}
@@ -164,14 +180,14 @@ const ImageViewer: React.FC<ImageViewerProps> = ({ message, onClose }) => {
                         className="max-w-full max-h-full transition-transform duration-75 ease-out shadow-2xl"
                         style={{
                             transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
-                            pointerEvents: message.message_type === 'image' ? 'none' : 'auto'
+                            pointerEvents: isImage ? 'none' : 'auto'
                         }}
                     />
                 )}
             </div>
 
             {/* Bottom Controls - Only for images */}
-            {message.message_type === 'image' && (
+            {isImage && (
                 <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/40 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-2xl shadow-2xl transition-opacity hover:opacity-100 opacity-60">
                     <Button
                         variant="ghost"

@@ -7,6 +7,7 @@ namespace WaDesktop.Client.Views.ManagementViews
         private System.Windows.Forms.DataGridViewComboBoxColumn colCompany;
         private System.Windows.Forms.DataGridViewComboBoxColumn colRole;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colStatus;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn colSuspend;
         private System.Windows.Forms.DataGridViewButtonColumn colReset;
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.Button btnSearch;
@@ -34,6 +35,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.DgvName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Role = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.Status = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Suspend = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Company = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.DgvPassword = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Reset = new System.Windows.Forms.DataGridViewButtonColumn();
@@ -51,6 +53,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.DgvName,
             this.Role,
             this.Status,
+            this.Suspend,
             this.Company,
             this.DgvPassword,
             this.Reset});
@@ -163,6 +166,14 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.Status.HeaderText = "Active";
             this.Status.Name = "Status";
             this.Status.TrueValue = true;
+            this.Status.Visible = false;
+            // 
+            // Suspend
+            // 
+            this.Suspend.FalseValue = false;
+            this.Suspend.HeaderText = "Suspended";
+            this.Suspend.Name = "Suspend";
+            this.Suspend.TrueValue = true;
             // 
             // Company
             // 
@@ -206,6 +217,7 @@ namespace WaDesktop.Client.Views.ManagementViews
         private System.Windows.Forms.DataGridViewTextBoxColumn DgvName;
         private System.Windows.Forms.DataGridViewComboBoxColumn Role;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Status;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn Suspend;
         private System.Windows.Forms.DataGridViewComboBoxColumn Company;
         private System.Windows.Forms.DataGridViewTextBoxColumn DgvPassword;
         private System.Windows.Forms.DataGridViewButtonColumn Reset;

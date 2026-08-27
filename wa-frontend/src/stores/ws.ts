@@ -19,11 +19,16 @@ export const useWS = create<WSState>((set, get) => {
   let pendingRequests = new Map<string, { event: string, payload: any }>()
 
   function connect(token: string, company_id: string) {
-    if (ws) ws.close()
+    if (ws) {
+      ws.onclose = null
+      ws.onerror = null
+      ws.onmessage = null
+      ws.close()
+    }
     currentToken = token
     currentCompanyId = company_id
-    // const host = (window as any).__WS_HOST__ || "localhost:8080"
-    const host = (window as any).__WS_HOST__ || "test.waba.mbi-software.com"
+    const host = (window as any).__WS_HOST__ || "localhost:8080"
+    // const host = (window as any).__WS_HOST__ || "test.waba.mbi-software.com"
     const proto = host.startsWith("localhost") ? "ws:" : "wss:"
     
     // Connect tanpa query parameter
@@ -67,6 +72,7 @@ export const useWS = create<WSState>((set, get) => {
         // 1. Deteksi token expired/unauthorized
         const errMsg = ev.error ? (typeof ev.error === 'object' ? ev.error.message : ev.error) : "";
         if (errMsg && (errMsg.includes("unauthorized") || errMsg.includes("expired") || ev.error?.code === 401)) {
+          const wasRefreshing = isRefreshing;
           isRefreshing = true
           
           const failedReq = ev.id ? pendingRequests.get(ev.id) : Array.from(pendingRequests.values()).pop()
@@ -76,18 +82,22 @@ export const useWS = create<WSState>((set, get) => {
           }
 
           const refreshToken = localStorage.getItem("refresh_token")
-          if (refreshToken && ws && ws.readyState === WebSocket.OPEN) {
-            console.log("WS Token expired, triggering auth_refresh...")
-            ws.send(JSON.stringify({
-              id: crypto.randomUUID(),
-              event: "auth_refresh",
-              payload: {
-                refresh_token: refreshToken
-              }
-            }))
-          } else {
-             // Jika tidak ada refresh token, biarkan user logout atau lempar ke UI
-             get().onEvent?.(ev as WebsocketEvent)
+          
+          // Cegah spam event auth_refresh jika sedang dalam proses refresh
+          if (!wasRefreshing) {
+            if (refreshToken && ws && ws.readyState === WebSocket.OPEN) {
+              console.log("WS Token expired, triggering auth_refresh...")
+              ws.send(JSON.stringify({
+                id: crypto.randomUUID(),
+                event: "auth_refresh",
+                payload: {
+                  refresh_token: refreshToken
+                }
+              }))
+            } else {
+               // Jika tidak ada refresh token, biarkan user logout atau lempar ke UI
+               get().onEvent?.(ev as WebsocketEvent)
+            }
           }
           return // Hentikan propagasi event error ke UI
         }

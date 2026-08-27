@@ -38,7 +38,7 @@ namespace WaDesktop.Client
             using (var splashPresenter = new SplashPresenter(splashView, updateService))
             {
                 if (splashView.ShowDialog() != DialogResult.OK)
-                {
+                {   
                     return;
                 }
             }

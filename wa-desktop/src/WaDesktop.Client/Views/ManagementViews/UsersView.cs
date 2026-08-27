@@ -51,7 +51,7 @@ namespace WaDesktop.Client.Views.ManagementViews
                     {
                         string displayRole = RoleMap.TryGetValue(u.Role ?? "", out var r) ? r : u.Role;
 
-                        int idx = dataGridView.Rows.Add(u.Id, u.Username, u.DisplayName, displayRole, u.IsActive, u.CompanyId);
+                        int idx = dataGridView.Rows.Add(u.Id, u.Username, u.DisplayName, displayRole, u.IsActive, u.IsSuspend, u.CompanyId);
                         dataGridView.Rows[idx].DefaultCellStyle.BackColor = Color.White;
                         dataGridView.Rows[idx].Tag = null;
                     }
@@ -135,7 +135,8 @@ namespace WaDesktop.Client.Views.ManagementViews
                         NewPassword = row.Cells["DgvPassword"].Value?.ToString() ?? "",
                         Role = backendRole,
                         CompanyId = row.Cells["Company"].Value?.ToString() ?? "",
-                        IsActive = row.Cells["Status"].Value as bool? ?? false
+                        IsActive = row.Cells["Status"].Value as bool? ?? false,
+                        IsSuspend = row.Cells["Suspend"].Value as bool? ?? false
                     });
                 }
             }

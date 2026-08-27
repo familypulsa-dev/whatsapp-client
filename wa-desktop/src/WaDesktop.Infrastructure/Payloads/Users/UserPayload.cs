@@ -12,5 +12,6 @@ namespace WaDesktop.Infrastructure.Payloads.Users
         [JsonProperty("role")] public string Role { get; set; }
         [JsonProperty("company_id")] public string CompanyId { get; set; }
         [JsonProperty("is_active")] public bool IsActive { get; set; } = true;
+        [JsonProperty("is_suspend")] public bool IsSuspend { get; set; }
     }
 }

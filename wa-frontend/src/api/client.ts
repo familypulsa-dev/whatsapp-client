@@ -9,9 +9,9 @@ function getBase(): string {
     return (window as any).__API_BASE__
   }
 
-  // return "http://localhost:8080"
+  return "http://localhost:8080"
 
-  return "https://test.waba.mbi-software.com"
+  // return "https://test.waba.mbi-software.com"
 }
 
 // Set global axios base URL so all /api/v1/* calls go to backend, not same-origin

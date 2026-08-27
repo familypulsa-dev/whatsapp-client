@@ -101,7 +101,7 @@ namespace WaDesktop.Client.Presenters
                     else
                     {
                         // User Lama: Update data biasa
-                        result = await Task.Run(() => _users.UpdateAsync(u.Id, u.DisplayName, u.Role, u.CompanyId, u.IsActive));
+                        result = await Task.Run(() => _users.UpdateAsync(u.Id, u.DisplayName, u.Role, u.CompanyId, u.IsActive, u.IsSuspend));
 
                         // Eksekusi ganti password jika ada inputan di DgvPassword
                         if (result.IsSuccess && !string.IsNullOrEmpty(u.NewPassword))

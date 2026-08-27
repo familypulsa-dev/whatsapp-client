@@ -18,6 +18,8 @@ namespace WaDesktop.Domain.Entities
         public string CompanyId { get; set; }
         [JsonProperty("is_active")]
         public bool IsActive { get; set; } = true;
+        [JsonProperty("is_suspend")]
+        public bool IsSuspend { get; set; }
 
         [JsonIgnore]
         public string NewPassword { get; set; }

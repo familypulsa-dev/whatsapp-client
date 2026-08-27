@@ -11,7 +11,7 @@ namespace WaDesktop.Domain.Interfaces
         bool IsLoggedIn { get; }
         bool IsSuperAdmin { get; }
 
-        Task<bool> LoginAsync(string username, string password);
+        Task<(bool,string)> LoginAsync(string username, string password);
         Task<bool> RefreshTokenAsync();
         void Logout();
     }

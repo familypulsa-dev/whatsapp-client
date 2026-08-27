@@ -27,7 +27,7 @@ namespace WaDesktop.Client.Presenters
             _view.IsLoading = true;
             try
             {
-                var success = await Task.Run(() => _auth.LoginAsync(_view.Username, _view.Password));
+                var (success,errMsg) = await Task.Run(() => _auth.LoginAsync(_view.Username, _view.Password));
                 if (success)
                 {
                     _bus.Publish(new LoginCompletedMessage(_auth.DisplayName, _auth.Role));
@@ -35,7 +35,7 @@ namespace WaDesktop.Client.Presenters
                 }
                 else
                 {
-                    _view.ShowError("Login gagal. Periksa username/password.");
+                    _view.ShowError(errMsg);
                 }
             }
             catch (Exception ex)
