@@ -303,7 +303,8 @@ export const useChatActions = ({
             created_at: new Date().toISOString(),
             sender_name: user?.name || 'Me',
             agent_name: user?.name || 'Me',
-            content: {}
+            content: {},
+            request_id: id,
         }
 
          switch(type) {
