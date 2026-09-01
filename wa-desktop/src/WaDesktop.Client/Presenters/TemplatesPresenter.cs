@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WaDesktop.Domain.Entities;
 using WaDesktop.Domain.Interfaces;
-using WaDesktop.Domain.Messages;
 using WaDesktop.Client.Views.ManagementViews;
 
 namespace WaDesktop.Client.Presenters
@@ -21,12 +20,10 @@ namespace WaDesktop.Client.Presenters
         private readonly string _messagesUrl;
         private readonly string _apiBaseUrl;
         private TemplatesView _realView;
-        private MessagesPresenter _embeddedMsgPresenter;
         private bool _disposed;
         private string _currentWabaFilter;
         private bool _wabasLoaded;
         private bool _isLoadingData;
-        private readonly List<string> _pendingDeletions = new List<string>();
 
         public TemplatesPresenter(IManagementView<Template> view, ITemplateRepository templates, IWabaRepository wabas,
             IEventAggregator bus, IAuthService auth, string messagesUrl, string apiBaseUrl)
@@ -41,17 +38,12 @@ namespace WaDesktop.Client.Presenters
 
             _view.RefreshClicked += async (s, e) => { _wabasLoaded = false; await LoadDataAsync(); };
             _view.SearchClicked += async (s, q) => await LoadDataAsync(q);
-            _view.AddClicked += OnAdd;
-            _view.EditClicked += OnEdit;
-            _view.DeleteClicked += OnDelete;
 
             _realView = _view as TemplatesView;
             if (_realView != null)
             {
                 _realView.SyncClicked += OnSync;
                 _realView.WabaFilterChanged += OnWabaFilterChanged;
-                _realView.PreviewClicked += OnPreview;
-                _realView.UserDeletedRowItem += OnUserDeletedRow;
             }
         }
 
@@ -61,7 +53,6 @@ namespace WaDesktop.Client.Presenters
         {
             if (_isLoadingData) return;
 
-            _pendingDeletions.Clear();
             _isLoadingData = true;
             _view.IsLoading = true;
             try
@@ -146,98 +137,6 @@ namespace WaDesktop.Client.Presenters
             }
         }
 
-        private void OnPreview(object sender, string templateId)
-        {
-            if (string.IsNullOrEmpty(templateId)) return;
-
-            var url = _messagesUrl + $"templates/preview/{templateId}";
-            var previewView = _realView?.GetOrCreatePreviewView();
-            if (previewView == null) return;
-
-            if (_embeddedMsgPresenter == null)
-            {
-                _embeddedMsgPresenter = new MessagesPresenter(previewView, _bus, _auth, url, _apiBaseUrl);
-            }
-            else
-            {
-                previewView.Url = url;
-            }
-        }
-
-        private void OnAdd(object sender, EventArgs e)
-        {
-            var key = $"template_create_{_currentWabaFilter}";
-            _bus.Publish(new RequestOpenTabMessage(key, "Template Baru"));
-        }
-
-        private void OnEdit(object sender, string templateId)
-        {
-            if (_view.SelectedIndex < 0) { MessageBox.Show("Pilih baris dulu.", "Info"); return; }
-            var item = _data.Where(p => p.Id == templateId).FirstOrDefault();
-            if(item == null) return;
-            var key = $"template_detail_{item.Id}";
-            _bus.Publish(new RequestOpenTabMessage(key, item.Name ?? item.Id));
-        }
-
-        private void OnUserDeletedRow(object sender, string templateId)
-        {
-            if (!string.IsNullOrEmpty(templateId) && !_pendingDeletions.Contains(templateId))
-                _pendingDeletions.Add(templateId);
-        }
-
-        private async void OnDelete(object sender, EventArgs e)
-        {
-            if (_pendingDeletions.Count == 0)
-            {
-                MessageBox.Show("Tidak ada perubahan untuk disimpan.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            var confirm = MessageBox.Show(
-                $"Simpan perubahan? {_pendingDeletions.Count} template akan dihapus permanen dari Meta.",
-                "Konfirmasi Simpan",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question);
-
-            if (confirm != DialogResult.Yes) return;
-
-            _view.IsLoading = true;
-            var total = _pendingDeletions.Count;
-            var failed = 0;
-            try
-            {
-                foreach (var id in _pendingDeletions.ToList())
-                {
-                    try
-                    {
-                        var del = await _templates.DeleteAsync(id);
-                        if (del.IsFailure)
-                            failed++;
-                    }
-                    catch
-                    {
-                        failed++;
-                    }
-                }
-
-                _pendingDeletions.Clear();
-                await LoadDataAsync();
-
-                if (failed == 0)
-                    MessageBox.Show($"Berhasil menghapus {total} template.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else
-                    MessageBox.Show($"{total - failed} berhasil, {failed} gagal.", "Selesai", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Gagal: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                _view.IsLoading = false;
-            }
-        }
-
         public void Dispose()
         {
             if (!_disposed)
@@ -245,19 +144,12 @@ namespace WaDesktop.Client.Presenters
                 _data = null;
                 _view.RefreshClicked -= null;
                 _view.SearchClicked -= null;
-                _view.AddClicked -= null;
-                _view.EditClicked -= null;
-                _view.DeleteClicked -= null;
 
                 if (_realView != null)
                 {
                     _realView.SyncClicked -= OnSync;
                     _realView.WabaFilterChanged -= OnWabaFilterChanged;
-                    _realView.PreviewClicked -= OnPreview;
-                    _realView.UserDeletedRowItem -= OnUserDeletedRow;
                 }
-
-                _embeddedMsgPresenter?.Dispose();
 
                 _disposed = true;
             }

@@ -22,6 +22,15 @@ namespace WaDesktop.Client.Views.ManagementViews
         {
             this.components = new System.ComponentModel.Container();
             this.dataGridView = new System.Windows.Forms.DataGridView();
+            this.dgvPhoneNumberId = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgvNameStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgvCodeStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgvMetaStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colRegister = new System.Windows.Forms.DataGridViewButtonColumn();
             this.ctxMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ctxMenuWebhook = new System.Windows.Forms.ToolStripMenuItem();
             this.txtSearch = new System.Windows.Forms.TextBox();
@@ -33,15 +42,6 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.cmbWabaSync = new System.Windows.Forms.ComboBox();
             this.panelHeader = new System.Windows.Forms.Panel();
             this.panelFooter = new System.Windows.Forms.Panel();
-            this.dgvPhoneNumberId = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgvNameStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgvCodeStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgvMetaStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colRegister = new System.Windows.Forms.DataGridViewButtonColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             this.ctxMenu.SuspendLayout();
             this.panelHeader.SuspendLayout();
@@ -75,115 +75,6 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellDoubleClick);
             this.dataGridView.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView_CellFormatting);
             this.dataGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView_CellMouseClick);
-            // 
-            // ctxMenu
-            // 
-            this.ctxMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ctxMenuWebhook});
-            this.ctxMenu.Name = "ctxMenu";
-            this.ctxMenu.Size = new System.Drawing.Size(126, 26);
-            // 
-            // ctxMenuWebhook
-            // 
-            this.ctxMenuWebhook.Name = "ctxMenuWebhook";
-            this.ctxMenuWebhook.Size = new System.Drawing.Size(125, 22);
-            this.ctxMenuWebhook.Text = "Webhook";
-            this.ctxMenuWebhook.Click += new System.EventHandler(this.ctxMenuWebhook_Click);
-            // 
-            // txtSearch
-            // 
-            this.txtSearch.Location = new System.Drawing.Point(8, 5);
-            this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(200, 20);
-            this.txtSearch.TabIndex = 1;
-            this.txtSearch.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtSearch_KeyPress);
-            // 
-            // btnSearch
-            // 
-            this.btnSearch.Location = new System.Drawing.Point(435, 3);
-            this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(75, 23);
-            this.btnSearch.TabIndex = 2;
-            this.btnSearch.Text = "Search";
-            this.btnSearch.UseVisualStyleBackColor = true;
-            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
-            // 
-            // btnAdd
-            // 
-            this.btnAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAdd.Location = new System.Drawing.Point(725, 4);
-            this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(75, 23);
-            this.btnAdd.TabIndex = 4;
-            this.btnAdd.Text = "Tambah";
-            this.btnAdd.UseVisualStyleBackColor = true;
-            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
-            // 
-            // btnDelete
-            // 
-            this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDelete.Location = new System.Drawing.Point(806, 3);
-            this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(75, 23);
-            this.btnDelete.TabIndex = 6;
-            this.btnDelete.Text = "Delete";
-            this.btnDelete.UseVisualStyleBackColor = true;
-            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
-            // 
-            // btnSync
-            // 
-            this.btnSync.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSync.Location = new System.Drawing.Point(563, 4);
-            this.btnSync.Name = "btnSync";
-            this.btnSync.Size = new System.Drawing.Size(75, 23);
-            this.btnSync.TabIndex = 7;
-            this.btnSync.Text = "Sinkron";
-            this.btnSync.UseVisualStyleBackColor = true;
-            this.btnSync.Click += new System.EventHandler(this.btnSync_Click);
-            // 
-            // btnRefresh
-            // 
-            this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRefresh.Location = new System.Drawing.Point(482, 4);
-            this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
-            this.btnRefresh.TabIndex = 9;
-            this.btnRefresh.Text = "F5 - Refresh";
-            this.btnRefresh.UseVisualStyleBackColor = true;
-            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
-            // 
-            // cmbWabaSync
-            // 
-            this.cmbWabaSync.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbWabaSync.FormattingEnabled = true;
-            this.cmbWabaSync.Location = new System.Drawing.Point(214, 5);
-            this.cmbWabaSync.Name = "cmbWabaSync";
-            this.cmbWabaSync.Size = new System.Drawing.Size(215, 21);
-            this.cmbWabaSync.TabIndex = 8;
-            this.cmbWabaSync.SelectedIndexChanged += new System.EventHandler(this.CmbWabaSync_SelectedIndexChanged);
-            // 
-            // panelHeader
-            // 
-            this.panelHeader.Controls.Add(this.cmbWabaSync);
-            this.panelHeader.Controls.Add(this.txtSearch);
-            this.panelHeader.Controls.Add(this.btnSearch);
-            this.panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelHeader.Location = new System.Drawing.Point(0, 0);
-            this.panelHeader.Name = "panelHeader";
-            this.panelHeader.Size = new System.Drawing.Size(884, 33);
-            this.panelHeader.TabIndex = 9;
-            // 
-            // panelFooter
-            // 
-            this.panelFooter.Controls.Add(this.btnRefresh);
-            this.panelFooter.Controls.Add(this.btnDelete);
-            this.panelFooter.Controls.Add(this.btnAdd);
-            this.panelFooter.Controls.Add(this.btnSync);
-            this.panelFooter.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelFooter.Location = new System.Drawing.Point(0, 526);
-            this.panelFooter.Name = "panelFooter";
-            this.panelFooter.Size = new System.Drawing.Size(884, 30);
-            this.panelFooter.TabIndex = 10;
             // 
             // dgvPhoneNumberId
             // 
@@ -245,6 +136,115 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.colRegister.Text = "Register";
             this.colRegister.UseColumnTextForButtonValue = true;
             this.colRegister.Width = 80;
+            // 
+            // ctxMenu
+            // 
+            this.ctxMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ctxMenuWebhook});
+            this.ctxMenu.Name = "ctxMenu";
+            this.ctxMenu.Size = new System.Drawing.Size(126, 26);
+            // 
+            // ctxMenuWebhook
+            // 
+            this.ctxMenuWebhook.Name = "ctxMenuWebhook";
+            this.ctxMenuWebhook.Size = new System.Drawing.Size(125, 22);
+            this.ctxMenuWebhook.Text = "Webhook";
+            this.ctxMenuWebhook.Click += new System.EventHandler(this.ctxMenuWebhook_Click);
+            // 
+            // txtSearch
+            // 
+            this.txtSearch.Location = new System.Drawing.Point(8, 5);
+            this.txtSearch.Name = "txtSearch";
+            this.txtSearch.Size = new System.Drawing.Size(200, 20);
+            this.txtSearch.TabIndex = 1;
+            this.txtSearch.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtSearch_KeyPress);
+            // 
+            // btnSearch
+            // 
+            this.btnSearch.Location = new System.Drawing.Point(435, 3);
+            this.btnSearch.Name = "btnSearch";
+            this.btnSearch.Size = new System.Drawing.Size(75, 23);
+            this.btnSearch.TabIndex = 2;
+            this.btnSearch.Text = "Search";
+            this.btnSearch.UseVisualStyleBackColor = true;
+            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
+            // 
+            // btnAdd
+            // 
+            this.btnAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAdd.Location = new System.Drawing.Point(725, 4);
+            this.btnAdd.Name = "btnAdd";
+            this.btnAdd.Size = new System.Drawing.Size(75, 23);
+            this.btnAdd.TabIndex = 4;
+            this.btnAdd.Text = "Tambah";
+            this.btnAdd.UseVisualStyleBackColor = true;
+            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
+            // 
+            // btnDelete
+            // 
+            this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnDelete.Location = new System.Drawing.Point(806, 3);
+            this.btnDelete.Name = "btnDelete";
+            this.btnDelete.Size = new System.Drawing.Size(75, 23);
+            this.btnDelete.TabIndex = 6;
+            this.btnDelete.Text = "Delete";
+            this.btnDelete.UseVisualStyleBackColor = true;
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+            // 
+            // btnSync
+            // 
+            this.btnSync.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSync.Location = new System.Drawing.Point(644, 4);
+            this.btnSync.Name = "btnSync";
+            this.btnSync.Size = new System.Drawing.Size(75, 23);
+            this.btnSync.TabIndex = 7;
+            this.btnSync.Text = "Sinkron";
+            this.btnSync.UseVisualStyleBackColor = true;
+            this.btnSync.Click += new System.EventHandler(this.btnSync_Click);
+            // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRefresh.Location = new System.Drawing.Point(563, 4);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
+            this.btnRefresh.TabIndex = 9;
+            this.btnRefresh.Text = "F5 - Refresh";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
+            // cmbWabaSync
+            // 
+            this.cmbWabaSync.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbWabaSync.FormattingEnabled = true;
+            this.cmbWabaSync.Location = new System.Drawing.Point(214, 5);
+            this.cmbWabaSync.Name = "cmbWabaSync";
+            this.cmbWabaSync.Size = new System.Drawing.Size(215, 21);
+            this.cmbWabaSync.TabIndex = 8;
+            this.cmbWabaSync.SelectedIndexChanged += new System.EventHandler(this.CmbWabaSync_SelectedIndexChanged);
+            // 
+            // panelHeader
+            // 
+            this.panelHeader.Controls.Add(this.cmbWabaSync);
+            this.panelHeader.Controls.Add(this.txtSearch);
+            this.panelHeader.Controls.Add(this.btnSearch);
+            this.panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelHeader.Location = new System.Drawing.Point(0, 0);
+            this.panelHeader.Name = "panelHeader";
+            this.panelHeader.Size = new System.Drawing.Size(884, 33);
+            this.panelHeader.TabIndex = 9;
+            // 
+            // panelFooter
+            // 
+            this.panelFooter.Controls.Add(this.btnRefresh);
+            this.panelFooter.Controls.Add(this.btnDelete);
+            this.panelFooter.Controls.Add(this.btnAdd);
+            this.panelFooter.Controls.Add(this.btnSync);
+            this.panelFooter.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelFooter.Location = new System.Drawing.Point(0, 526);
+            this.panelFooter.Name = "panelFooter";
+            this.panelFooter.Size = new System.Drawing.Size(884, 30);
+            this.panelFooter.TabIndex = 10;
             // 
             // PhoneNumberView
             // 

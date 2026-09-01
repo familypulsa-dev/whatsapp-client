@@ -56,6 +56,7 @@ namespace WaDesktop.Client.Views.ManagementViews
 
         public void LoadDetail(PhoneNumberDetail detail)
         {
+                if (detail == null) return;
             this.InvokeIfRequired(() =>
             {
                 txtPhoneId.Text = detail.PhoneNumberId;

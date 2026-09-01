@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WaDesktop.Domain.Interfaces;
 using WaDesktop.Domain.Entities;
+using WaDesktop.Domain.Interfaces;
 using WaDesktop.Domain.Messages;
+using WaDesktop.Domain.State;
 
 namespace WaDesktop.Client.Presenters
 {
@@ -21,15 +22,17 @@ namespace WaDesktop.Client.Presenters
         private readonly System.Timers.Timer _webhookStatusTimer;
         private readonly IDisposable _sessionExpiredSub;
         private readonly IDisposable _sessionRestoredSub;
+        private readonly AppState _state;
 
         public SidebarPresenter(ISidebarView view, ICompanyRepository companies,
-            IBillingRepository billing, IAppSettingsRepository settings, IEventAggregator bus)
+            IBillingRepository billing, IAppSettingsRepository settings, IEventAggregator bus, AppState state)
         {
             _view = view;
             _companies = companies;
             _billing = billing;
             _settings = settings;
             _bus = bus;
+            _state = state;
 
             _view.PhoneNumberSelected += OnPhoneNumberSelected;
             _view.RefreshRequested += OnRefreshRequested;
@@ -76,14 +79,17 @@ namespace WaDesktop.Client.Presenters
                 //var phones = await Task.Run(() => _companies.GetPhoneNumbersAsync());
                 //_view.LoadPhoneNumbers(BuildTree(phones));
 
-                var result = await Task.Run(() => _billing.GetAnalyticsAsync());
-                if (result.IsSuccess)
+                if (!_state.IsSuperAdmin)
                 {
-                    _view.UpdateUsageSummary(result.Value);
-                }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine($"Failed to load sidebar data: {result.Error.Message}");
+                    var result = await Task.Run(() => _billing.GetAnalyticsAsync());
+                    if (result.IsSuccess)
+                    {
+                        _view.UpdateUsageSummary(result.Value);
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Failed to load sidebar data: {result.Error.Message}");
+                    }
                 }
 
                 // Initial webhook status check

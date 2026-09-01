@@ -38,7 +38,7 @@ namespace WaDesktop.Tests.PresenterTests
             public bool IsLoggedIn => true;
             public bool IsSuperAdmin => false;
 
-            public Task<bool> LoginAsync(string username, string password) => Task.FromResult(LoginResult);
+            public Task<(bool, string)> LoginAsync(string username, string password) => Task.FromResult((LoginResult, (string)null));
             public Task<bool> RefreshTokenAsync() => Task.FromResult(true);
             public void Logout() { }
         }
