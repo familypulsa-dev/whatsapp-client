@@ -40,7 +40,7 @@ jobs:
       - name: Generate AssemblyInfo
         shell: pwsh
         run: |
-          $dir = "wa-desktop/src/WaDesktop.Client/Properties"
+          $dir = "wa-desktop/WaDesktop.Client/Properties"
           New-Item -Force -ItemType Directory -Path $dir | Out-Null
           $year = (Get-Date).Year
           $lines = @(
@@ -85,7 +85,7 @@ jobs:
         shell: pwsh
         run: |
           git log -1 --pretty=format:"%B" | Out-File -FilePath release-notes.md -Encoding utf8
-          vpk pack --packId "WaDesktop" --packTitle "WA Client" --packVersion $env:VERSION --packDir "wa-desktop/src/WaDesktop.Client/bin/Release" --mainExe "WaDesktop.exe" --icon "wa-desktop/src/WaDesktop.Client/app.ico" --releaseNotes "release-notes.md"
+          vpk pack --packId "WaDesktop" --packTitle "WA Client" --packVersion $env:VERSION --packDir "wa-desktop/WaDesktop.Client/bin/Release" --mainExe "WaDesktop.exe" --icon "wa-desktop/WaDesktop.Client/app.ico" --releaseNotes "release-notes.md"
 
       - name: Create Release
         uses: softprops/action-gh-release@v2

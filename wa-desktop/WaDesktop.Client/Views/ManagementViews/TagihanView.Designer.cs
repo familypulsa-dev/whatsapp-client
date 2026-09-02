@@ -7,6 +7,7 @@ namespace WaDesktop.Client.Views.ManagementViews
         private System.Windows.Forms.DateTimePicker dtpStart;
         private System.Windows.Forms.DateTimePicker dtpEnd;
         private System.Windows.Forms.Button btnFilter;
+        private System.Windows.Forms.Button btnSync;
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.Panel panelFilter;
 
@@ -27,11 +28,11 @@ namespace WaDesktop.Client.Views.ManagementViews
 
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView = new System.Windows.Forms.DataGridView();
             this.colBulan = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colMarketing = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -44,10 +45,13 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dtpStart = new System.Windows.Forms.DateTimePicker();
             this.dtpEnd = new System.Windows.Forms.DateTimePicker();
             this.btnFilter = new System.Windows.Forms.Button();
+            this.btnSync = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.panelFilter = new System.Windows.Forms.Panel();
+            this.panelFooter = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             this.panelFilter.SuspendLayout();
+            this.panelFooter.SuspendLayout();
             this.SuspendLayout();
             // 
             // dataGridView
@@ -69,7 +73,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.dataGridView.ReadOnly = true;
             this.dataGridView.RowHeadersVisible = false;
             this.dataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView.Size = new System.Drawing.Size(1000, 474);
+            this.dataGridView.Size = new System.Drawing.Size(1000, 442);
             this.dataGridView.TabIndex = 0;
             // 
             // colBulan
@@ -80,9 +84,9 @@ namespace WaDesktop.Client.Views.ManagementViews
             // 
             // colMarketing
             // 
-            dataGridViewCellStyle6.Format = "C2";
-            dataGridViewCellStyle6.FormatProvider = new System.Globalization.CultureInfo("id-ID");
-            this.colMarketing.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle1.Format = "C2";
+            dataGridViewCellStyle1.FormatProvider = new System.Globalization.CultureInfo("id-ID");
+            this.colMarketing.DefaultCellStyle = dataGridViewCellStyle1;
             this.colMarketing.HeaderText = "Marketing";
             this.colMarketing.Name = "colMarketing";
             this.colMarketing.ReadOnly = true;
@@ -90,9 +94,9 @@ namespace WaDesktop.Client.Views.ManagementViews
             // 
             // colUtility
             // 
-            dataGridViewCellStyle7.Format = "C2";
-            dataGridViewCellStyle7.FormatProvider = new System.Globalization.CultureInfo("id-ID");
-            this.colUtility.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle2.Format = "C2";
+            dataGridViewCellStyle2.FormatProvider = new System.Globalization.CultureInfo("id-ID");
+            this.colUtility.DefaultCellStyle = dataGridViewCellStyle2;
             this.colUtility.HeaderText = "Utility";
             this.colUtility.Name = "colUtility";
             this.colUtility.ReadOnly = true;
@@ -100,9 +104,9 @@ namespace WaDesktop.Client.Views.ManagementViews
             // 
             // colAuth
             // 
-            dataGridViewCellStyle8.Format = "C2";
-            dataGridViewCellStyle8.FormatProvider = new System.Globalization.CultureInfo("id-ID");
-            this.colAuth.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle3.Format = "C2";
+            dataGridViewCellStyle3.FormatProvider = new System.Globalization.CultureInfo("id-ID");
+            this.colAuth.DefaultCellStyle = dataGridViewCellStyle3;
             this.colAuth.HeaderText = "Auth";
             this.colAuth.Name = "colAuth";
             this.colAuth.ReadOnly = true;
@@ -110,9 +114,9 @@ namespace WaDesktop.Client.Views.ManagementViews
             // 
             // colService
             // 
-            dataGridViewCellStyle9.Format = "C2";
-            dataGridViewCellStyle9.FormatProvider = new System.Globalization.CultureInfo("id-ID");
-            this.colService.DefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle4.Format = "C2";
+            dataGridViewCellStyle4.FormatProvider = new System.Globalization.CultureInfo("id-ID");
+            this.colService.DefaultCellStyle = dataGridViewCellStyle4;
             this.colService.HeaderText = "Service";
             this.colService.Name = "colService";
             this.colService.ReadOnly = true;
@@ -126,9 +130,9 @@ namespace WaDesktop.Client.Views.ManagementViews
             // 
             // colTotalBiaya
             // 
-            dataGridViewCellStyle10.Format = "C2";
-            dataGridViewCellStyle10.FormatProvider = new System.Globalization.CultureInfo("id-ID");
-            this.colTotalBiaya.DefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle5.Format = "C2";
+            dataGridViewCellStyle5.FormatProvider = new System.Globalization.CultureInfo("id-ID");
+            this.colTotalBiaya.DefaultCellStyle = dataGridViewCellStyle5;
             this.colTotalBiaya.HeaderText = "Total Biaya";
             this.colTotalBiaya.Name = "colTotalBiaya";
             this.colTotalBiaya.ReadOnly = true;
@@ -174,10 +178,21 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.btnFilter.UseVisualStyleBackColor = true;
             this.btnFilter.Click += new System.EventHandler(this.btnFilter_Click);
             // 
+            // btnSync
+            // 
+            this.btnSync.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSync.Location = new System.Drawing.Point(926, 6);
+            this.btnSync.Name = "btnSync";
+            this.btnSync.Size = new System.Drawing.Size(71, 23);
+            this.btnSync.TabIndex = 3;
+            this.btnSync.Text = "Sinkron";
+            this.btnSync.UseVisualStyleBackColor = true;
+            this.btnSync.Click += new System.EventHandler(this.btnSync_Click);
+            // 
             // btnRefresh
             // 
-            this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRefresh.Location = new System.Drawing.Point(917, 9);
+            this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRefresh.Location = new System.Drawing.Point(845, 6);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(75, 23);
             this.btnRefresh.TabIndex = 4;
@@ -187,7 +202,6 @@ namespace WaDesktop.Client.Views.ManagementViews
             // 
             // panelFilter
             // 
-            this.panelFilter.Controls.Add(this.btnRefresh);
             this.panelFilter.Controls.Add(this.cmbWaba);
             this.panelFilter.Controls.Add(this.dtpStart);
             this.panelFilter.Controls.Add(this.dtpEnd);
@@ -199,18 +213,32 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.panelFilter.Size = new System.Drawing.Size(1000, 40);
             this.panelFilter.TabIndex = 1;
             // 
+            // panelFooter
+            // 
+            this.panelFooter.Controls.Add(this.btnRefresh);
+            this.panelFooter.Controls.Add(this.btnSync);
+            this.panelFooter.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelFooter.Location = new System.Drawing.Point(0, 482);
+            this.panelFooter.Name = "panelFooter";
+            this.panelFooter.Size = new System.Drawing.Size(1000, 32);
+            this.panelFooter.TabIndex = 3;
+            // 
             // TagihanView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.dataGridView);
+            this.Controls.Add(this.panelFooter);
             this.Controls.Add(this.panelFilter);
             this.Name = "TagihanView";
             this.Size = new System.Drawing.Size(1000, 514);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).EndInit();
             this.panelFilter.ResumeLayout(false);
+            this.panelFooter.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
+
+        private System.Windows.Forms.Panel panelFooter;
     }
 }

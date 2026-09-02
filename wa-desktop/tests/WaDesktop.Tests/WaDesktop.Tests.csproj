@@ -42,15 +42,15 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\WaDesktop.Domain\WaDesktop.Domain.csproj">
+    <ProjectReference Include="..\..\WaDesktop.Domain\WaDesktop.Domain.csproj">
       <Project>{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}</Project>
       <Name>WaDesktop.Domain</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\WaDesktop.Infrastructure\WaDesktop.Infrastructure.csproj">
+    <ProjectReference Include="..\..\WaDesktop.Infrastructure\WaDesktop.Infrastructure.csproj">
       <Project>{B2C3D4E5-F6A7-8901-BCDE-F12345678901}</Project>
       <Name>WaDesktop.Infrastructure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\WaDesktop.Client\WaDesktop.Client.csproj">
+    <ProjectReference Include="..\..\WaDesktop.Client\WaDesktop.Client.csproj">
       <Project>{C3D4E5F6-A7B8-9012-CDEF-123456789012}</Project>
       <Name>WaDesktop.Client</Name>
     </ProjectReference>

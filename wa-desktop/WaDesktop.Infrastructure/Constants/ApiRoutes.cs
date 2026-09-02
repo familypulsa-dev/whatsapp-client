@@ -38,6 +38,8 @@ namespace WaDesktop.Infrastructure.Constants
         {
             public const string Base = "/api/v1/waba";
             public const string Usage = "/api/v1/waba/usage";
+            public const string Sync = "/api/v1/waba/sync";
+            public const string SyncBilling = "/api/v1/waba/billing/sync";
         }
         
         public static class Wabas

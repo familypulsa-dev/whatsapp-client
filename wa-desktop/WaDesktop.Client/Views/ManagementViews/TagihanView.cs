@@ -75,6 +75,7 @@ namespace WaDesktop.Client.Views.ManagementViews
         public bool IsLoading { set => this.InvokeIfRequired(() => { Cursor = value ? Cursors.WaitCursor : Cursors.Default; }); }
 
         public event EventHandler FilterClicked;
+        public event EventHandler SyncClicked;
         public event EventHandler RefreshClicked;
         public event EventHandler<string> WabaFilterChanged;
 
@@ -91,6 +92,11 @@ namespace WaDesktop.Client.Views.ManagementViews
         private void btnFilter_Click(object sender, EventArgs e)
         {
             FilterClicked?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void btnSync_Click(object sender, EventArgs e)
+        {
+            SyncClicked?.Invoke(this, EventArgs.Empty);
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)

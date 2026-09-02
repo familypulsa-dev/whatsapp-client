@@ -6,28 +6,27 @@ WinForms .NET 4.7.2 desktop shell for the WhatsApp Business platform.
 ## Project Structure
 ```
 WaDesktop.sln
-└── src/
-    ├── WaDesktop.Domain/              # No WinForms deps
-    │   ├── Interfaces/                # IView, IListener, IUseCase
-    │   ├── Entities/                  # PhoneNumber, Company, User, Template, AppSetting
-    │   ├── UseCases/                  # Business logic
-    │   └── State/                     # AppStateContainer
-    ├── WaDesktop.Infrastructure/
-    │   ├── Services/                  # AuthService, AuthSessionStore
-    │   ├── Data/
-    │   │   ├── Remote/                # ApiHttpPipeline, BaseDataSource, AuthDelegatingHandler
-    │   │   └── Repositories/          # Per-feature repository (Result<T,E> contract)
-    │   ├── Payloads/                  # snake_case DTO per feature (onpay-style)
-    │   ├── EventAggregator/           # Pub/Sub message bus
-    │   └── ServiceLocator.cs          # DI container
-    └── WaDesktop.Client/              # WinForms .NET 4.7.2
-        ├── Controls/                  # Custom controls
-        ├── Views/
-        │   ├── ShellView.cs           # MainForm (MenuBar + Sidebar + Workspace)
-        │   ├── SidebarView.cs         # WA Phone Number TreeView
-        │   ├── DashboardView.cs       # WebView2 embed wa-frontend
-        │   └── ManagementViews/       # Company, Users, Templates, AppSettings
-        └── Presenters/                # Per-View presenters
+├── WaDesktop.Domain/              # No WinForms deps
+│   ├── Interfaces/                # IView, IListener, IUseCase
+│   ├── Entities/                  # PhoneNumber, Company, User, Template, AppSetting
+│   ├── UseCases/                  # Business logic
+│   └── State/                     # AppStateContainer
+├── WaDesktop.Infrastructure/
+│   ├── Services/                  # AuthService, AuthSessionStore
+│   ├── Data/
+│   │   ├── Remote/                # ApiHttpPipeline, BaseDataSource, AuthDelegatingHandler
+│   │   └── Repositories/          # Per-feature repository (Result<T,E> contract)
+│   ├── Payloads/                  # snake_case DTO per feature (onpay-style)
+│   ├── EventAggregator/           # Pub/Sub message bus
+│   └── ServiceLocator.cs          # DI container
+└── WaDesktop.Client/              # WinForms .NET 4.7.2
+    ├── Controls/                  # Custom controls
+    ├── Views/
+    │   ├── ShellView.cs           # MainForm (MenuBar + Sidebar + Workspace)
+    │   ├── SidebarView.cs         # WA Phone Number TreeView
+    │   ├── MessagesView.cs        # WebView2 embed wa-frontend
+    │   └── ManagementViews/       # Company, Users, Templates, AppSettings
+    └── Presenters/                # Per-View presenters
 ```
 
 ## Skills

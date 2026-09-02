@@ -12,5 +12,6 @@ namespace WaDesktop.Domain.Interfaces
         Task<Result<WaWabaUsageSummary>> GetAnalyticsAsync();
         Task<Result<List<WaWabaUsageSummary>>> GetUsageSummaryAsync(
             DateTime? start = null, DateTime? end = null, string wabaId = null);
+        Task<Result<bool>> SyncBillingAsync(string startTime, string endTime, string wabaId = null);
     }
 }
