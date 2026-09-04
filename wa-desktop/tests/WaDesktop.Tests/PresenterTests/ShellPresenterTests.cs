@@ -25,6 +25,13 @@ namespace WaDesktop.Tests.PresenterTests
 
         private class FakeAuthService : IAuthService
         {
+            private readonly AppState _state;
+
+            public FakeAuthService(AppState state)
+            {
+                _state = state;
+            }
+
             public string AccessToken => "token";
             public string RefreshToken => "rtoken";
             public string Role => "admin";
@@ -36,7 +43,7 @@ namespace WaDesktop.Tests.PresenterTests
                 => System.Threading.Tasks.Task.FromResult((true, (string)null));
             public System.Threading.Tasks.Task<bool> RefreshTokenAsync()
                 => System.Threading.Tasks.Task.FromResult(true);
-            public void Logout() { }
+            public void Logout() => _state.ClearSession();
         }
 
         private class FakeShellView : IShellView
@@ -83,10 +90,10 @@ namespace WaDesktop.Tests.PresenterTests
         public void Constructor_SetsStatusText()
         {
             var view = new FakeShellView();
-            var auth = new FakeAuthService();
-            var bus = new EventAggregator();
             var state = new AppState();
             state.SetSession("t", "rt", "admin", "Test", "family", "asdfjasjf");
+            var auth = new FakeAuthService(state);
+            var bus = new EventAggregator();
 
             var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
             var provider = services.BuildServiceProvider();
@@ -101,10 +108,10 @@ namespace WaDesktop.Tests.PresenterTests
         public void Logout_ClearsSession()
         {
             var view = new FakeShellView();
-            var auth = new FakeAuthService();
-            var bus = new EventAggregator();
             var state = new AppState();
             state.SetSession("t", "rt", "admin", "Test", "family", "asdfjasjf");
+            var auth = new FakeAuthService(state);
+            var bus = new EventAggregator();
 
             var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
             var provider = services.BuildServiceProvider();

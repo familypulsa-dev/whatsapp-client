@@ -25,7 +25,7 @@ Set-Location "wa-desktop"
 
 # --- GENERATE ASSEMBLY INFO ---
 Write-Host "   -> Injecting Version $Version ke AssemblyInfo.cs..." -ForegroundColor Cyan
-$propsDir = "WaDesktop.Client\Properties"
+$propsDir = "WaDesktop\Properties"
 if (-not (Test-Path $propsDir)) {
     New-Item -ItemType Directory -Force -Path $propsDir | Out-Null
 }
@@ -48,12 +48,12 @@ using System.Runtime.InteropServices;
 "@ | Out-File -FilePath "$propsDir\AssemblyInfo.cs" -Encoding utf8
 # ------------------------------
 
-nuget restore WaDesktop.sln
+dotnet restore WaDesktop.sln
 msbuild WaDesktop.sln /p:Configuration=Release /p:Platform="Any CPU" /m
 Set-Location ".."
 
 # 4. Pack dengan Velopack
 Write-Host "4. Packaging dengan Velopack..." -ForegroundColor Yellow
-vpk pack --packId "WaDesktop" --packTitle "WaDesktop" --packVersion $Version --packDir "wa-desktop\WaDesktop.Client\bin\Release" --mainExe "WaDesktop.exe"
+vpk pack --packId "WaDesktop" --packTitle "WaDesktop" --packVersion $Version --packDir "wa-desktop\WaDesktop\bin\Release\net472" --mainExe "WaDesktop.exe"
 
 Write-Host "Selesai." -ForegroundColor Green

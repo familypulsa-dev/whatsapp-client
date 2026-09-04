@@ -40,7 +40,7 @@ jobs:
       - name: Generate AssemblyInfo
         shell: pwsh
         run: |
-          $dir = "wa-desktop/WaDesktop.Client/Properties"
+          $dir = "wa-desktop/WaDesktop/Properties"
           New-Item -Force -ItemType Directory -Path $dir | Out-Null
           $year = (Get-Date).Year
           $lines = @(
@@ -64,7 +64,7 @@ jobs:
 
       - name: Restore NuGet packages
         working-directory: wa-desktop
-        run: nuget restore WaDesktop.sln
+        run: dotnet restore WaDesktop.sln
 
       - name: Build (Release)
         working-directory: wa-desktop
@@ -85,7 +85,7 @@ jobs:
         shell: pwsh
         run: |
           git log -1 --pretty=format:"%B" | Out-File -FilePath release-notes.md -Encoding utf8
-          vpk pack --packId "WaDesktop" --packTitle "WA Client" --packVersion $env:VERSION --packDir "wa-desktop/WaDesktop.Client/bin/Release" --mainExe "WaDesktop.exe" --icon "wa-desktop/WaDesktop.Client/app.ico" --releaseNotes "release-notes.md"
+          vpk pack --packId "WaDesktop" --packTitle "WA Client" --packVersion $env:VERSION --packDir "wa-desktop/WaDesktop/bin/Release/net472" --mainExe "WaDesktop.exe" --icon "wa-desktop/WaDesktop/app.ico" --releaseNotes "release-notes.md"
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
