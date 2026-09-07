@@ -8,11 +8,12 @@ export function initDesktopToken(): void {
   if (!isDesktop()) return
   const bridge = (window as any)?.__DESKTOP_BRIDGE__
   if (bridge?.token) {
-    localStorage.setItem("access_token", bridge.token)
+    localStorage.setItem("token", bridge.token)
   }
 
-  if (bridge?.refreshToken) {
-    localStorage.setItem("refresh_token", bridge.refreshToken)
+  const refreshToken = bridge?.refresh_token ?? bridge?.refreshToken
+  if (refreshToken) {
+    localStorage.setItem("refresh_token", refreshToken)
   }
 }
 

@@ -1,5 +1,6 @@
 import { create } from "zustand"
 import type { User } from "../types"
+import * as authApi from "../api/auth"
 import { useWS } from "./ws"
 
 interface AuthState {
@@ -11,56 +12,44 @@ interface AuthState {
   init: () => Promise<void>
 }
 
-export const useAuth = create<AuthState>((set) => {
-  const storedUser = localStorage.getItem("user")
-  const initialUser = storedUser ? JSON.parse(storedUser) : null
+export const useAuth = create<AuthState>((set) => ({
+  token: localStorage.getItem("token"),
+  user: null,
+  loading: true,
 
-  return {
-    token: localStorage.getItem("access_token"),
-    user: initialUser,
-    loading: !localStorage.getItem("access_token"),
+  setAuth: (token, refreshToken, user) => {
+    localStorage.setItem("token", token)
+    localStorage.setItem("refresh_token", refreshToken)
+    set({ token, user, loading: false })
+  },
 
-    setAuth: (token, refreshToken, user) => {
-      console.log(`[setAuth] token: ${token}, refreshToken: ${refreshToken}, user: ${JSON.stringify(user)}`)
-      localStorage.setItem("access_token", token)
-      localStorage.setItem("refresh_token", refreshToken)
-      localStorage.setItem("user", JSON.stringify(user))
-      
-      useWS.getState().connect(token, user.company_id || "")
-      set({ token, user, loading: false })
-    },
+  logout: () => {
+    localStorage.removeItem("token")
+    localStorage.removeItem("refresh_token")
+    useWS.getState().disconnect()
+    set({ token: null, user: null, loading: false })
+  },
 
-    logout: () => {
-      localStorage.removeItem("access_token")
+  init: async () => {
+    const token = localStorage.getItem("token")
+
+    if (!token) {
+      set({ token: null, user: null, loading: false })
+      return
+    }
+
+    try {
+      const response = await authApi.getMe()
+      if (response.error || !response.data) {
+        throw new Error(response.error?.message || "Failed to get user data")
+      }
+      const activeToken = localStorage.getItem("token") || token
+      set({ token: activeToken, user: response.data, loading: false })
+    } catch {
+      localStorage.removeItem("token")
       localStorage.removeItem("refresh_token")
-      localStorage.removeItem("user")
-      
       useWS.getState().disconnect()
       set({ token: null, user: null, loading: false })
-    },
-
-    init: async () => {
-      const token = localStorage.getItem("access_token")
-      const storedUser = localStorage.getItem("user")
-      
-      if (!token || !storedUser) {
-        localStorage.removeItem("access_token")
-        localStorage.removeItem("refresh_token")
-        localStorage.removeItem("user")
-        set({ loading: false })
-        return
-      }
-      
-      try {
-        const user = JSON.parse(storedUser)
-        useWS.getState().connect(token, user.company_id || "")
-        set({ token, user, loading: false })
-      } catch {
-        localStorage.removeItem("access_token")
-        localStorage.removeItem("refresh_token")
-        localStorage.removeItem("user")
-        set({ token: null, user: null, loading: false })
-      }
-    },
-  }
-})
+    }
+  },
+}))

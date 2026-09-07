@@ -102,7 +102,7 @@ export const useChatConnection = () => {
 
     const handleRetryConnection = () => {
         setStatus('reconnecting');
-        const token = localStorage.getItem('access_token');
+        const token = localStorage.getItem('token');
         if (token) {
             connect(token, user?.company_id || "");
         } else {
