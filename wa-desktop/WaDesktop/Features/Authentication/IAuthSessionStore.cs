@@ -13,7 +13,7 @@ namespace WaDesktop.Domain.Interfaces
         string RefreshToken { get; }
 
         void SetSession(string accessToken, string refreshToken);
-        void ClearAccessToken();
+        void ClearSession();
 
         void RaiseSessionExpired();
         void RaiseTokenRefreshed();

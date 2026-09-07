@@ -64,6 +64,7 @@ namespace WaDesktop.Client.Presenters
         string Password { get; }
         bool IsLoading { set; }
         event EventHandler LoginClicked;
+        void ShowSessionExpiredMessage();
         void ShowError(string message);
         void Close();
     }

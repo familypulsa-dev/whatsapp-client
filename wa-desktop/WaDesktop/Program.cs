@@ -65,26 +65,66 @@ namespace WaDesktop.Client
                     sessionStore.SessionExpired += (s, e) => eventAggregator.Publish(new SessionExpiredMessage());
                     sessionStore.TokenRefreshed += (s, e) => eventAggregator.Publish(new TokenRefreshedMessage());
 
-                    // --- LOGIN ---
-                    var loginView = provider.GetRequiredService<LoginView>();
-                    var loginPresenter = ActivatorUtilities.CreateInstance<LoginPresenter>(provider, loginView);
-                    if (loginView.ShowDialog() != DialogResult.OK)
+                    var authService = provider.GetRequiredService<IAuthService>();
+                    var hasRestoredSession = authService.RestoreSessionAsync().GetAwaiter().GetResult();
+                    RunApplication(provider, hasRestoredSession);
+                }
+            }
+        }
+
+        private static void RunApplication(IServiceProvider provider, bool hasRestoredSession)
+        {
+            var showSessionExpiredMessage = false;
+            var isAuthenticated = hasRestoredSession;
+
+            while (true)
+            {
+                if (!isAuthenticated)
+                {
+                    using (var loginView = provider.GetRequiredService<LoginView>())
+                    using (var loginPresenter = ActivatorUtilities.CreateInstance<LoginPresenter>(provider, loginView))
                     {
-                        return; // Exit
+                        if (showSessionExpiredMessage)
+                        {
+                            loginView.ShowSessionExpiredMessage();
+                        }
+
+                        if (loginView.ShowDialog() != DialogResult.OK)
+                        {
+                            return;
+                        }
                     }
 
-                    // --- MAIN SHELL ---
-                    var shellView = provider.GetRequiredService<IShellView>();
-                    var shellPresenter = ActivatorUtilities.CreateInstance<ShellPresenter>(provider, shellView);
+                    isAuthenticated = true;
+                }
 
-                    var sidebarView = provider.GetRequiredService<SidebarView>();
-                    var sidebarPresenter = ActivatorUtilities.CreateInstance<SidebarPresenter>(provider, sidebarView);
-                    
+                var shellView = provider.GetRequiredService<IShellView>();
+                var shellForm = shellView as Form;
+                if (shellForm == null)
+                {
+                    throw new InvalidOperationException("IShellView must be a WinForms Form.");
+                }
+
+                ShellExitReason exitReason;
+                using (shellForm)
+                using (var shellPresenter = ActivatorUtilities.CreateInstance<ShellPresenter>(provider, shellView))
+                using (var sidebarView = provider.GetRequiredService<SidebarView>())
+                using (var sidebarPresenter = ActivatorUtilities.CreateInstance<SidebarPresenter>(provider, sidebarView))
+                {
                     shellView.RenderSidebar(sidebarView);
                     _ = sidebarPresenter.LoadDataAsync();
 
-                    Application.Run(shellView as Form);
+                    Application.Run(shellForm);
+                    exitReason = shellView.ExitReason;
                 }
+
+                if (exitReason == ShellExitReason.ApplicationExit)
+                {
+                    return;
+                }
+
+                showSessionExpiredMessage = exitReason == ShellExitReason.SessionExpired;
+                isAuthenticated = false;
             }
         }
     }

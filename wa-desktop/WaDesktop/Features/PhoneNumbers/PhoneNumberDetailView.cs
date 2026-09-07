@@ -95,6 +95,10 @@ namespace WaDesktop.Client.Views.ManagementViews
         private void BtnFetchMeta_Click(object sender, EventArgs e) => FetchFromMetaClicked?.Invoke(this, EventArgs.Empty);
         private void BtnUploadPhoto_Click(object sender, EventArgs e)
         {
+            // alert user that the upload will replace the existing profile picture
+            var res = MessageBox.Show("Mengunggah foto profil baru akan langsung mengganti profil yang lama. Anda yakin ingin melanjutkan ?", "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if(res != DialogResult.Yes) return;
+
             using (var dlg = new OpenFileDialog())
             {
                 dlg.Filter = "Images|*.jpg;*.jpeg;*.png;*.gif;*.bmp";

@@ -41,6 +41,8 @@ namespace WaDesktop.Tests.PresenterTests
 
             public System.Threading.Tasks.Task<(bool, string)> LoginAsync(string username, string password)
                 => System.Threading.Tasks.Task.FromResult((true, (string)null));
+            public System.Threading.Tasks.Task<bool> RestoreSessionAsync()
+                => System.Threading.Tasks.Task.FromResult(false);
             public System.Threading.Tasks.Task<bool> RefreshTokenAsync()
                 => System.Threading.Tasks.Task.FromResult(true);
             public void Logout() => _state.ClearSession();
@@ -48,6 +50,9 @@ namespace WaDesktop.Tests.PresenterTests
 
         private class FakeShellView : IShellView
         {
+            public ShellExitReason ExitReason { get; private set; } = ShellExitReason.ApplicationExit;
+            public bool TabsCleared { get; private set; }
+            public int CloseCallCount { get; private set; }
             public string StatusText { get; set; }
             public bool AppSettingsVisible { get; set; }
             public bool SidebarCollapsed { get; set; }
@@ -72,7 +77,12 @@ namespace WaDesktop.Tests.PresenterTests
 
             public void AddOrSelectTab(string key, string title, IViewBase content) { }
             public void CloseTab(string key) { }
-            public void ClearTabs() { }
+            public void ClearTabs() => TabsCleared = true;
+            public void CloseForSessionEnd(ShellExitReason reason)
+            {
+                ExitReason = reason;
+                CloseCallCount++;
+            }
             public void ShowNotification(string title, string body) { }
             public void SetBadge(int count) { }
             public void SetFooterVersion(string version) { }
@@ -121,6 +131,53 @@ namespace WaDesktop.Tests.PresenterTests
             view.TriggerLogout();
 
             Assert.That(state.IsLoggedIn, Is.False);
+            Assert.That(view.TabsCleared, Is.True);
+            Assert.That(view.ExitReason, Is.EqualTo(ShellExitReason.ManualLogout));
+            presenter.Dispose();
+        }
+
+        [Test]
+        public void SessionExpired_ClosesShellAndClearsSession()
+        {
+            var view = new FakeShellView();
+            var state = new AppState();
+            state.SetSession("t", "rt", "admin", "Test", "family", "asdfjasjf");
+            var auth = new FakeAuthService(state);
+            var bus = new EventAggregator();
+
+            var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+            var provider = services.BuildServiceProvider();
+
+            var presenter = new global::WaDesktop.Client.Presenters.ShellPresenter(view, auth, bus, state, new FakeModuleFactory(), provider);
+
+            bus.Publish(new SessionExpiredMessage());
+            bus.Publish(new SessionExpiredMessage());
+
+            Assert.That(state.IsLoggedIn, Is.False);
+            Assert.That(view.TabsCleared, Is.True);
+            Assert.That(view.ExitReason, Is.EqualTo(ShellExitReason.SessionExpired));
+            Assert.That(view.CloseCallCount, Is.EqualTo(1));
+            presenter.Dispose();
+        }
+
+        [Test]
+        public void LogoutMessage_ClosesShellAsManualLogout()
+        {
+            var view = new FakeShellView();
+            var state = new AppState();
+            state.SetSession("t", "rt", "admin", "Test", "family", "asdfjasjf");
+            var auth = new FakeAuthService(state);
+            var bus = new EventAggregator();
+            var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+            var provider = services.BuildServiceProvider();
+
+            var presenter = new global::WaDesktop.Client.Presenters.ShellPresenter(view, auth, bus, state, new FakeModuleFactory(), provider);
+
+            bus.Publish(new LogoutMessage());
+
+            Assert.That(state.IsLoggedIn, Is.False);
+            Assert.That(view.ExitReason, Is.EqualTo(ShellExitReason.ManualLogout));
+            Assert.That(view.CloseCallCount, Is.EqualTo(1));
             presenter.Dispose();
         }
     }

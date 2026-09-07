@@ -29,11 +29,13 @@ namespace WaDesktop.Client.Presenters
         private IDisposable _tabSub;
         private IDisposable _closeTabSub;
         private IDisposable _sessionSub;
+        private IDisposable _logoutSub;
         private IDisposable _notifSub;
         private IDisposable _badgeSub;
         private IDisposable _refreshTabSub;
+        private readonly Timer _footerTimer;
         private bool _disposed;
-        private bool _isLoggingIn = false;
+        private bool _isEndingSession;
 
         public ShellPresenter(IShellView view, IAuthService auth, IEventAggregator bus, AppState state,
             IModuleFactory moduleFactory, IServiceProvider serviceProvider)
@@ -48,6 +50,7 @@ namespace WaDesktop.Client.Presenters
             _tabSub = bus.Subscribe<RequestOpenTabMessage>(OnRequestOpenTab);
             _closeTabSub = bus.Subscribe<RequestCloseTabMessage>(OnRequestCloseTab);
             _sessionSub = bus.Subscribe<SessionExpiredMessage>(OnSessionExpired);
+            _logoutSub = bus.Subscribe<LogoutMessage>(_ => EndSession(ShellExitReason.ManualLogout));
             _notifSub = bus.Subscribe<ShowNotificationMessage>(m => _view.ShowNotification(m.Title, m.Body));
             _badgeSub = bus.Subscribe<SetBadgeMessage>(m => _view.SetBadge(m.Count));
             _refreshTabSub = bus.Subscribe<RequestRefreshTabMessage>(OnRefreshTabMessage);
@@ -92,9 +95,9 @@ namespace WaDesktop.Client.Presenters
             _view.SetFooterServerName(_state.DisplayName + " - " + _state.CompanyName ?? "Unknown");
 
             // ── Footer: DateTime ──
-            var timer = new Timer { Interval = 1000 };
-            timer.Tick += (s, e) => _view.SetFooterTime(DateTime.Now.ToString("dd/MM/yy HH:mm:ss"));
-            timer.Start();
+            _footerTimer = new Timer { Interval = 1000 };
+            _footerTimer.Tick += OnFooterTimerTick;
+            _footerTimer.Start();
         }
 
         // ── Message Handlers ──
@@ -155,44 +158,29 @@ namespace WaDesktop.Client.Presenters
 
         private void OnSessionExpired(SessionExpiredMessage msg)
         {
-            if (_isLoggingIn) return;
-            _isLoggingIn = true;
-
-            try
-            {
-                _view.ClearTabs();
-                _view.StatusText = "Session expired — login ulang";
-
-                var loginView = _serviceProvider.GetRequiredService<LoginView>();
-                var loginPresenter = ActivatorUtilities.CreateInstance<LoginPresenter>(_serviceProvider, loginView);
-                
-                if (loginView.ShowDialog() == DialogResult.OK)
-                {
-                    _view.StatusText = $"Logged in as {_auth.DisplayName}";
-                    _view.SetFooterServerName(_state.DisplayName + " - " + (_state.CompanyName ?? "Unknown"));
-                    OpenMessages();
-                }
-                else
-                {
-                    _auth.Logout();
-                    _bus.Publish(new LogoutMessage());
-                    _view.StatusText = "Logged out";
-                }
-                loginPresenter.Dispose();
-            }
-            finally
-            {
-                _isLoggingIn = false;
-            }
+            EndSession(ShellExitReason.SessionExpired);
         }
 
         private void OnLogout(object sender, EventArgs e)
         {
-            _auth.Logout();
-            _bus.Publish(new LogoutMessage());
-            _view.ClearTabs();
-            _view.StatusText = "Logged out";
+            EndSession(ShellExitReason.ManualLogout);
         }
+
+        private void EndSession(ShellExitReason reason)
+        {
+            if (_isEndingSession) return;
+            _isEndingSession = true;
+
+            _auth.Logout();
+            _view.ClearTabs();
+            _view.StatusText = reason == ShellExitReason.SessionExpired
+                ? "Session expired"
+                : "Logged out";
+            _view.CloseForSessionEnd(reason);
+        }
+
+        private void OnFooterTimerTick(object sender, EventArgs e)
+            => _view.SetFooterTime(DateTime.Now.ToString("dd/MM/yy HH:mm:ss"));
 
         public void Dispose()
         {
@@ -201,9 +189,12 @@ namespace WaDesktop.Client.Presenters
                 _tabSub?.Dispose();
                 _closeTabSub?.Dispose();
                 _sessionSub?.Dispose();
+                _logoutSub?.Dispose();
                 _notifSub?.Dispose();
                 _badgeSub?.Dispose();
                 _refreshTabSub?.Dispose();
+                _footerTimer?.Stop();
+                _footerTimer?.Dispose();
 
                 foreach (var instance in _activeModules.Values)
                 {

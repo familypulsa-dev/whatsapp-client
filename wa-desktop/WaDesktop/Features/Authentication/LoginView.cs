@@ -27,6 +27,12 @@ namespace WaDesktop.Client.Views
         }
 
         public event EventHandler LoginClicked;
+        public void ShowSessionExpiredMessage() => MessageBox.Show(
+            "Sesi Anda telah berakhir. Silakan login kembali.",
+            "Sesi Berakhir",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
+
         public void ShowError(string message) => MessageBox.Show(message, "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
         void ILoginView.Close()

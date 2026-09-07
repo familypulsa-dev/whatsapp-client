@@ -2,12 +2,20 @@ using System;
 
 namespace WaDesktop.Domain.Interfaces
 {
+    public enum ShellExitReason
+    {
+        ApplicationExit,
+        ManualLogout,
+        SessionExpired
+    }
+
     /// <summary>
     /// Pure MVP interface — no WinForms types leaked.
     /// Content is IViewBase; ShellView casts to Control internally.
     /// </summary>
     public interface IShellView : IViewBase
     {
+        ShellExitReason ExitReason { get; }
         string StatusText { get; set; }
 
         event EventHandler MessagesClicked;
@@ -48,5 +56,6 @@ namespace WaDesktop.Domain.Interfaces
         void SetFooterVersion(string version);
         void SetFooterServerName(string name);
         void SetFooterTime(string time);
+        void CloseForSessionEnd(ShellExitReason reason);
     }
 }

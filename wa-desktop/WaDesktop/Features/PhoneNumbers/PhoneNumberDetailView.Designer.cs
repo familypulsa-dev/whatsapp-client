@@ -68,6 +68,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.lblWebsite2 = new System.Windows.Forms.Label();
             this.txtWebsite2 = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.picProfile)).BeginInit();
             this.SuspendLayout();
             // 
@@ -324,11 +325,22 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.button1.Text = "Ubah";
             this.button1.UseVisualStyleBackColor = true;
             // 
+            // label4
+            // 
+            this.label4.BackColor = System.Drawing.Color.White;
+            this.label4.ForeColor = System.Drawing.SystemColors.ControlDark;
+            this.label4.Location = new System.Drawing.Point(20, 185);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(120, 42);
+            this.label4.TabIndex = 26;
+            this.label4.Text = "Foto akan langsung diupload, tanpa perlu simpan dahulu";
+            // 
             // PhoneNumberDetailView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.txtWebsite2);
@@ -364,5 +376,6 @@ namespace WaDesktop.Client.Views.ManagementViews
         }
 
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label label4;
     }
 }

@@ -10,9 +10,12 @@ namespace WaDesktop.Infrastructure.Data.Remote
     /// </summary>
     public static class ApiHttpPipeline
     {
-        public static HttpClient Create(IAuthSessionStore sessionStore, string baseUrl)
+        public static HttpClient Create(
+            IAuthSessionStore sessionStore,
+            IAuthTokenRefresher tokenRefresher,
+            string baseUrl)
         {
-            var handler = new Handlers.AuthDelegatingHandler(sessionStore, baseUrl)
+            var handler = new Handlers.AuthDelegatingHandler(sessionStore, tokenRefresher, baseUrl)
             {
                 InnerHandler = new HttpClientHandler()
             };

@@ -15,6 +15,8 @@ namespace WaDesktop.Client.Views
         private static readonly Brush _xHoverBrush = new SolidBrush(Color.FromArgb(220, 60, 60));
         private int _hoveredTabIndex = -1;
 
+        public ShellExitReason ExitReason { get; private set; } = ShellExitReason.ApplicationExit;
+
         public ShellView()
         {
             InitializeComponent();
@@ -333,7 +335,7 @@ namespace WaDesktop.Client.Views
 
         private void ShellView_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (e.CloseReason == CloseReason.UserClosing)
+            if (ExitReason == ShellExitReason.ApplicationExit && e.CloseReason == CloseReason.UserClosing)
             {
                 var result = MessageBox.Show("Keluar dari aplikasi?", "Konfirmasi",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -365,5 +367,14 @@ namespace WaDesktop.Client.Views
         public void SetFooterVersion(string version) => footerView1.SetVersion(version);
         public void SetFooterServerName(string name) => footerView1.SetServerName(name);
         public void SetFooterTime(string time) => footerView1.SetTimeServer(time);
+
+        public void CloseForSessionEnd(ShellExitReason reason)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                ExitReason = reason;
+                Close();
+            });
+        }
     }
 }

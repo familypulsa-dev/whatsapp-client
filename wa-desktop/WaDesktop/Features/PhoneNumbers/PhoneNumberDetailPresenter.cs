@@ -135,7 +135,6 @@ namespace WaDesktop.Client.Presenters
                 var result = await Task.Run(() => _phones.UploadPictureAsync(_phoneNumberId, filePath));
                 if (result.IsFailure)
                     throw new Exception(result.Error.Message);
-                _view.LoadDetail(result.Value);
 
                 await LoadPictureAsync(result.Value.ProfilePictureUrl);
                 _view.ShowSuccess("Profile picture updated.");

@@ -32,11 +32,12 @@ namespace WaDesktop.Infrastructure.Services
             }
         }
 
-        public void ClearAccessToken()
+        public void ClearSession()
         {
             lock (_gate)
             {
                 _accessToken = null;
+                _refreshToken = null;
             }
         }
 

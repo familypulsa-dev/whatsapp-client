@@ -18,13 +18,21 @@ namespace WaDesktop.Client.Extensions
         public static IServiceCollection AddAppServices(this IServiceCollection services, string apiBaseUrl, string messagesUrl, IUpdateService updateService)
         {
             // 1. Core Services (Singleton = Satu instance untuk seluruh aplikasi)
+            services.AddSingleton<AppState>();
             services.AddSingleton<IEventAggregator, EventAggregator>();
             services.AddSingleton<IAuthSessionStore, AuthSessionStore>();
+            services.AddSingleton<IPersistedSessionStore, PersistedSessionStore>();
+            services.AddSingleton<IAuthTokenRefresher>(sp => new AuthTokenRefresher(
+                sp.GetRequiredService<IAuthSessionStore>(),
+                sp.GetRequiredService<IPersistedSessionStore>(),
+                sp.GetRequiredService<AppState>(),
+                apiBaseUrl));
             services.AddSingleton(sp => WaDesktop.Infrastructure.Data.Remote.ApiHttpPipeline.Create(
-                sp.GetRequiredService<IAuthSessionStore>(), apiBaseUrl));
+                sp.GetRequiredService<IAuthSessionStore>(),
+                sp.GetRequiredService<IAuthTokenRefresher>(),
+                apiBaseUrl));
             services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<IUpdateService>(updateService);
-            services.AddSingleton<AppState>();
 
             // 1.2 Data layer ala onpay (Repository + DataSource per fitur)
             services.AddTransient<ICompanyRepository, CompanyRepository>();

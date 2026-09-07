@@ -1,12 +1,8 @@
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using WaDesktop.Domain.Entities;
 using WaDesktop.Domain.Interfaces;
 using WaDesktop.Infrastructure.Constants;
 
@@ -23,16 +19,18 @@ namespace WaDesktop.Infrastructure.Data.Remote.Handlers
     public class AuthDelegatingHandler : DelegatingHandler
     {
         private readonly IAuthSessionStore _store;
+        private readonly IAuthTokenRefresher _tokenRefresher;
         private readonly string _baseUrl;
-        private readonly HttpClient _refreshHttp;
         private readonly SemaphoreSlim _refreshLock = new SemaphoreSlim(1, 1);
 
-        public AuthDelegatingHandler(IAuthSessionStore store, string baseUrl)
+        public AuthDelegatingHandler(
+            IAuthSessionStore store,
+            IAuthTokenRefresher tokenRefresher,
+            string baseUrl)
         {
             _store = store;
+            _tokenRefresher = tokenRefresher;
             _baseUrl = baseUrl;
-            // Klien terpisah agar panggilan refresh tidak lewat handler ini lagi (anti-rekursi).
-            _refreshHttp = new HttpClient();
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(
@@ -58,7 +56,8 @@ namespace WaDesktop.Infrastructure.Data.Remote.Handlers
             try
             {
                 // Jika token sudah berubah saat menunggu lock, thread lain sudah refresh.
-                refreshed = initialToken != _store.AccessToken || await TryRefreshAsync();
+                refreshed = (!string.IsNullOrEmpty(_store.AccessToken) && initialToken != _store.AccessToken)
+                    || await _tokenRefresher.TryRefreshAsync();
             }
             finally
             {
@@ -89,46 +88,9 @@ namespace WaDesktop.Infrastructure.Data.Remote.Handlers
         {
             if (disposing)
             {
-                _refreshHttp.Dispose();
                 _refreshLock.Dispose();
             }
             base.Dispose(disposing);
-        }
-
-        private async Task<bool> TryRefreshAsync()
-        {
-            var refreshToken = _store.RefreshToken;
-            if (string.IsNullOrEmpty(refreshToken)) return false;
-
-            try
-            {
-                var body = JsonConvert.SerializeObject(new { refresh_token = refreshToken });
-                var res = await _refreshHttp.PostAsync($"{_baseUrl}{ApiRoutes.Auth.Refresh}",
-                    new StringContent(body, Encoding.UTF8, "application/json"));
-
-                if (!res.IsSuccessStatusCode) return false;
-
-                var json = await res.Content.ReadAsStringAsync();
-                var wrapper = JObject.Parse(json);
-                var data = wrapper["data"];
-                var result = data != null ? data.ToObject<AuthResult>() : null;
-
-                if (result == null || string.IsNullOrEmpty(result.AccessToken)) return false;
-
-                // Defensif: kalau respons refresh tidak membawa refresh_token baru
-                // (backend tidak rotasi), JANGAN nukul RT lama dengan null.
-                var newRefresh = string.IsNullOrEmpty(result.RefreshToken)
-                    ? refreshToken
-                    : result.RefreshToken;
-
-                _store.SetSession(result.AccessToken, newRefresh);
-                _store.RaiseTokenRefreshed();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
         }
 
         private async Task<HttpRequestMessage> CloneRequestAsync(HttpRequestMessage request)

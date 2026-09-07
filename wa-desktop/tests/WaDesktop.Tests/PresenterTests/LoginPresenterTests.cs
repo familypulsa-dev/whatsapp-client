@@ -23,6 +23,7 @@ namespace WaDesktop.Tests.PresenterTests
             public event EventHandler LoginClicked;
 
             public void InvokeIfRequired(Action action) => action();
+            public void ShowSessionExpiredMessage() { }
             public void ShowError(string message) => LastError = message;
             public void Close() => IsClosed = true;
             public void TriggerLogin() => LoginClicked?.Invoke(this, EventArgs.Empty);
@@ -40,6 +41,7 @@ namespace WaDesktop.Tests.PresenterTests
 
             public Task<(bool, string)> LoginAsync(string username, string password)
                 => Task.FromResult((LoginResult, LoginResult ? null : "Login gagal"));
+            public Task<bool> RestoreSessionAsync() => Task.FromResult(false);
             public Task<bool> RefreshTokenAsync() => Task.FromResult(true);
             public void Logout() { }
         }
