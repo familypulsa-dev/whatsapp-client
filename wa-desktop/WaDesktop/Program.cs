@@ -43,7 +43,7 @@ namespace WaDesktop.Client
                 }
             }
 
-            var apiBaseUrl = "http://localhost:8080";
+            var apiBaseUrl = "https://test.waba.mbi-software.com";
             var wwwRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot");
             Directory.CreateDirectory(wwwRoot);
 
