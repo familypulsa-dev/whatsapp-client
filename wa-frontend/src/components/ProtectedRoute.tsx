@@ -1,12 +1,10 @@
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../stores/auth"
-import { useWS } from "../stores/ws"
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate()
   const { token, user, loading, init } = useAuth()
-  const { connect } = useWS()
 
   useEffect(() => {
     init()
@@ -18,8 +16,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
       navigate("/login", { replace: true })
       return
     }
-    connect(token, user?.company_id)
-  }, [token, loading, navigate, connect])
+  }, [token, loading, navigate])
 
   if (loading) {
     return (

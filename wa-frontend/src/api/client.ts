@@ -4,14 +4,13 @@ import { isDesktop, initDesktopToken, postToDesktop } from "./desktopBridge"
 // Sync token from desktop bridge on first load
 initDesktopToken()
 
+
 function getBase(): string {
   if (typeof window !== "undefined" && (window as any).__API_BASE__) {
     return (window as any).__API_BASE__
   }
 
-  return "http://localhost:8080"
-
-  // return "https://test.waba.mbi-software.com"
+   return "https://test.waba.mbi-software.com"
 }
 
 // Set global axios base URL so all /api/v1/* calls go to backend, not same-origin
@@ -42,12 +41,12 @@ async function handleTokenRefresh(): Promise<string | null> {
     if (!res.ok) throw new Error("Refresh failed")
     const wrapper = await res.json()
     const data = wrapper.data
-    localStorage.setItem("token", data.access_token)
+    localStorage.setItem("access_token", data.access_token)
     localStorage.setItem("refresh_token", data.refresh_token)
     return data.access_token
   } catch (err) {
     console.error("[auth] refresh call failed", err)
-    localStorage.removeItem("token")
+    localStorage.removeItem("access_token")
     localStorage.removeItem("refresh_token")
     return null
   }
@@ -80,7 +79,7 @@ function parseApiError(body: any, fallback: string): string {
 }
 
 async function request<T>(path: string, opts: RequestInit = {}): Promise<T> {
-  let token = localStorage.getItem("token")
+  let token = localStorage.getItem("access_token")
   const headers: Record<string, string> = {
     ...(opts.headers as Record<string, string>),
   }
@@ -144,7 +143,7 @@ async function request<T>(path: string, opts: RequestInit = {}): Promise<T> {
     } else {
       console.error("[auth] refresh failed, clearing session")
       refreshSubscribers = []
-      localStorage.removeItem("token")
+      localStorage.removeItem("access_token")
       localStorage.removeItem("refresh_token")
       if (isDesktop()) {
         postToDesktop({ type: "TOKEN_EXPIRED" })
