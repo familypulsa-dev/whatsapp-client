@@ -8,6 +8,7 @@ namespace WaDesktop.Client.Views.ManagementViews
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.Button btnAdd;
 
         protected override void Dispose(bool disposing)
         {
@@ -27,6 +28,13 @@ namespace WaDesktop.Client.Views.ManagementViews
             this.btnSearch = new System.Windows.Forms.Button();
             this.btnSync = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
+            this.btnAdd = new System.Windows.Forms.Button();
+            this.btnAdd.Text = "Tambah WABA";
+            this.btnAdd.Name = "btnAdd";
+            this.btnAdd.Location = new System.Drawing.Point(6, 3);
+            this.btnAdd.Size = new System.Drawing.Size(120, 23);
+            this.btnAdd.Visible = false;
+            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             this.panelHeader = new System.Windows.Forms.Panel();
             this.panelFooter = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
@@ -129,6 +137,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             // panelFooter
             // 
             this.panelFooter.Controls.Add(this.btnRefresh);
+            this.panelFooter.Controls.Add(this.btnAdd);
             this.panelFooter.Controls.Add(this.btnSync);
             this.panelFooter.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panelFooter.Location = new System.Drawing.Point(0, 525);

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WaDesktop.Domain.Interfaces;
 using WaDesktop.Domain.Entities;
-using WaDesktop.Client.Views.ManagementViews;
+using WaDesktop.Domain.State;
 using WaDesktop.Client.Views.ManagementViews;
 
 namespace WaDesktop.Client.Presenters
@@ -13,14 +13,18 @@ namespace WaDesktop.Client.Presenters
         private readonly WabaView _view;
         private readonly IWabaRepository _wabas;
         private bool _disposed;
+        private readonly AppState _state;
+        private bool _busy;
 
-        public WabasPresenter(WabaView view, IWabaRepository wabas)
+        public WabasPresenter(WabaView view, IWabaRepository wabas, AppState state)
         {
             _view = view;
             _wabas = wabas;
+            _state = state;
+            _view.AddVisible = state.IsSuperAdmin;
 
-            _view.RefreshClicked += async (s, e) => await LoadDataAsync();
-            _view.SearchClicked += async (s, q) => await LoadDataAsync(q);
+            _view.RefreshClicked += OnRefresh;
+            _view.SearchClicked += OnSearch;
             _view.AddClicked += OnAdd;
             _view.EditClicked += OnEdit;
             _view.DeleteClicked += OnDelete;
@@ -31,10 +35,12 @@ namespace WaDesktop.Client.Presenters
 
         private async Task LoadDataAsync(string search = null)
         {
+            if (_busy || _disposed) return;
+            _busy = true;
             _view.IsLoading = true;
             try
             {
-                var wabasResult = await Task.Run(() => _wabas.GetAllAsync());
+                var wabasResult = await _wabas.GetAllAsync();
                 if (wabasResult.IsFailure)
                     throw new Exception(wabasResult.Error.Message);
 
@@ -54,39 +60,63 @@ namespace WaDesktop.Client.Presenters
             finally
             {
                 _view.IsLoading = false;
+                _busy = false;
             }
         }
 
-        private void OnAdd(object sender, EventArgs e)
+        private async void OnRefresh(object sender, EventArgs e) => await LoadDataAsync();
+        private async void OnSearch(object sender, string search) => await LoadDataAsync(search);
+
+        private async void OnAdd(object sender, EventArgs e)
         {
-            MessageBox.Show("Tambah WABA — implement form dialog.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (_busy || _disposed || !_state.IsSuperAdmin) return;
+            _busy = true;
+            _view.IsLoading = true;
+            try
+            {
+                var baseline = await _wabas.GetAllAsync();
+                if (baseline.IsFailure) throw new Exception(baseline.Error.Message);
+                using (var form = new WabaOnboardingForm(_wabas, baseline.Value))
+                {
+                    form.ShowDialog(_view.FindForm());
+                    _view.DataSource = form.LatestWabas ?? baseline.Value;
+                    if (form.NewWabas.Count > 0) _view.SelectWaba(form.NewWabas[0].WabaId);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(_view.FindForm(), "Gagal membuka proses tambah WABA: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally { _busy = false; _view.IsLoading = false; }
         }
 
-        private void OnSync(object sender, EventArgs e)
+        private async void OnSync(object sender, EventArgs e)
         {
+            if (_busy || _disposed) return;
             var result = MessageBox.Show("Sinkronisasi WABA dari Meta?", "Sinkronisasi", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result == DialogResult.Yes)
             {
                 _view.IsLoading = true;
-                Task.Run(async () =>
+                _busy = true;
+                try
                 {
-                    try
-                    {
-                        var sync = await _wabas.SyncFromMetaAsync();
-                        if (sync.IsFailure)
-                            throw new Exception(sync.Error.Message);
-                        await LoadDataAsync();
-                        MessageBox.Show("Sinkronisasi selesai.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"Sinkronisasi gagal: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    finally
-                    {
-                        _view.IsLoading = false;
-                    }
-                });
+                    var sync = await _wabas.SyncFromMetaAsync();
+                    if (sync.IsFailure)
+                        throw new Exception(sync.Error.Message);
+                    var list = await _wabas.GetAllAsync();
+                    if (list.IsFailure) throw new Exception(list.Error.Message);
+                    _view.DataSource = list.Value;
+                    MessageBox.Show("Sinkronisasi selesai.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Sinkronisasi gagal: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    _view.IsLoading = false;
+                    _busy = false;
+                }
             }
         }
 
@@ -106,12 +136,12 @@ namespace WaDesktop.Client.Presenters
         {
             if (!_disposed)
             {
-                _view.RefreshClicked -= null;
-                _view.SearchClicked -= null;
-                _view.AddClicked -= null;
-                _view.EditClicked -= null;
-                _view.DeleteClicked -= null;
-                _view.SyncClicked -= null;
+                _view.RefreshClicked -= OnRefresh;
+                _view.SearchClicked -= OnSearch;
+                _view.AddClicked -= OnAdd;
+                _view.EditClicked -= OnEdit;
+                _view.DeleteClicked -= OnDelete;
+                _view.SyncClicked -= OnSync;
                 _disposed = true;
             }
         }

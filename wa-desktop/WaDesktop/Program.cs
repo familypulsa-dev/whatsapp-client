@@ -1,18 +1,15 @@
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
 using System.Windows.Forms;
-using Microsoft.Extensions.DependencyInjection;
+using Velopack;
+using WaDesktop.Client.Extensions;
+using WaDesktop.Client.Presenters;
+using WaDesktop.Client.Views;
 using WaDesktop.Domain.Interfaces;
 using WaDesktop.Domain.Messages;
-using WaDesktop.Domain.State;
-using WaDesktop.Infrastructure;
-using WaDesktop.Infrastructure.EventAggregator;
 using WaDesktop.Infrastructure.Services;
-using WaDesktop.Client.Views;
-using WaDesktop.Client.Presenters;
-using WaDesktop.Client.Extensions;
 using WaDesktop.Shell;
-using Velopack;
 
 namespace WaDesktop.Client
 {
@@ -38,12 +35,12 @@ namespace WaDesktop.Client
             using (var splashPresenter = new SplashPresenter(splashView, updateService))
             {
                 if (splashView.ShowDialog() != DialogResult.OK)
-                {   
+                {
                     return;
                 }
             }
 
-            var apiBaseUrl = "https://test.waba.mbi-software.com";
+            var apiBaseUrl = "http://localhost:8080";
             var wwwRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot");
             Directory.CreateDirectory(wwwRoot);
 
@@ -55,7 +52,7 @@ namespace WaDesktop.Client
                 // --- SETUP DEPENDENCY INJECTION ---
                 var services = new ServiceCollection();
                 services.AddAppServices(apiBaseUrl, messagesUrl, updateService);
-                
+
                 using (var provider = services.BuildServiceProvider())
                 {
                     var eventAggregator = provider.GetRequiredService<IEventAggregator>();

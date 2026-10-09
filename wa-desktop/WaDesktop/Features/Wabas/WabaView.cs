@@ -60,7 +60,29 @@ namespace WaDesktop.Client.Views.ManagementViews
             }
         }
 
-        public bool IsLoading { set => this.InvokeIfRequired(() => Cursor = value ? Cursors.WaitCursor : Cursors.Default); }
+        public bool AddVisible { set => btnAdd.Visible = value; }
+
+        public void SelectWaba(string wabaId)
+        {
+            dataGridView.ClearSelection();
+            foreach (DataGridViewRow row in dataGridView.Rows)
+            {
+                if ((row.Tag as Waba)?.WabaId != wabaId) continue;
+                row.Selected = true;
+                dataGridView.CurrentCell = row.Cells[0];
+                dataGridView.FirstDisplayedScrollingRowIndex = row.Index;
+                break;
+            }
+        }
+
+        public bool IsLoading
+        {
+            set => this.InvokeIfRequired(() =>
+            {
+                Cursor = value ? Cursors.WaitCursor : Cursors.Default;
+                btnAdd.Enabled = btnSync.Enabled = btnRefresh.Enabled = btnSearch.Enabled = !value;
+            });
+        }
 
         public event EventHandler<string> SearchClicked;
         public event EventHandler RefreshClicked;
