@@ -31,7 +31,8 @@ namespace WaDesktop.Infrastructure.Data.Repositories
                     case "wa_waba_token":   setting.WabaToken = item.Value; break;
                     case "wa_app_id":       setting.AppId = item.Value; break;
                     case "wa_app_secret":   setting.AppSecret = item.Value; break;
-                    case "wa_bussiness_id": setting.BusinessId = item.Value; break;
+                    case "wa_bussiness_id":
+                    case "wa_business_id": setting.BusinessId = item.Value; break;
                     case "wa_verify_token": setting.VerifyToken = item.Value; break;
                     case "wa_webhook_url":  setting.WebhookUrl = item.Value; break;
                     case "wa_message_cleanup_enabled": setting.MessageCleanupEnabled = item.Value == "true"; break;

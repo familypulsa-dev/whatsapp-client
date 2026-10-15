@@ -51,6 +51,7 @@ namespace WaDesktop.Infrastructure.Services
             var auth = result.Value;
             _sessionStore.SetSession(auth.AccessToken, auth.RefreshToken);
             _state.SetSession(auth.AccessToken, auth.RefreshToken, auth.User.Role, auth.User.DisplayName, auth.CompanyName, auth.User.CompanyId);
+            _state.Username = auth.User.Username;
             SaveCurrentSession();
             return (true, null);
         }
@@ -68,6 +69,7 @@ namespace WaDesktop.Infrastructure.Services
                 persisted.DisplayName,
                 persisted.CompanyName,
                 persisted.CompanyId);
+            _state.Username = persisted.Username;
 
             if (await _tokenRefresher.TryRefreshAsync()) return true;
 
@@ -97,6 +99,7 @@ namespace WaDesktop.Infrastructure.Services
                 RefreshToken = _sessionStore.RefreshToken,
                 Role = _state.Role,
                 DisplayName = _state.DisplayName,
+                Username = _state.Username,
                 CompanyName = _state.CompanyName,
                 CompanyId = _state.CompanyId
             });

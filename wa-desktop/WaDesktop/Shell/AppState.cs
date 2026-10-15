@@ -8,6 +8,7 @@ namespace WaDesktop.Domain.State
         public string AccessToken { get; set; }
         public string RefreshToken { get; set; }
         public string Role { get; set; }
+        public string Username { get; set; }
         public string DisplayName { get; set; }
         public string CompanyName { get; set; }
         public bool IsLoggedIn => !string.IsNullOrEmpty(AccessToken);
@@ -29,6 +30,7 @@ namespace WaDesktop.Domain.State
             AccessToken = null;
             RefreshToken = null;
             Role = null;
+            Username = null;
             DisplayName = null;
             CompanyName = null;
             CompanyId= null;

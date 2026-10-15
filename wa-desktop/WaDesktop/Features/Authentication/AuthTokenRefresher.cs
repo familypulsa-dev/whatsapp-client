@@ -98,6 +98,7 @@ namespace WaDesktop.Infrastructure.Services
 
             _state.Role = result.User.Role;
             _state.DisplayName = result.User.DisplayName;
+            _state.Username = result.User.Username;
             _state.CompanyId = result.User.CompanyId;
             if (!string.IsNullOrEmpty(result.CompanyName)) _state.CompanyName = result.CompanyName;
         }
@@ -110,6 +111,7 @@ namespace WaDesktop.Infrastructure.Services
                 RefreshToken = _sessionStore.RefreshToken,
                 Role = _state.Role,
                 DisplayName = _state.DisplayName,
+                Username = _state.Username,
                 CompanyName = _state.CompanyName,
                 CompanyId = _state.CompanyId
             });

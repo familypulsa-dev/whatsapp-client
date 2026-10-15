@@ -60,7 +60,6 @@ namespace WaDesktop.Client.Views.ManagementViews
             }
         }
 
-        public bool AddVisible { set => btnAdd.Visible = value; }
 
         public void SelectWaba(string wabaId)
         {
@@ -80,7 +79,7 @@ namespace WaDesktop.Client.Views.ManagementViews
             set => this.InvokeIfRequired(() =>
             {
                 Cursor = value ? Cursors.WaitCursor : Cursors.Default;
-                btnAdd.Enabled = btnSync.Enabled = btnRefresh.Enabled = btnSearch.Enabled = !value;
+                btnSync.Enabled = btnRefresh.Enabled = btnSearch.Enabled = !value;
             });
         }
 
@@ -93,7 +92,6 @@ namespace WaDesktop.Client.Views.ManagementViews
 
         private void btnSearch_Click(object sender, EventArgs e) => SearchClicked?.Invoke(this, txtSearch.Text);
         private void btnRefresh_Click(object sender, EventArgs e) => RefreshClicked?.Invoke(this, EventArgs.Empty);
-        private void btnAdd_Click(object sender, EventArgs e) => AddClicked?.Invoke(this, EventArgs.Empty);
         private void btnDelete_Click(object sender, EventArgs e) => DeleteClicked?.Invoke(this, EventArgs.Empty);
         private void btnSync_Click(object sender, EventArgs e) => SyncClicked?.Invoke(this, EventArgs.Empty);
 

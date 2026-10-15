@@ -21,11 +21,9 @@ namespace WaDesktop.Client.Presenters
             _view = view;
             _wabas = wabas;
             _state = state;
-            _view.AddVisible = state.IsSuperAdmin;
 
             _view.RefreshClicked += OnRefresh;
             _view.SearchClicked += OnSearch;
-            _view.AddClicked += OnAdd;
             _view.EditClicked += OnEdit;
             _view.DeleteClicked += OnDelete;
             _view.SyncClicked += OnSync;
@@ -66,29 +64,6 @@ namespace WaDesktop.Client.Presenters
 
         private async void OnRefresh(object sender, EventArgs e) => await LoadDataAsync();
         private async void OnSearch(object sender, string search) => await LoadDataAsync(search);
-
-        private async void OnAdd(object sender, EventArgs e)
-        {
-            if (_busy || _disposed || !_state.IsSuperAdmin) return;
-            _busy = true;
-            _view.IsLoading = true;
-            try
-            {
-                var baseline = await _wabas.GetAllAsync();
-                if (baseline.IsFailure) throw new Exception(baseline.Error.Message);
-                using (var form = new WabaOnboardingForm(_wabas, baseline.Value))
-                {
-                    form.ShowDialog(_view.FindForm());
-                    _view.DataSource = form.LatestWabas ?? baseline.Value;
-                    if (form.NewWabas.Count > 0) _view.SelectWaba(form.NewWabas[0].WabaId);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(_view.FindForm(), "Gagal membuka proses tambah WABA: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally { _busy = false; _view.IsLoading = false; }
-        }
 
         private async void OnSync(object sender, EventArgs e)
         {
@@ -138,7 +113,6 @@ namespace WaDesktop.Client.Presenters
             {
                 _view.RefreshClicked -= OnRefresh;
                 _view.SearchClicked -= OnSearch;
-                _view.AddClicked -= OnAdd;
                 _view.EditClicked -= OnEdit;
                 _view.DeleteClicked -= OnDelete;
                 _view.SyncClicked -= OnSync;
